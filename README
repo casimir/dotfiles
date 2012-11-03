@@ -1,6 +1,11 @@
 Todo:
 
-	Ace-jump mode
-	Helm
-	Emacs Code Browser (ECB)
-	Collection of Emacs Development Environment Tools (CEDET)
+	zathura
+
+	XCompose
+
+	Emacs:
+		Ace-jump mode
+		Helm
+		Emacs Code Browser (ECB)
+		Collection of Emacs Development Environment Tools (CEDET)
