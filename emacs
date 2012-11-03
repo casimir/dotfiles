@@ -19,9 +19,90 @@
 
 ;; -- Common settings ---------------------------------------------------------
 
-;; work on PRIMARY rather than CLIPBOARD
-;; (same clipboard that firefox/urxvt uses)
-(set 'x-select-enable-primary t)
+;; run server
+(server-start)
+
+(setq
+  ;; don't show the startup screen
+  inhibit-startup-screen t
+
+  ;; never follow symlinks and don't ask
+  vc-follow-symlinks nil
+
+  ;; see what you type
+  echo-keystrokes 0.01
+
+  ;; text scrolling
+  scroll-conservatively 50
+  scroll-preserve-screen-position 't
+  scroll-margin 10
+
+  ;; Insert space/slash after completion
+  comint-completion-addsuffix t
+
+  ;; number of chars in line
+  fill-column 80
+
+  ;; make sure file ends with NEWLINE
+  require-final-newline t
+
+  ;; delete excess backup versions
+  delete-old-versions t
+
+  ;; paste at cursor NOT at mouse pointer position
+  mouse-yank-at-point t
+
+  ;; display time in the modeline
+  display-time-24hr-format t
+  display-time-day-and-date nil
+
+  ;; calendar customizing
+  european-calendar-style t
+  calendar-week-start-day 1
+
+  ;; no "#" files after a save
+  delete-auto-save-files t
+
+  ;; NO annoing backups
+  make-backup-files t
+
+  ;; autosave every 512 keyboard inputs
+  auto-save-interval 512
+
+  ;; limit the number of newest versions
+  kept-new-versions 5
+
+  ;; limit the number of oldest versions
+  kept-old-versions 5
+
+  auto-save-list-file-prefix "~/.emacs.d/backups/save-"
+
+  ;; cursors!!
+  cursor-in-non-selected-windows t
+
+  ;; work on PRIMARY rather than CLIPBOARD
+  ;; (same clipboard that firefox/urxvt uses)
+  x-select-enable-primary t
+
+  ;; make ido ignore stupid extensions
+  ido-ignore-extensions t
+
+  ;; enable tramp (enables :ssh, :sudo etc)
+  tramp-mode t
+
+  ;; put space instead of a tab when using tab
+  indent-tabs-mode nil
+
+  ;; setting the default tabulation
+  default-tab-width 4
+
+  ;; make tabstops every 4th char
+  tab-stop-list (number-sequence 0 80 4)
+
+)
+
+;; save position in files
+(setq-default save-place t)
 
 ;;  no scroll bar
 (scroll-bar-mode -1)
@@ -36,24 +117,14 @@
 (column-number-mode t)
 
 ;; display time and battery
-(setq display-time-day-and-date nil display-time-24hr-format t)
 (display-time)
 (display-battery-mode t)
-
-;; enable ido-mode
-(ido-mode t)
-
-;; make ido ignore stupid extensions
-(setq ido-ignore-extensions t)
-
-;; don't show the startup screen
-(setq inhibit-startup-screen t)
 
 ;; "y or n" instead of yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; put space instead of a tab when using tab
-(setq-default indent-tabs-mode nil)
+;; enable ido-mode
+(ido-mode t)
 
 ;; highlight parentheses
 (show-paren-mode 1)
@@ -65,24 +136,6 @@
 ;; make cursor not blink
 (blink-cursor-mode 0)
 
-;; enable tramp (enables :ssh, :sudo etc)
-(setq tramp-mode t)
-
-;; run server
-;; allows for instance git commit messages in emacs with
-;; git config --global core.editor emacsclient
-;; and starting a new emacs window with C-x 5 2
-(server-start)
-
-;; make tabstops every 4th char
-(set-variable 'tab-stop-list (number-sequence 0 80 4))
-
-;; make <RET> also indent
-(global-set-key (kbd "<RET>") 'newline-and-indent)
-
-;; fill (M-q) (gqq) to 80 chars
-(setq fill-column 80)
-
 ;; set font
 (set-default-font "dejavu sans mono-9")
 
@@ -91,10 +144,6 @@
 
 ;; don't use goal column
 (put 'set-goal-column 'disabled nil)
-
-;; eldoc in lisp
-(add-hook 'lisp-mode 'turn-on-eldoc-mode)
-
 
 
 
@@ -211,38 +260,6 @@
 (setq evil-want-visual-char-semi-exclusive t)
 
 
-;; Ace jump mode
-
-(autoload
-  'ace-jump-mode
-  "ace-jump-mode"
-  "Emacs quick move minor mode"
-  t)
-(require 'ace-jump-mode)
-
-;; make ace jump look like a single command to evil
-(defadvice ace-jump-word-mode (before evil-jump activate)
-  (push (point) evil-jump-list))
-(defadvice ace-jump-char-mode (before evil-jump activate)
-  (push (point) evil-jump-list))
-(defadvice ace-jump-line-mode (before evil-jump activate)
-  (push (point) evil-jump-list))
-
-
-(defadvice ace-jump-word-mode (after evil activate)
-  (recursive-edit))
-
-(defadvice ace-jump-char-mode (after evil activate)
-  (recursive-edit))
-
-(defadvice ace-jump-line-mode (after evil activate)
-  (recursive-edit))
-
-(defadvice ace-jump-done (after evil activate)
-  (exit-recursive-edit))
-
-(define-key evil-normal-state-map (kbd "SPC") 'ace-jump-mode)
-
 ;; start evil mode
 (evil-mode 1)
 
@@ -254,10 +271,21 @@
 ;; (setq exec-path (cons "/usr/lib/erlang/bin" exec-path))
 ;; (require 'erlang-start)
 
+;; -- ELisp mode ---------------------------------------------------------------
+
+;; eldoc in lisp
+(add-hook 'lisp-mode 'turn-on-eldoc-mode)
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq mode-name "eL")))
+
+
 ;; -- Haskell mode -------------------------------------------------------------
 
 ;; haskell mode
 
+(require 'haskell-mode)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 
 ;; flyspell comments in Haskell
@@ -274,6 +302,12 @@
 (global-set-key (kbd "C-c C--") 'my-haskell-fill-comment)
 
 
+;; config ---------------------------------------------------------------------
+
+(add-hook 'emacs-startup-hook (lambda ()
+                                (message "Time needed to load: %s seconds."
+                                         (emacs-uptime "%s")))
+          'append)
 
 
 
@@ -285,6 +319,10 @@
 (global-set-key (kbd "C-c f") 'auto-fill-mode)
 
 (add-hook 'latex-mode-hook 'turn-on-auto-fill 'append)
+
+
+
+
 
 ;; -- Fly-spell ---------------------------------------------------------------
 
