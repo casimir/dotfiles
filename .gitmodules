@@ -13,9 +13,9 @@
 [submodule "elisp/org-mode"]
 	path = elisp/org-mode
 	url = git://orgmode.org/org-mode.git
-[submodule "elisp/auto-complete"]
-	path = elisp/auto-complete
-	url = https://github.com/m2ym/auto-complete.git
 [submodule "elisp/markdown-mode"]
 	path = elisp/markdown-mode
 	url = git://jblevins.org/git/markdown-mode.git
+[submodule "elisp/auto-complete"]
+	path = elisp/auto-complete
+	url = https://github.com/auto-complete/auto-complete
