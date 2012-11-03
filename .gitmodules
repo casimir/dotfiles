@@ -22,3 +22,6 @@
 [submodule "elisp/popup"]
 	path = elisp/popup
 	url = https://github.com/auto-complete/popup-el.git
+[submodule "elisp/ace-jump-mode"]
+	path = elisp/ace-jump-mode
+	url = https://github.com/winterTTr/ace-jump-mode.git

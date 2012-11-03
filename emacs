@@ -6,7 +6,16 @@
     (add-to-list 'load-path (expand-file-name dir) nil #'string=)))
 
 (add-to-loadpath "~/.elisp")
+(add-to-loadpath "~/.elisp/ac-dict")
+(add-to-loadpath "~/.elisp/ace-jump-mode")
 (add-to-loadpath "~/.elisp/auto-complete")
+(add-to-loadpath "~/.elisp/evil")
+(add-to-loadpath "~/.elisp/haskell-mode")
+(add-to-loadpath "~/.elisp/magit")
+(add-to-loadpath "~/.elisp/markdown-mode")
+(add-to-loadpath "~/.elisp/org-mode")
+(add-to-loadpath "~/.elisp/popup")
+(add-to-loadpath "~/.elisp/undo-tree")
 
 ;; -- Common settings ---------------------------------------------------------
 
@@ -201,6 +210,39 @@
 ;; Make copy in visual mode not copy dangling char
 (setq evil-want-visual-char-semi-exclusive t)
 
+
+;; Ace jump mode
+
+(autoload
+  'ace-jump-mode
+  "ace-jump-mode"
+  "Emacs quick move minor mode"
+  t)
+(require 'ace-jump-mode)
+
+;; make ace jump look like a single command to evil
+(defadvice ace-jump-word-mode (before evil-jump activate)
+  (push (point) evil-jump-list))
+(defadvice ace-jump-char-mode (before evil-jump activate)
+  (push (point) evil-jump-list))
+(defadvice ace-jump-line-mode (before evil-jump activate)
+  (push (point) evil-jump-list))
+
+
+(defadvice ace-jump-word-mode (after evil activate)
+  (recursive-edit))
+
+(defadvice ace-jump-char-mode (after evil activate)
+  (recursive-edit))
+
+(defadvice ace-jump-line-mode (after evil activate)
+  (recursive-edit))
+
+(defadvice ace-jump-done (after evil activate)
+  (exit-recursive-edit))
+
+(define-key evil-normal-state-map (kbd "SPC") 'ace-jump-mode)
+
 ;; start evil mode
 (evil-mode 1)
 
@@ -275,7 +317,6 @@
 
 ;; -- Auto complete mode -------------------------------------------------------
 
-(add-to-loadpath "~/.elisp/popup")
 
 (require 'auto-complete)
 (require 'auto-complete-config)
