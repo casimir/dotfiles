@@ -1,9 +1,12 @@
 
+
 (defun add-to-loadpath (&rest dirs)
+  "From cofi/dotfiles"
   (dolist (dir dirs load-path)
     (add-to-list 'load-path (expand-file-name dir) nil #'string=)))
 
 (add-to-loadpath "~/.elisp")
+(add-to-loadpath "~/.elisp/auto-complete")
 
 ;; -- Common settings ---------------------------------------------------------
 
@@ -272,11 +275,11 @@
 
 ;; -- Auto complete mode -------------------------------------------------------
 
+(add-to-loadpath "~/.elisp/popup")
+
 (require 'auto-complete)
 (require 'auto-complete-config)
 (ac-config-default)
-
-(load "~/.emacs.d/lisp/modes/auto-complete-extension")
 
 ;; Auto-complete in Haskell
 (setq ac-modes (append ac-modes '(haskell-mode literate-haskell-mode)))

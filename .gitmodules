@@ -19,3 +19,6 @@
 [submodule "elisp/auto-complete"]
 	path = elisp/auto-complete
 	url = https://github.com/auto-complete/auto-complete
+[submodule "elisp/popup"]
+	path = elisp/popup
+	url = https://github.com/auto-complete/popup-el.git

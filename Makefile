@@ -17,4 +17,5 @@ compile:
 deploy:
 	mkdir -p ~/.xmonad
 	for file in $(NORMAL_FILES); do $(LINK_CMD) $(PWD)/$$file ~/.$$file; done
-	@$(LINK_CMD) $(PWD)/xmonad.hs ~/.xmonad/xmonad.hs
+	$(LINK_CMD) $(PWD)/xmonad.hs ~/.xmonad/xmonad.hs
+	(cd $$HOME/.elisp/auto-complete; make install DIR=$$HOME/.elisp)
