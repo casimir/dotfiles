@@ -1,0 +1,15 @@
+
+noremap h <C-o>
+noremap s <C-i>
+noremap e t
+noremap . f
+noremap , F
+noremap t 6j
+noremap n 6k
+noremap a <C-o>
+noremap N n
+noremap T N
+set autocomplete=false
+set editor='emacsclient -c'
+set hintchars=aoeuhtnsidpgcrl
+set gui=noaddons,nobookmarks,nomenu,nonavigation,tabs

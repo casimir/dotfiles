@@ -1,0 +1,144 @@
+!
+! Dvorak unicode file
+!
+! `1234567890/
+! ≈₁₂₃₄₅₆₇₈₉₀≟
+! ¬¹²³⁴⁵⁶⁷⁸⁹⁰
+!
+! ',.pyfgcrl=
+! ′⟨⟩≗∧∀γ →λ≡
+! ″≤≥   Γ ⟶∣⁺
+!
+! aoeuidhtns-
+! åäöε∈δ ⊤≢Σ⊖
+! ÅÄÖ  Δ    ⁻
+!
+! ;qjkxbmwvz
+! α∎  ∃β⊥ ∨
+! ∷
+!
+! \[]
+! ∣⟦⟧
+
+! Σ U03A3
+! Γ U0393
+! α U03B1
+! β U03B2
+! γ U03B3
+! δ U03B4
+! ε U03B5
+! λ U03BB
+! Δ U0394
+! ∅ U2205
+! ¬ UAC
+! ∎ U220E
+! ⊤ U22A4
+! ⊥ U22A5
+! ⊎ U228E
+! → 2192
+! ′ U2032
+! ″ U2033
+! ∷ U2237
+! ≟ U225F
+! ∨ U2228
+! ∈ U2208
+! ∃ U2203
+! ∨ U2228
+! ∧ U2227
+! ⟶ U27F6
+
+! ∙ U2219
+! ⋯ U22Ef
+! … U2026
+! σ U03C3
+! ₙ U2099
+
+
+! [ { ⟦
+keycode 20 = bracketleft braceleft U27E6
+! ] } ⟧
+keycode 21 = bracketright braceright U27E7
+
+! ' " ′ ″
+keycode 24 = apostrophe quotedbl U2032 U2033
+! , < ⟨ ≤
+keycode 25 = comma less U27E8 U2264
+! . > ⟩ ≥
+keycode 26 = period greater U27E9 U2265
+! p P ≗
+keycode 27 = p P U2257
+! y Y ∧
+keycode 28 = y Y U2227
+! f F ∀
+keycode 29 = f F U2200
+! g G γ Γ
+keycode 30 = g G U03B3 U0393
+! c C
+keycode 31 = c C c C
+! r R → ⟶
+keycode 32 = r R U2192 U27F6
+! l L ℓ
+keycode 33 = l L  U2113
+
+! / ? ≟ ∅
+keycode  34 = slash question U225F U2205
+
+! = + ≡ ⁺
+keycode 35 = equal plus U2261 U207A
+
+! \ | λ ∣
+keycode 51 = backslash bar U03BB U2223
+
+! u U ε
+keycode 41 = u U U03B5
+! i I ∈
+keycode 42 = i I U2208
+! d D δ Δ
+keycode 43 = d D U03B4 U0394
+! h H φ Φ
+keycode 44 = h H U03C6 U03A6
+! t T ⊤
+keycode 45 = t T U22A4
+! ₙ U2099
+! n N ≢ ℕ
+keycode 46 = n N U2262 U2115 U2099
+! s S Σ
+keycode 47 = s S U03A3 U2099
+
+! - _ ⊖ ⁻
+keycode 48 = minus underscore U2296 U207B
+! ` ~ ≈ ¬
+keycode 49 = grave asciitilde U2248 UAC
+
+! ; : α ∷
+keycode 52 = semicolon colon U03B1 U2237
+! q Q ∎
+keycode 53 = q Q U220E
+! j J ψ Ψ
+keycode 54 = j J U03C8 U03A8
+! k K
+keycode 55 = k K k K
+! x X ∃
+keycode 56 = x X U2203
+! b B β
+keycode 57 = b B U03B2
+! m M ⊥
+keycode 58 = m M U22A5
+! w W
+keycode 59 = w W w W
+! v V ∨
+keycode 60 = v V U2228
+! z Z ℤ
+keycode 61 = z Z U2124
+
+! ₁₂₃₄₅₆₇₈₉₀ ¹²³⁴⁵⁶⁷⁸⁹⁰
+keycode  10 = 1 exclam U2081 UB9
+keycode  11 = 2 at U2082 UB2
+keycode  12 = 3 numbersign U2083 UB3
+keycode  13 = 4 dollar U2084 U2074
+keycode  14 = 5 percent U2085 U2075
+keycode  15 = 6 asciicircum U2086 U2076
+keycode  16 = 7 ampersand U2087 U2077
+keycode  17 = 8 asterisk U2088 U2078
+keycode  18 = 9 parenleft U2089 U2079
+keycode  19 = 0 parenright U2080 U2070
