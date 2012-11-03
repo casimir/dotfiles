@@ -87,9 +87,6 @@
   completion-ignored-extensions '(".hi" ".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof" ".glo" ".idx" ".lot" ".svn/" ".hg/" ".git/" ".bzr/" "CVS/" "_darcs/" "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")
 )
 
-;; truncate lines: don't wrap lines when they are too long
-(setq truncate-lines t)
-
 (set-fringe-mode `(0 . 0))
 
 ;; save position in files
@@ -135,5 +132,10 @@
 
 ;; don't use goal column
 (put 'set-goal-column 'disabled nil)
+
+;; mixedCase to small_words_with_underscores (visually) with glasses-mode
+(setq glasses-separate-parentheses-p nil
+      glasses-uncapitalize-p t
+      glasses-uncapitalize-regexp "[a-zA-Z]")
 
 (provide 'danr-common)
