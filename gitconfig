@@ -1,0 +1,23 @@
+[user]
+	name = Dan Rosén
+	email = danr@student.chalmers.se
+
+[core]
+	editor = emacsclient
+    excludesfile = ~/.gitexcludes
+
+[branch "master"]
+    autosetupmerge = true
+
+[mergetool.ediff]
+    cmd = emacsclient -c --eval \" \
+(progn \
+  (setq ediff-quit-hook 'kill-emacs) \
+  (if (file-readable-p \\\"$BASE\\\") \
+      (ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \
+                                       \\\"$BASE\\\" nil \\\"$MERGED\\\") \
+      (ediff-merge-files \\\"$LOCAL\\\" \\\"$REMOTE\\\" nil \\\"$MERGED\\\")))\"
+
+[merge]
+    tool = ediff
+
