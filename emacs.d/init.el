@@ -27,6 +27,7 @@
 (require 'danr-erlang)
 (require 'danr-flyspell)
 (require 'danr-haskell)
+(require 'danr-magit)
 (require 'danr-markdown)
 
 ;; truncate lines: don't wrap lines when they are too long
