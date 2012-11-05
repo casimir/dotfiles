@@ -50,26 +50,33 @@
 (define-key evil-normal-state-map "l" 'evil-substitute)
 (define-key evil-normal-state-map "-" 'newline-and-indent)
 
-(define-key evil-motion-state-map "j" nil)
-
 ;; Some convenience on g/j: changing buffer, opening new files
+(define-key evil-motion-state-map "j" nil)
 (define-key evil-motion-state-map "jb" 'ido-switch-buffer)   ;; jump buffer
 (define-key evil-motion-state-map "jr" 'revert-buffer)
 (define-key evil-motion-state-map "jw" 'save-buffer)
-(define-key evil-motion-state-map "gt" 'next-buffer)
-(define-key evil-motion-state-map "gT" 'previous-buffer)
+(define-key evil-motion-state-map "jd" 'ido-dired)
+
+(define-key evil-motion-state-map "jh" 'describe-mode)
+(define-key evil-motion-state-map "jk" 'describe-key)
+(define-key evil-motion-state-map "j." 'find-tag)               ;; M-.
+(define-key evil-motion-state-map "g." 'find-tag-other-window)  ;; C-.
+(define-key evil-motion-state-map "g," 'pop-tag-mark)           ;; M-*
+
 (define-key evil-motion-state-map "go" 'ido-find-file)       ;; go open
 (define-key evil-motion-state-map "gk" 'kill-buffer)         ;; go kill
-(define-key evil-motion-state-map "gu" 'undo-tree-visualize) ;; go undo-tree
+(define-key evil-motion-state-map "gK" 'kill-some-buffers)
+(define-key evil-normal-state-map "gu" 'undo-tree-visualize) ;; go undo-tree
+(define-key evil-normal-state-map "gs" 'magit-status)        ;; magit status
 
 ;; windows management on g
-(define-key evil-motion-state-map "gs" 'evil-window-right)
-(define-key evil-motion-state-map "gh" 'evil-window-left)
 (define-key evil-motion-state-map "gn" 'evil-window-next)
+(define-key evil-motion-state-map [tab] 'evil-window-next)
 (define-key evil-motion-state-map "g2" 'split-window-vertically)
 (define-key evil-motion-state-map "g3" 'split-window-horizontally)
 (define-key evil-motion-state-map "g1" 'delete-other-windows)
 (define-key evil-motion-state-map "g0" 'delete-window)
+(define-key evil-motion-state-map "g=" 'balance-windows)
 
 ;; evaluating lisp on g{e/E}
 (define-key evil-motion-state-map "ge" 'eval-last-sexp)
@@ -106,6 +113,20 @@
 
 ;; Make copy in visual mode not copy dangling char
 (setq evil-want-visual-char-semi-exclusive t)
+
+(defun my-indent-whole-buffer ()
+  "indent whole buffer"
+  (interactive)
+  (delete-trailing-whitespace)
+  (indent-region (point-min) (point-max) nil)
+  (untabify (point-min) (point-max)))
+
+(define-key evil-normal-state-map [backtab] 'my-indent-whole-buffer)
+
+;; make all modes enter motion state that are otherwise in emacs mode (for instance debugger)
+(setq evil-motion-state-modes (append evil-emacs-state-modes evil-motion-state-modes))
+(setq evil-emacs-state-modes nil)
+;; we will override this with magit later
 
 ;; start evil mode
 (evil-mode 1)
