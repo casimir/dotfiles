@@ -14,16 +14,17 @@ import XMonad.Actions.CycleWS
 
 import XMonad.Hooks.ManageDocks
 
-import XMonad.Layout.NoBorders
+import XMonad.Layout.BoringWindows
+import XMonad.Layout.LayoutCombinators
 import XMonad.Layout.Master
+import XMonad.Layout.Maximize
+import XMonad.Layout.Minimize
+import XMonad.Layout.MouseResizableTile
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.ResizableTile
-
-import XMonad.Layout.Maximize
-import XMonad.Layout.MouseResizableTile
 import XMonad.Layout.Named
-import XMonad.Layout.LayoutCombinators
+import XMonad.Layout.NoBorders
+import XMonad.Layout.ResizableTile
 
 import XMonad.Hooks.ManageHelpers
 
@@ -38,7 +39,8 @@ import Data.List.Split
 import Data.Maybe
 
 myLayout =
-      avoidStrutsOn [] $ smartBorders $ mkToggle (FULL ?? EOT) $ mkToggle (single MIRROR)
+      avoidStrutsOn [] $ smartBorders $ minimize $ maximize $ boringWindows $
+        mkToggle (FULL ?? EOT) $ mkToggle (single MIRROR)
         (    ResizableTall 1 (3/100) (1/2) []
          ||| mastered (3/100) (1/3) tall
          ||| mastered (3/100) (1/3) (Mirror tall))
@@ -47,7 +49,7 @@ tall = Tall 1 (3/100) (1/2)
 
 myTerminal =  "urxvt -fn \"xft:terminus-8\" +sb"
 
-myBorderWidth   = 1
+myBorderWidth   = 2
 myModMask       = mod4Mask
 
 myNumlockMask   = mod2Mask
@@ -60,27 +62,6 @@ myFocusedBorderColor  = "#1892f8"
 dmenu = "dmenu_run -fn \"-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*\""
      ++ " -nb \"#000\" -nf \"#ccc\" -sb \"#333\" -sf \"#66e\" -l 6 -b"
 
-osdColor = "#6060e0"
-osdFont = "-*-droid sans mono-*-*-*-*-80-*-*-*-*-*-*-*"
-
-osd time = "osd_cat -l 7 -d " ++ show time ++ " -p middle -A center -c '" ++ osdColor ++ "'"
-      ++ " -f '" ++ osdFont ++ "'" ++ " -O 2"
-
-osdPipe time = "|" ++ osd time
-
-osdText :: String -> Int -> String
-osdText t time = "echo \"" ++ t ++ "\"" ++ osdPipe time
-
-dateFormat = "%Y-%m-%d\n%H:%M"
-timeFormat = "%H:%M"
-
-killosd = "killall osd_cat; "
-
-osdDate = killosd ++ "date +'" ++ dateFormat ++ "'" ++ osdPipe 2
-osdTime = killosd ++ "date +'" ++ timeFormat ++ "'" ++ osdPipe 2
-osdAcpi = killosd ++ "acpi | perl -e \"@_ = split(', ',<>); print qq/@_[2]@_[1]/;\"" ++ osdPipe 2
-
---spawn s = spawn s >> spawn (osdText (takeWhile (/= ' ') s) 2)
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
   where
@@ -88,6 +69,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
     shift      = (,) shiftMask
     super      = (,) modMask
     shiftSuper = (,) (modMask .|. shiftMask)
+    ctrlSuper  = (,) (modMask .|. controlMask)
 
 {-
     osdUnbound = do
@@ -121,10 +103,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
         -- List the unbound keys
       , (super xK_u, spawn "urxvt")
 
-        -- Information on osd
-      , (super xK_d, spawn osdDate)
-      -- , (shiftSuper xK_b, spawn osdAcpi)
-
         -- Take screenshot
       , (super xK_Print, spawn "scrot /home/dan/screen_%Y-%m-%d.png")
 
@@ -145,9 +123,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
       , (super xK_w, sequence_ (take 6 $ cycle [sendMessage MirrorExpand,sendMessage ExpandSlave]))
 
         -- Move focus
-      , (super xK_Tab, windows W.focusDown)
-      , (super xK_n,   windows W.focusDown)
-      , (super xK_t,   windows W.focusUp)
+      , (super xK_Tab, focusDown)
+      , (super xK_n,   focusDown)
+      , (super xK_t,   focusUp)
 
         -- Swap the focused window and the master window, and focus master (dwmpromote)
       , (super xK_Return, dwmpromote)
@@ -160,9 +138,12 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
       , (super xK_h, sendMessage Shrink)
       , (super xK_s, sendMessage Expand)
 
-          -- Toggle zoom (full) and mirror
-      , (super xK_z, sendMessage $ Toggle FULL)
-      , (super xK_m, sendMessage $ Toggle MIRROR)
+          -- Toggle zoom (full) and mirror, and minimise
+      , (super xK_z,      withFocused (sendMessage . maximizeRestore))
+      , (shiftSuper xK_z, sendMessage $ Toggle FULL)
+      , (ctrlSuper xK_m,  sendMessage $ Toggle MIRROR)
+      , (super xK_m,      withFocused minimizeWindow)
+      , (shiftSuper xK_m, sendMessage RestoreNextMinimizedWin)
 
         -- Push window back into tiling
       , (shiftSuper xK_b, withFocused $ windows . W.sink)
@@ -190,8 +171,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
 
       ++
 
-      let mute = spawn (killosd ++ "amixer sset Master toggle | grep -w 'on\\|off' -o | head -n 1 | perl -e \"print 'Master: '; print <>;\" " ++ osdPipe 1)
-          volume s = spawn (killosd ++ "amixer set Master " ++ s ++ " | grep '[0-9]*%' -o | head -n 1 " ++ osdPipe 1) in
+      let mute = spawn "amixer sset Master toggle"
+          volume s = spawn ("amixer set Master " ++ s) in
 
       [ -- Media keys : alsamixer
         (just xF86XK_AudioMute,         mute)
@@ -260,11 +241,9 @@ main = xmonad defaults
 
 
 defaults = defaultConfig {
-
     terminal           = myTerminal,
     borderWidth        = myBorderWidth,
     modMask            = myModMask,
---    numlockMask        = myNumlockMask,
     workspaces         = myWorkspaces,
     normalBorderColor  = myNormalBorderColor,
     focusedBorderColor = myFocusedBorderColor,
@@ -274,6 +253,4 @@ defaults = defaultConfig {
 
     layoutHook         = myLayout,
     manageHook         = myManageHook
-
   }
-
