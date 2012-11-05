@@ -22,6 +22,7 @@
 (require 'danr-evil)
 
 (require 'danr-agda)
+(require 'danr-c)
 (require 'danr-completion)
 (require 'danr-elisp)
 (require 'danr-erlang)
