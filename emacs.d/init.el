@@ -31,5 +31,7 @@
 (require 'danr-magit)
 (require 'danr-markdown)
 
-;; truncate lines: don't wrap lines when they are too long
-(setq truncate-lines t)
+(add-hook 'emacs-startup-hook (lambda ()
+                                (message "Time needed to load: %s seconds."
+                                         (emacs-uptime "%s")))
+          'append)

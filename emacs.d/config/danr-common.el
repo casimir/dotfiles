@@ -87,7 +87,11 @@
   completion-ignored-extensions '(".hi" ".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof" ".glo" ".idx" ".lot" ".svn/" ".hg/" ".git/" ".bzr/" "CVS/" "_darcs/" "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")
 )
 
-(set-fringe-mode `(0 . 0))
+;; truncate lines: don't wrap lines when they are too long
+(toggle-truncate-lines nil)
+
+;; 0px fringes
+(set-fringe-mode '(0 . 0))
 
 ;; save position in files
 (setq-default save-place t)
@@ -126,6 +130,9 @@
 
 ;; set font
 (set-default-font "dejavu sans mono-9")
+
+;; also in new frames
+(add-to-list 'default-frame-alist '(font . "dejavu sans mono-9"))
 
 ;; remove all trailing whitespace before saving
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
