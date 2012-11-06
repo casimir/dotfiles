@@ -15,7 +15,8 @@
                  "~/.elisp/markdown-mode"
                  "~/.elisp/org-mode"
                  "~/.elisp/popup"
-                 "~/.elisp/undo-tree")
+                 "~/.elisp/undo-tree"
+                 "~/.elisp/zencoding")
 
 (require 'danr-common)
 
@@ -30,6 +31,7 @@
 (require 'danr-haskell)
 (require 'danr-magit)
 (require 'danr-markdown)
+(require 'danr-zencoding)
 
 (add-hook 'emacs-startup-hook (lambda ()
                                 (message "Time needed to load: %s seconds."

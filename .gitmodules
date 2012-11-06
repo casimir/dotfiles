@@ -25,3 +25,6 @@
 [submodule "elisp/ace-jump-mode"]
 	path = elisp/ace-jump-mode
 	url = https://github.com/winterTTr/ace-jump-mode.git
+[submodule "elisp/zencoding"]
+	path = elisp/zencoding
+	url = https://github.com/rooney/zencoding.git
