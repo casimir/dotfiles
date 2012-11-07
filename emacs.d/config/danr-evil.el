@@ -122,6 +122,7 @@
   (untabify (point-min) (point-max)))
 
 (define-key evil-normal-state-map [backtab] 'my-indent-whole-buffer)
+(define-key evil-visual-state-map [tab] 'indent-region)
 
 ;; make all modes enter motion state that are otherwise in emacs mode (for instance debugger)
 (setq evil-motion-state-modes (append evil-emacs-state-modes evil-motion-state-modes))
