@@ -91,6 +91,7 @@
 ;; truncate lines: don't wrap lines when they are too long
 (toggle-truncate-lines t)
 (setq-default truncate-lines t)
+(setq-default truncate-partial-width-windows t)
 
 ;; 0px fringes
 (set-fringe-mode '(0 . 0))
