@@ -10,6 +10,9 @@ set number
 set nowrap
 syntax on
 
+set wildmode=longest,list,full
+set wildmenu
+
 noremap t j
 noremap n k
 noremap s l
