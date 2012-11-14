@@ -2,6 +2,7 @@
 noremap h <C-o>
 noremap s <C-i>
 noremap e t
+noremap E T
 noremap . f
 noremap , F
 noremap t 6j
