@@ -28,3 +28,6 @@
 [submodule "elisp/zencoding"]
 	path = elisp/zencoding
 	url = https://github.com/rooney/zencoding.git
+[submodule "elisp/coffee-mode"]
+	path = elisp/coffee-mode
+	url = git://github.com/defunkt/coffee-mode.git

@@ -9,6 +9,7 @@
                  "~/.elisp/ac-dict"
                  "~/.elisp/ace-jump-mode"
                  "~/.elisp/auto-complete"
+                 "~/.elisp/coffee-mode"
                  "~/.elisp/evil"
                  "~/.elisp/haskell-mode"
                  "~/.elisp/magit"
@@ -24,6 +25,7 @@
 
 (require 'danr-agda)
 (require 'danr-c)
+(require 'danr-coffee)
 (require 'danr-completion)
 (require 'danr-elisp)
 (require 'danr-erlang)
