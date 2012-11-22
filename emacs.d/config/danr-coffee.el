@@ -13,6 +13,6 @@
 (add-hook 'coffee-mode-hook '(lambda () (coffee-custom)))
 
 (add-hook 'after-save-hook
-          '(lambda () (if (eq major-mode "coffee-mode") (coffee-compile-file) ())))
+          '(lambda () (if (string= major-mode "coffee-mode") (coffee-compile-file) ())))
 
 (provide 'danr-coffee)
