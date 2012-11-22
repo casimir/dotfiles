@@ -11,9 +11,8 @@
        (evil-define-key 'visual coffee-mode-map (kbd "jc") 'coffee-compile-region)))
 
 (add-hook 'coffee-mode-hook '(lambda () (coffee-custom)))
-(add-hook 'coffee-mode-hook
-          '(lambda ()
-             (add-hook 'after-save-hook
-                       '(lambda () (coffee-compile-file)))))
+
+(add-hook 'after-save-hook
+          '(lambda () (if (eq major-mode "coffee-mode") (coffee-compile-file) ())))
 
 (provide 'danr-coffee)
