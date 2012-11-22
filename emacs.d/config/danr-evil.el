@@ -68,6 +68,7 @@
 (define-key evil-motion-state-map "gK" 'kill-some-buffers)
 (define-key evil-normal-state-map "gu" 'undo-tree-visualize) ;; go undo-tree
 (define-key evil-normal-state-map "gs" 'magit-status)        ;; magit status
+(define-key evil-normal-state-map "gw" 'whitespace-mode)
 
 ;; windows management on g
 (define-key evil-motion-state-map "gn" 'evil-window-next)
