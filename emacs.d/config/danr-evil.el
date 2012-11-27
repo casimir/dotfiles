@@ -115,15 +115,21 @@
 ;; Make copy in visual mode not copy dangling char
 (setq evil-want-visual-char-semi-exclusive t)
 
+;; Reindent buffer with backtab
 (defun my-indent-whole-buffer ()
   "indent whole buffer"
   (interactive)
   (delete-trailing-whitespace)
   (indent-region (point-min) (point-max) nil)
   (untabify (point-min) (point-max)))
-
 (define-key evil-normal-state-map [backtab] 'my-indent-whole-buffer)
+
+;; indent visual region with tab
 (define-key evil-visual-state-map [tab] 'indent-region)
+
+;; in insert, add and remove tab stops with tab/backtab
+(define-key evil-insert-state-map [tab] 'my-insert-tab-stop)
+(define-key evil-insert-state-map [backtab] 'my-delete-tab-stop)
 
 ;; make all modes enter motion state that are otherwise in emacs mode (for instance debugger)
 (setq evil-motion-state-modes (append evil-emacs-state-modes evil-motion-state-modes))

@@ -35,6 +35,9 @@
 (require 'danr-markdown)
 (require 'danr-zencoding)
 
+(require 'danr-haml)
+(require 'danr-sass)
+
 (add-hook 'emacs-startup-hook (lambda ()
                                 (message "Time needed to load: %s seconds."
                                          (emacs-uptime "%s")))

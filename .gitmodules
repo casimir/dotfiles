@@ -31,3 +31,9 @@
 [submodule "elisp/coffee-mode"]
 	path = elisp/coffee-mode
 	url = git://github.com/defunkt/coffee-mode.git
+[submodule "elisp/haml-mode"]
+	path = elisp/haml-mode
+	url = https://github.com/nex3/haml-mode.git
+[submodule "elisp/sass-mode"]
+	path = elisp/sass-mode
+	url = https://github.com/nex3/sass-mode.git

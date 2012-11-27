@@ -7,7 +7,9 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 export GIT_EDITOR='emacsclient'
-export PATH=$HOME/scripts:$HOME/bin:$HOME.cabal/bin:$PATH
+export PATH=$HOME/scripts:$HOME/bin:$PATH
+export PATH=$HOME/.cabal/bin:$PATH
+export PATH=$HOME/.gem/ruby/1.9.1/bin:$PATH
 
 export PS1='[$(date +%H:%M)|\w] \n\$ '
 
