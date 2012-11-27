@@ -7,7 +7,9 @@
   "coffee-mode-hook"
 
   ;; Evil key binding
-  (and (evil-define-key 'motion coffee-mode-map (kbd "jc") 'coffee-compile-buffer)
+
+  (and (setq indent-line-function 'my-haskell-indent)
+       (evil-define-key 'motion coffee-mode-map (kbd "jc") 'coffee-compile-buffer)
        (evil-define-key 'visual coffee-mode-map (kbd "jc") 'coffee-compile-region)))
 
 (add-hook 'coffee-mode-hook '(lambda () (coffee-custom)))
