@@ -116,33 +116,37 @@ function! StripTrailingWhitespace()
 endfunction
 
 " Always strip trailing whitespace
-augroup my-strip
+augroup myStrip
     au!
     au BufWritePre * call StripTrailingWhitespace()
 augroup END
 
 " Compile coffee
-augroup my-coffee
+augroup myCoffee
     au!
     au BufWritePost *.coffee !coffee -c <afile>
 augroup END
 
 " Compile sass
-augroup my-sass
+augroup mySass
     au!
     au BufWritePost *.sass !sass <afile> <afile>:r.css
 augroup END
 
 " CloseTag in html, xhtml, xml and others
-augroup my-closetag
+augroup myCloseTag
     au!
     au FileType html,htmldjango,jinjahtml,eruby,mako let b:closetag_html_style=1
     au FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako source ~/.vim/bundle/closetag/plugin/closetag.vim
 augroup END
 
 " Set sw/ts to 2 in html
-augroup my-html-shiftwidth
+augroup myHtmlShiftwidth
     au!
     au FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako setlocal ts=2
     au FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako setlocal sw=2
 augroup END
+
+" Tagbar
+let g:tagbar_usearrows = 1
+nnoremap <leader>t :TagbarToggle<CR>
