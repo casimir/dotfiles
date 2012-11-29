@@ -39,7 +39,7 @@ set ignorecase                  " case insensitive search
 set smartcase                   " case sensitive when uc present
 set wildmenu                    " show list instead of just completing
 set wildmode=list:longest,full  " command <Tab> completion, list matches, then longest common part, then all.
-set whichwrap=b,s,h,l,<,>,[,]   " backspace and cursor keys wrap to
+set nowrap                      " don't wrap
 set scrolljump=1                " lines to scroll when cursor leaves screen
 set scrolloff=0                 " minimum lines to keep above and below cursor
 " set foldenable                  " auto fold code
@@ -49,7 +49,7 @@ set shiftwidth=4                " use indents of 4 spaces
 set expandtab                   " tabs are spaces, not tabs
 set tabstop=4                   " an indentation every four columns
 set softtabstop=4               " let backspace delete indent
-"set matchpairs+=<:>                " match, to be used with %
+set matchpairs+=<:>             " match, to be used with %
 "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
 
 " Yank from the cursor to the end of the line, to be consistent with C and D.
@@ -121,12 +121,28 @@ augroup my-strip
     au BufWritePre * call StripTrailingWhitespace()
 augroup END
 
+" Compile coffee
 augroup my-coffee
     au!
     au BufWritePost *.coffee !coffee -c <afile>
 augroup END
 
+" Compile sass
 augroup my-sass
     au!
     au BufWritePost *.sass !sass <afile> <afile>:r.css
+augroup END
+
+" CloseTag in html, xhtml, xml and others
+augroup my-closetag
+    au!
+    au FileType html,htmldjango,jinjahtml,eruby,mako let b:closetag_html_style=1
+    au FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako source ~/.vim/bundle/closetag/plugin/closetag.vim
+augroup END
+
+" Set sw/ts to 2 in html
+augroup my-html-shiftwidth
+    au!
+    au FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako setlocal ts=2
+    au FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako setlocal sw=2
 augroup END
