@@ -2,6 +2,8 @@ call pathogen#runtime_append_all_bundles()
 call pathogen#infect()
 call pathogen#helptags()
 
+runtime /home/dan/vim/bundles/tplugin/macros/tplugin.vim
+
 let mapleader = ","
 
 filetype plugin indent on   " Automatically detect file types.
@@ -50,6 +52,7 @@ set expandtab                   " tabs are spaces, not tabs
 set tabstop=4                   " an indentation every four columns
 set softtabstop=4               " let backspace delete indent
 set matchpairs+=<:>             " match, to be used with %
+set matchpairs+=":"             " match, to be used with %
 "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
 
 " Yank from the cursor to the end of the line, to be consistent with C and D.
@@ -150,3 +153,9 @@ augroup END
 " Tagbar
 let g:tagbar_usearrows = 1
 nnoremap <leader>t :TagbarToggle<CR>
+
+" fuzzy-finder
+nnoremap <leader>b :FufBuffer<CR>
+nnoremap <leader>f :FufFile<CR>
+nnoremap <leader>d :FufDir<CR>
+
