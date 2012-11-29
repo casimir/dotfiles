@@ -1,4 +1,8 @@
-" call pathogen#infect()
+call pathogen#runtime_append_all_bundles()
+call pathogen#infect()
+call pathogen#helptags()
+
+let mapleader = ","
 
 filetype plugin indent on   " Automatically detect file types.
 syntax on                   " syntax highlighting
@@ -39,8 +43,6 @@ set whichwrap=b,s,h,l,<,>,[,]   " backspace and cursor keys wrap to
 set scrolljump=1                " lines to scroll when cursor leaves screen
 set scrolloff=0                 " minimum lines to keep above and below cursor
 " set foldenable                  " auto fold code
-set list
-set listchars=tab:,.,trail:.,extends:#,nbsp:. " Highlight problematic whitespace
 
 set autoindent                  " indent at the same level of the previous line
 set shiftwidth=4                " use indents of 4 spaces
