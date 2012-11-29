@@ -6,7 +6,7 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
-export GIT_EDITOR='emacsclient'
+export GIT_EDITOR='vim'
 export PATH=$HOME/scripts:$HOME/bin:$PATH
 export PATH=$HOME/.cabal/bin:$PATH
 export PATH=$HOME/.gem/ruby/1.9.1/bin:$PATH
