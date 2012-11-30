@@ -67,3 +67,5 @@ alias epf='eproof -tAuto -xAuto --tptp3-format'
 alias epr='eprover -tAuto -xAuto --tptp3-format'
 alias spa='SPASS -Auto -TPTP -PGiven=0 -PProblem=0 -DocProof=0 -PStatistic=0'
 alias vam='vampire_lin32 -mode casc'
+
+alias xo='xclip -o'
