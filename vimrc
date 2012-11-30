@@ -97,9 +97,8 @@ noremap g0 <C-w>c
 noremap g1 <C-w>o
 noremap g= <C-w>=
 
-noremap go :CtrlP<cr>
-noremap jb :BufExplorer<cr>j
-noremap j/ :noh<cr>
+" clear highlight
+noremap <leader>/ :noh<cr>
 
 " Always source vimrc when saving it
 " augroup source_vimrc
