@@ -53,7 +53,7 @@ hi CursorLine                   guibg=#e1f5ff   gui=none
 hi ColorColumn                  guibg=#b8ddf0
 hi Cursor       guifg=#ffffff   guibg=#323232
 hi lCursor      guifg=#ffffff   guibg=#004364
-hi MatchParen   guifg=#ffffff   guibg=#f00078
+hi MatchParen   guifg=#000000   guibg=#00e5f0
 hi Normal       guifg=#323232   guibg=#ffffff
 hi Comment      guifg=#969696
 hi Constant     guifg=#1094a0

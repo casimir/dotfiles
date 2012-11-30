@@ -63,7 +63,10 @@ vnoremap < <gv
 vnoremap > >gv
 
 " For when you forget to sudo.. Really Write the file.
-cmap w!! w !sudo tee % >/dev/null
+
+function! W()
+    write !sudo tee % >/dev/null
+endfunction
 
 " Fugitive {
    nnoremap <silent> <leader>gs :Gstatus<CR>

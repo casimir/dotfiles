@@ -39,11 +39,12 @@ endfunction
 
 " a:bufname:
 " a:height: Window height. If 0, default height is used.
-"           If less than 0, the window becomes full-screen. 
+"           If less than 0, the window becomes full-screen.
 " a:listener:
 "   a:listener.onClose(written)
 function l9#tempbuffer#openScratch(bufname, filetype, lines, topleft, vertical, height, listener)
-  let openCmdPrefix = (a:topleft ? 'topleft ' : '')
+                                  " changed topleft to botright
+  let openCmdPrefix = (a:topleft ? 'botright ' : '')
         \           . (a:vertical ? 'vertical ' : '')
         \           . (a:height > 0 ? a:height : '')
   if !exists('s:dataMap[a:bufname]') || !bufexists(s:dataMap[a:bufname].bufNr)
