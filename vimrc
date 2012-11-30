@@ -153,10 +153,19 @@ augroup END
 
 " Tagbar
 let g:tagbar_usearrows = 1
+
+" tagbar
 nnoremap <leader>t :TagbarToggle<CR>
+
+" Automatically change directory to the current file?
+augroup myChdir
+    au!
+    " au BufEnter * silent! lcd %:p:h
+augroup END
 
 " fuzzy-finder
 nnoremap <leader>b :FufBuffer<CR>
-nnoremap <leader>f :FufFile<CR>
+nnoremap <leader>f :FufFileWithCurrentBufferDir<CR>
+nnoremap <leader>o :FufFile<CR>
 nnoremap <leader>d :FufDir<CR>
-
+nnoremap <leader>l :FufLine<CR>
