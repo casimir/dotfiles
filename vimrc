@@ -4,7 +4,7 @@ call pathogen#helptags()
 
 runtime /home/dan/vim/bundles/tplugin/macros/tplugin.vim
 
-let mapleader = ","
+let mapleader = "j"
 
 filetype plugin indent on   " Automatically detect file types.
 syntax on                   " syntax highlighting
