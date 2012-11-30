@@ -12,6 +12,8 @@ set mouse=a                 " automatically enable mouse usage
 set mousehide               " hide the mouse cursor while typing
 scriptencoding utf-8
 
+set clipboard=unnamed       " share clipboard with x
+
 set shortmess+=filmnrxoOtT      " abbrev. of messages (avoids 'hit enter')
 set virtualedit=onemore         " allow for cursor beyond last character
 set history=100                 " Store a ton of history (default is 20)
