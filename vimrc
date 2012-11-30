@@ -2,8 +2,6 @@ call pathogen#runtime_append_all_bundles()
 call pathogen#infect()
 call pathogen#helptags()
 
-runtime /home/dan/vim/bundles/tplugin/macros/tplugin.vim
-
 let mapleader = "j"
 
 filetype plugin indent on   " Automatically detect file types.
@@ -75,8 +73,6 @@ cmap w!! w !sudo tee % >/dev/null
    nnoremap <silent> <leader>gl :Glog<CR>
    nnoremap <silent> <leader>gp :Git push<CR>
 "}
-
-"colorscheme bclear
 
 noremap t j
 noremap n k
@@ -169,3 +165,6 @@ nnoremap <leader>f :FufFileWithCurrentBufferDir<CR>
 nnoremap <leader>o :FufFile<CR>
 nnoremap <leader>d :FufDir<CR>
 nnoremap <leader>l :FufLine<CR>
+
+" use bclear!
+colorscheme bclear
