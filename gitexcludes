@@ -15,6 +15,10 @@
 *.pdf
 *.bbl
 
+# Vim temp
+*\.swp
+*\.swo
+
 # Emacs temp
 \#*
 .\#*
