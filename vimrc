@@ -187,3 +187,9 @@ if exists(":Tabularize")
     nmap <Leader>a :Tabularize /
     vmap <Leader>a :Tabularize /
 endif
+
+if exists(":UndotreeToggle")
+    nmap <Leader>u :UndotreeToggle<cr>
+endif
+
+
