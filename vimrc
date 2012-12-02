@@ -182,3 +182,8 @@ let g:haddock_browser="/usr/bin/firefox"
 let g:haddock_docdir="/home/dan/.cabal/share/doc"
 let g:haddock_indexfiledir="~/.vim/"
 let g:wget="/usr/bin/wget/"
+
+if exists(":Tabularize")
+    nmap <Leader>a :Tabularize /
+    vmap <Leader>a :Tabularize /
+endif
