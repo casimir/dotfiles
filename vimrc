@@ -171,3 +171,14 @@ nnoremap <leader>l :FufLine<CR>
 
 " use bclear!
 colorscheme bclear
+
+let g:EasyMotion_leader_key = ','
+
+" haskell
+au BufEnter *.hs compiler ghc
+let g:ghc="/usr/bin/ghc"
+let g:haddock_browser="/usr/bin/firefox"
+" let g:haddock_browser_callformat = '%s file://%s '.printf(&shellredir,'/dev/null').' &'
+let g:haddock_docdir="/home/dan/.cabal/share/doc"
+let g:haddock_indexfiledir="~/.vim/"
+let g:wget="/usr/bin/wget/"
