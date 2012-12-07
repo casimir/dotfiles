@@ -127,8 +127,12 @@ augroup END
 " Compile coffee
 augroup myCoffee
     au!
-    au BufWritePost *.coffee !coffee -c <afile>
+    " au BufWritePost *.coffee !coffee -c <afile>
+    au BufWritePost *.coffee !coffee -o js -c <afile>
 augroup END
+
+nmap <leader>c :w !coffee -c -s<cr>
+vmap <leader>c :w !coffee -c -s<cr>
 
 " Compile sass
 augroup mySass
