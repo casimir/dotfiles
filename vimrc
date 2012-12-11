@@ -128,7 +128,7 @@ augroup END
 augroup myCoffee
     au!
     " au BufWritePost *.coffee !coffee -c <afile>
-    au BufWritePost *.coffee !coffee -o js -c <afile>
+    au BufWritePost *.coffee !coffee -o <afile>:p:h/js -c <afile>
 augroup END
 
 nmap <leader>c :w !coffee -c -s<cr>
@@ -159,6 +159,12 @@ let g:tagbar_usearrows = 1
 
 " tagbar
 nnoremap <leader>t :TagbarToggle<CR>
+
+" Json
+augroup myJSON
+    au!
+    au BufNewFile,BufRead *.json set ft=json
+augroup END
 
 " Automatically change directory to the current file?
 augroup myChdir
