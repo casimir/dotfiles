@@ -37,6 +37,7 @@ set showmatch                   " show matching brackets/parenthesis
 set incsearch                   " find as you type search
 set hlsearch                    " highlight search terms
 set winminheight=0              " windows can be 0 line high
+set cmdheight=1                 " command height only one line!
 set ignorecase                  " case insensitive search
 set smartcase                   " case sensitive when uc present
 set wildmenu                    " show list instead of just completing

@@ -7,7 +7,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 export GIT_EDITOR='vim'
-export PATH=$HOME/scripts:$HOME/bin:$PATH
+export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$PATH
 export PATH=$HOME/.cabal/bin:$PATH
 export PATH=$HOME/.gem/ruby/1.9.1/bin:$PATH
 

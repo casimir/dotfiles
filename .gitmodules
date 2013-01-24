@@ -70,6 +70,6 @@
 [submodule "vim/bundle/undotree"]
 	path = vim/bundle/undotree
 	url = https://github.com/mbbill/undotree.git
-[submodule "vim/bundle/json"]
-	path = vim/bundle/json
-	url = https://github.com/elzr/vim-json.git
+[submodule "vim/bundle/haskell-conceal"]
+	path = vim/bundle/haskell-conceal
+	url = https://github.com/Twinside/vim-haskellConceal.git
