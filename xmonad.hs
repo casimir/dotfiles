@@ -1,16 +1,10 @@
 {-# LANGUAGE ViewPatterns #-}
 
--- XMonad configuration, danr
-
--- Based on skangas' config on github,
--- and on And1's on xmonad wiki
-
 import XMonad hiding ((|||))
 
 import System.Exit
 
 import XMonad.Actions.DwmPromote
-import XMonad.Actions.CycleWS
 
 import XMonad.Hooks.ManageDocks
 
@@ -71,40 +65,18 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
     shiftSuper = (,) (modMask .|. shiftMask)
     ctrlSuper  = (,) (modMask .|. controlMask)
 
-{-
-    osdUnbound = do
-        let bs = map fst keylist
-            alphabet = ['a'..'z'] ++ ['A'..'Z'] -- ++ "',.[];"
-            interpretKey (m,chr . fromEnum -> k)
-              | fromEnum m == fromEnum modMask                  = Just k
-              | fromEnum m == fromEnum (modMask .|. shiftMask)  = Just (toUpper k)
-              | otherwise                                       = Nothing
-            keys :: [Char]
-            keys = mapMaybe interpretKey bs
-            unused = sort (alphabet \\ keys)
-            dups   = sort (alphabet `intersect` (keys \\ nub keys))
-            spacy  = intersperse ' '
-            output = unlines $ "unbound: ":map spacy (chunk 10 unused)
-                                ++ if null dups then []
-                                       else ["duplicates : " ++ spacy dups]
-        spawn (osdText output 6)
--}
     keylist =
 
         -- Spawn programs
       [ (super xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9\" -rv +sb")
       , (super xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9\" +sb")
-      -- , (shiftSuper xK_s, spawn "urxvt -fn \"xft:dejavu sans mono-10\" +sb")
       , (super xK_f, spawn "firefox")
-      -- , (super xK_c, spawn "conkeror")
-      , (super xK_e, spawn "emacs")
-      -- , (super xK_t, spawn "gnome-terminal --hide-menubar")
-
-        -- List the unbound keys
-      , (super xK_u, spawn "urxvt")
+      , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-13:autohint=true\" +sb")
+      , (shiftSuper xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-13:autohint=true\" +sb -rv")
+      , (ctrlSuper xK_space, spawn "togglepad")
 
         -- Take screenshot
-      , (super xK_Print, spawn "scrot /home/dan/screen_%Y-%m-%d.png")
+      , (super xK_Print, spawn "scrot")
 
         -- Dmenu
       , (super xK_g, spawn dmenu)
@@ -139,8 +111,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
       , (super xK_s, sendMessage Expand)
 
           -- Toggle zoom (full) and mirror, and minimise
-      , (super xK_z,      withFocused (sendMessage . maximizeRestore))
-      , (shiftSuper xK_z, sendMessage $ Toggle FULL)
+      , (super xK_z,      sendMessage $ Toggle FULL)
+      , (shiftSuper xK_z, withFocused (sendMessage . maximizeRestore))
       , (ctrlSuper xK_m,  sendMessage $ Toggle MIRROR)
       , (super xK_m,      withFocused minimizeWindow)
       , (shiftSuper xK_m, sendMessage RestoreNextMinimizedWin)
@@ -157,15 +129,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
 
         -- Restart xmonad
       , (super xK_q,       restart "xmonad" True)
-
-        -- CycleWS
-      , (super xK_a,      moveTo Prev NonEmptyWS)
-      , (super xK_o,      moveTo Next NonEmptyWS)
-      , (shiftSuper xK_a, shiftTo Prev NonEmptyWS >> moveTo Prev NonEmptyWS)
-      , (shiftSuper xK_e, shiftTo Next NonEmptyWS >> moveTo Next NonEmptyWS)
-      -- , (super xK_s,      toggleWS)
-      , (super xK_i,      moveTo Next EmptyWS)
-      , (shiftSuper xK_i, shiftTo Next EmptyWS)
 
       ]
 
