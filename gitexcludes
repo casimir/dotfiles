@@ -23,3 +23,6 @@
 \#*
 .\#*
 *~
+
+# Haskell temp
+dist/
