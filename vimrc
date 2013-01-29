@@ -63,6 +63,16 @@ nnoremap Y y$
 vnoremap < <gv
 vnoremap > >gv
 
+function Wrap()
+    setl wrap
+    setl linebreak
+    noremap <buffer> t gj
+    noremap <buffer> n gk
+    noremap <buffer> $ g$
+    noremap <buffer> 0 g0
+    noremap <buffer> ^ g^
+endfunction
+
 " For when you forget to sudo.. Really Write the file.
 
 function! W()
