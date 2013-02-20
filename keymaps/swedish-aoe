@@ -1,5 +1,5 @@
-keycode 108 = Mode_switch
-keycode 134 = Mode_switch
+! keycode 108 = Mode_switch
+! keycode 134 = Mode_switch
 keycode 38 = a A aring Aring
 keycode 39 = o O adiaeresis Adiaeresis
 keycode 40 = e E odiaeresis Odiaeresis
