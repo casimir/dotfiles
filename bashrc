@@ -6,6 +6,9 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
+
+export HISTCONTROL=ignorespace
+
 export GIT_EDITOR='vim'
 export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$PATH
 export PATH=$HOME/.cabal/bin:$PATH
