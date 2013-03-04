@@ -1,0 +1,8 @@
+#!/bin/bash
+
+setxkbmap dvorak
+xmodmap ~/.keymaps/fix-new-advantage
+xmodmap ~/.keymaps/swapcapsesc
+xmodmap ~/.keymaps/swedish-aoe
+xset r rate 150
+xmodmap -pm
