@@ -30,6 +30,9 @@ alias sl='ls --color=auto'
 alias s='ls --color=auto'
 alias dir='ls --color=auto'
 
+alias ai='sudo apt-get install'
+alias as='sudo apt-cache search'
+
 export GHC_INCLUDE_DIRS='.'
 
 alias ghc='ghc -i$GHC_INCLUDE_DIRS'
