@@ -196,7 +196,6 @@ colorscheme bclear
 let g:EasyMotion_leader_key = ','
 
 " haskell
-au BufEnter *.hs compiler ghc
 let g:ghc="/usr/bin/ghc"
 let g:haddock_browser="/usr/bin/firefox"
 " let g:haddock_browser_callformat = '%s file://%s '.printf(&shellredir,'/dev/null').' &'
