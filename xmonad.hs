@@ -71,8 +71,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
       [ (super xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9\" -rv +sb")
       , (super xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9\" +sb")
       , (super xK_f, spawn "firefox")
-      , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-13:autohint=true\" +sb")
-      , (shiftSuper xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-13:autohint=true\" +sb -rv")
+      , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-12:autohint=true\" +sb")
+      , (shiftSuper xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-12:autohint=true\" +sb -rv")
       , (ctrlSuper xK_space, spawn "togglepad")
 
         -- Take screenshot
