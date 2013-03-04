@@ -20,6 +20,7 @@ stty stop undef
 stty start undef
 
 shopt -s globstar
+shopt -s autocd
 
 alias ..='cd ..'
 alias .='ls --color=auto'
