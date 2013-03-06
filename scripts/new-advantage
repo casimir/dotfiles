@@ -1,6 +1,6 @@
 #!/bin/bash
 
-setxkbmap dvorak
+setxkbmap dvorak -option compose:102
 xmodmap ~/.keymaps/fix-new-advantage
 xmodmap ~/.keymaps/swapcapsesc
 xmodmap ~/.keymaps/swedish-aoe
