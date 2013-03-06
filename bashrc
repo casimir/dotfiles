@@ -22,6 +22,9 @@ stty start undef
 shopt -s globstar
 shopt -s autocd
 
+alias today='date +"%Y-%m-%d"'
+alias now='date +"%Y-%m-%d-%H%M"'
+
 alias ..='cd ..'
 alias .='ls --color=auto'
 alias l='ls --color=auto'
