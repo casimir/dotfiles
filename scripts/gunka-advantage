@@ -1,0 +1,8 @@
+#!/bin/bash
+
+setxkbmap dvorak -option compose:102
+xmodmap ~/.keymaps/fix-gunka-advantage
+xmodmap ~/.keymaps/swapcapsesc
+xmodmap ~/.keymaps/swedish-aoe
+xset r rate 150
+xmodmap -pm
