@@ -166,10 +166,10 @@ augroup myHtmlShiftwidth
 augroup END
 
 " Tagbar
-let g:tagbar_usearrows = 1
+" let g:tagbar_usearrows = 1
 
 " tagbar
-nnoremap <leader>t :TagbarToggle<CR>
+" nnoremap <leader>t :TagbarToggle<CR>
 
 " Json
 augroup myJSON
@@ -189,6 +189,7 @@ nnoremap <leader>f :FufFileWithCurrentBufferDir<CR>
 nnoremap <leader>o :FufFile<CR>
 nnoremap <leader>d :FufDir<CR>
 nnoremap <leader>l :FufLine<CR>
+nnoremap <leader>r :FufRenewCache<CR>
 
 " use bclear!
 colorscheme default
@@ -196,15 +197,15 @@ colorscheme default
 " stop concealing
 setglobal conceallevel=0
 
-" disable easy motion for now
 let g:EasyMotion_leader_key = ','
 
+" TAGS
 " goto tag
-noremap ,t <C-]>
+noremap <leader>t <C-]>
 " pop tag stack
-noremap ,p <C-T>
+noremap <leader>p <C-T>
 " goto tag, but in split window
-noremap ,s <C-w>i
+noremap <leader>s <C-w>i
 
 
 " haskell
