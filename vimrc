@@ -102,6 +102,13 @@ noremap T N
 " Window management etc (inspired from emacs)
 " noremap <tab> <C-w><C-w>
 noremap gn <C-w><C-w>
+noremap <C-n> <C-w><C-w>
+noremap <C-t> <C-w>W
+noremap <C-s> <C-w>s
+" noremap <C-v> <C-w>v
+noremap <C-=> <C-w>=
+noremap <C-o> <C-w>o
+noremap <C-x> <C-w>c
 noremap g2 <C-w>s
 noremap g3 <C-w>v
 noremap g0 <C-w>c
