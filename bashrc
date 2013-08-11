@@ -9,13 +9,17 @@ fi
 
 export HISTCONTROL=ignorespace
 
+export XDG_CONFIG_HOME=$HOME/config
 export GIT_EDITOR='vim'
 export PATH=/home/dan/build/pakcs-1.11.1/bin:$PATH
 export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$HOME/code/provers:$PATH
 export PATH=$HOME/.cabal/bin:$PATH
 export PATH=$HOME/.gem/ruby/1.9.1/bin:$PATH
+export PATH=$HOME/.gem/ruby/2.0.0/bin:$PATH
 
 export PS1='[$(date +%H:%M)|\w] \n\$ '
+
+setterm -blength 0
 
 stty stop undef
 stty start undef
@@ -90,3 +94,7 @@ alias spa='SPASS -Auto -TPTP -PGiven=0 -PProblem=0 -DocProof=0 -PStatistic=0'
 alias vam='vampire_lin32 -mode casc'
 
 alias xo='xclip -o'
+
+terminal() {
+    urxvt -fn "xft:dejavu sans mono-$1:autohint=true" +sb
+}

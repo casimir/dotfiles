@@ -26,3 +26,6 @@
 
 # Haskell temp
 dist/
+*\.hi
+
+tags

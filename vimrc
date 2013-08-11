@@ -63,7 +63,7 @@ nnoremap Y y$
 vnoremap < <gv
 vnoremap > >gv
 
-function Wrap()
+function! Wrap()
     setl wrap
     setl linebreak
     noremap <buffer> t gj
@@ -116,7 +116,7 @@ noremap <leader>/ :noh<cr>
 "     au BufWritePost *.vimrc :source $MYVIMRC
 " augroup END
 
-" Strip whitespace
+" Strip whitespace, TODO: when git-tracked, only do it on edited lines!
 function! StripTrailingWhitespace()
 " Preparation: save last search, and cursor position.
     let _s=@/
@@ -191,17 +191,30 @@ nnoremap <leader>d :FufDir<CR>
 nnoremap <leader>l :FufLine<CR>
 
 " use bclear!
-colorscheme bclear
+colorscheme default
 
+" stop concealing
+setglobal conceallevel=0
+
+" disable easy motion for now
 let g:EasyMotion_leader_key = ','
+
+" goto tag
+noremap ,t <C-]>
+" pop tag stack
+noremap ,p <C-T>
+" goto tag, but in split window
+noremap ,s <C-w>i
+
 
 " haskell
 let g:ghc="/usr/bin/ghc"
 let g:haddock_browser="/usr/bin/firefox"
-" let g:haddock_browser_callformat = '%s file://%s '.printf(&shellredir,'/dev/null').' &'
+"let g:haddock_browser_callformat = '%s file://%s '.printf(&shellredir,'/dev/null').' &'
 let g:haddock_docdir="/home/dan/.cabal/share/doc"
 let g:haddock_indexfiledir="~/.vim/"
 let g:wget="/usr/bin/wget/"
+let g:haddock_browser="/usr/bin/firefox"
 
 if exists(":Tabularize")
     nmap <Leader>a :Tabularize /
@@ -212,4 +225,40 @@ if exists(":UndotreeToggle")
     nmap <Leader>u :UndotreeToggle<cr>
 endif
 
+function! s:add_package_ghc()
+  if !exists('b:ghcmod_ghc_options')
+    let b:ghcmod_ghc_options = []
+  endif
+  call add(b:ghcmod_ghc_options, '-package ghc')
+  " if !exists('b:syntastic_haskell_checker_args')
+  "   let b:syntastic_haskell_checker_args = []
+  " endif
+  " call add(b:syntastic_haskell_checker_args, '-package ghc')
+  let g:syntastic_haskell_checker_args = '-package ghc'
+  let b:ghc_staticoptions = '-Wall -package ghc'
+endfunction
+
+" haskellmode
+augroup myHaskell
+    au!
+    au BufEnter *.hs compiler ghc
+    au BufEnter *.hs set cmdheight=1
+    au FileType haskell let b:ghc_staticoptions = '-Wall'
+    au BufRead,BufNewFile ~/code/tfp1/* call s:add_package_ghc()
+    au BufRead,BufNewFile ~/code/hipspec/* call s:add_package_ghc()
+    au BufWritePost *.hs GhcModCheckAsync
+augroup END
+
+" literate haskell doesn't really work, fall back to haskell
+augroup myLiterateHaskell
+    au!
+    au BufEnter *.lhs setf haskell
+    au BufEnter *.lhs compiler ghc
+    au BufEnter *.lhs set cmdheight=1
+    au BufWritePost *.lhs GhcModCheckAsync
+augroup END
+
+" to disable syntastic checkers
+"let g:syntastic_haskell_checkers = []
+"let g:syntastic_haskell_checker = ''
 
