@@ -191,10 +191,15 @@ nnoremap <leader>d :FufDir<CR>
 nnoremap <leader>l :FufLine<CR>
 
 " use bclear!
-colorscheme default
+" colorscheme default
+colorscheme danr
 
 " stop concealing
 setglobal conceallevel=0
+let g:haskell_conceal = 1
+let g:haskell_conceal_enumerations = 0
+
+set nofoldenable
 
 " disable easy motion for now
 let g:EasyMotion_leader_key = ','
@@ -261,4 +266,8 @@ augroup END
 " to disable syntastic checkers
 "let g:syntastic_haskell_checkers = []
 "let g:syntastic_haskell_checker = ''
+"
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
