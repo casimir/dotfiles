@@ -4,7 +4,8 @@ call pathogen#helptags()
 
 let mapleader = "j"
 
-filetype plugin indent on   " Automatically detect file types.
+filetype plugin on   " Automatically detect file types.
+filetype indent off  " Just use autoindent
 syntax on                   " syntax highlighting
 set mouse=a                 " automatically enable mouse usage
 set mousehide               " hide the mouse cursor while typing
