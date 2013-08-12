@@ -25,9 +25,18 @@ xmonad_link:
 scripts_link:
 	$(LINK_CMD) $(PWD)/scripts ~/scripts
 
-all: links xmonad_link scripts_link
+all: links xmonad_link scripts_link ghc-mod submodules vimproc
 
-.PHONY: all links $(all_links) xmonad_link scripts_link refresh compile deploy
+.PHONY: all links $(all_links) xmonad_link scripts_link refresh compile deploy ghc-mod submodules vimproc
+
+ghc-mod:
+	cabal install ghc-mod
+
+submodules:
+	git submodule update --init
+
+vimproc:
+	make -C vim/bundle/vimproc
 
 # Emacs stuff
 

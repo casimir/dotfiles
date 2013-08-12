@@ -11,7 +11,8 @@ export HISTCONTROL=ignorespace
 
 export XDG_CONFIG_HOME=$HOME/config
 export GIT_EDITOR='vim'
-export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$PATH
+export PATH=/home/dan/build/pakcs-1.11.1/bin:$PATH
+export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$HOME/code/provers:$PATH
 export PATH=$HOME/.cabal/bin:$PATH
 export PATH=$HOME/.gem/ruby/1.9.1/bin:$PATH
 export PATH=$HOME/.gem/ruby/2.0.0/bin:$PATH

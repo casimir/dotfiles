@@ -4,7 +4,8 @@ call pathogen#helptags()
 
 let mapleader = "j"
 
-filetype plugin indent on   " Automatically detect file types.
+filetype plugin on   " Automatically detect file types.
+filetype indent off  " Just use autoindent
 syntax on                   " syntax highlighting
 set mouse=a                 " automatically enable mouse usage
 set mousehide               " hide the mouse cursor while typing
@@ -101,6 +102,13 @@ noremap T N
 " Window management etc (inspired from emacs)
 " noremap <tab> <C-w><C-w>
 noremap gn <C-w><C-w>
+noremap <C-n> <C-w><C-w>
+noremap <C-t> <C-w>W
+noremap <C-s> <C-w>s
+" noremap <C-v> <C-w>v
+noremap <C-=> <C-w>=
+noremap <C-o> <C-w>o
+noremap <C-x> <C-w>c
 noremap g2 <C-w>s
 noremap g3 <C-w>v
 noremap g0 <C-w>c
@@ -192,10 +200,15 @@ nnoremap <leader>l :FufLine<CR>
 nnoremap <leader>r :FufRenewCache<CR>
 
 " use bclear!
-colorscheme default
+" colorscheme default
+colorscheme danr
 
 " stop concealing
 setglobal conceallevel=0
+let g:haskell_conceal = 1
+let g:haskell_conceal_enumerations = 0
+
+set nofoldenable
 
 let g:EasyMotion_leader_key = ','
 
@@ -262,4 +275,8 @@ augroup END
 " to disable syntastic checkers
 "let g:syntastic_haskell_checkers = []
 "let g:syntastic_haskell_checker = ''
+"
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
