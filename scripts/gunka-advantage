@@ -7,3 +7,8 @@ xmodmap ~/.keymaps/swedish-aoe
 xset r rate 150
 xset b off
 xmodmap -pm
+
+sudo echo "Password for dhcpcd"
+sudo dhcpcd eno1 &
+xrandr --output LVDS1 --off --output VGA1 --auto
+ssh-add
