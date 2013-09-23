@@ -11,6 +11,7 @@ noremap a <C-o>
 noremap N n
 noremap T N
 set autocomplete=false
-set editor='emacsclient -c'
+set editor='gvim'
 set hintchars=aoeuhtnsidpgcrl
 set gui=noaddons,nobookmarks,nomenu,nonavigation,tabs
+set defsearch=google
