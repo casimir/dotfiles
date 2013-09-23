@@ -60,6 +60,7 @@ alias ga='git add'
 alias gam='git commit --amend'
 alias gb='git branch'
 alias gc='git commit'
+alias gcl='git clone'
 alias gcp='git cherry-pick'
 alias gd='git diff --color'
 alias gds='git diff --staged --color'
@@ -97,4 +98,14 @@ alias xo='xclip -o'
 
 terminal() {
     urxvt -fn "xft:dejavu sans mono-$1:autohint=true" +sb
+}
+
+rlp() {
+#        set -o LOCAL_OPTIONS -o ERR_RETURN
+        file=$1
+        remotefile=lp/$(basename $file)
+        shift
+        chmod u+rw $file
+        scp $file danr@remote12.chalmers.se:$remotefile
+        ssh danr@remote12.chalmers.se lp -d cse-ed-5473-laser1 $* $remotefile
 }
