@@ -1,4 +1,6 @@
-(load-file "~/.cabal/share/Agda-2.3.1/emacs-mode/agda2.el")
+(load-file (let ((coding-system-for-read 'utf-8))
+                (shell-command-to-string "agda-mode locate")))
+;; (load-file "~/.cabal/share/Agda-2.3.1/emacs-mode/agda2.el")
 
 ;; Agda evil bindings
 (evil-define-key 'normal agda2-mode-map

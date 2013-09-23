@@ -6,37 +6,28 @@
 
 (add-to-loadpath "~/.emacs.d/config"
                  "~/.elisp"
-                 "~/.elisp/ac-dict"
-                 "~/.elisp/ace-jump-mode"
-                 "~/.elisp/auto-complete"
-                 "~/.elisp/coffee-mode"
                  "~/.elisp/evil"
                  "~/.elisp/haskell-mode"
-                 "~/.elisp/magit"
-                 "~/.elisp/markdown-mode"
-                 "~/.elisp/org-mode"
-                 "~/.elisp/popup"
-                 "~/.elisp/undo-tree"
-                 "~/.elisp/zencoding")
+                 "~/.elisp/undo-tree")
 
 (require 'danr-common)
 
 (require 'danr-evil)
 
-(require 'danr-agda)
-(require 'danr-c)
-(require 'danr-coffee)
-(require 'danr-completion)
-(require 'danr-elisp)
-(require 'danr-erlang)
-(require 'danr-flyspell)
 (require 'danr-haskell)
-(require 'danr-magit)
-(require 'danr-markdown)
-(require 'danr-zencoding)
+(require 'danr-agda)
 
-(require 'danr-haml)
-(require 'danr-sass)
+;; (require 'danr-c)
+;; (require 'danr-coffee)
+;; (require 'danr-elisp)
+;; (require 'danr-erlang)
+;; (require 'danr-flyspell)
+;; (require 'danr-magit)
+;; (require 'danr-markdown)
+;; (require 'danr-zencoding)
+;;
+;; (require 'danr-haml)
+;; (require 'danr-sass)
 
 (add-hook 'emacs-startup-hook (lambda ()
                                 (message "Time needed to load: %s seconds."

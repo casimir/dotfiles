@@ -6,7 +6,7 @@
 (global-undo-tree-mode)
 
 ;; exit undo tree visualiser (enter with "gu") by pressing escape
-(define-key undo-tree-visualizer-map [escape] 'undo-tree-visualizer-quit)
+;; (define-key undo-tree-visualizer-map [escape] 'undo-tree-visualizer-quit)
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit"
   (interactive)
@@ -63,10 +63,10 @@
 (define-key evil-motion-state-map "g." 'find-tag-other-window)  ;; C-.
 (define-key evil-motion-state-map "g," 'pop-tag-mark)           ;; M-*
 
-(define-key evil-motion-state-map "go" 'ido-find-file)       ;; go open
+(define-key evil-motion-state-map "jf" 'ido-find-file)       ;; go open
 (define-key evil-motion-state-map "gk" 'kill-buffer)         ;; go kill
 (define-key evil-motion-state-map "gK" 'kill-some-buffers)
-(define-key evil-normal-state-map "gu" 'undo-tree-visualize) ;; go undo-tree
+;; (define-key evil-normal-state-map "gu" 'undo-tree-visualize) ;; go undo-tree
 (define-key evil-normal-state-map "gs" 'magit-status)        ;; magit status
 (define-key evil-normal-state-map "gw" 'whitespace-mode)
 
