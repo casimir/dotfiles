@@ -24,24 +24,24 @@ keycode 24 = U27 U22 U2032 U2033
 keycode 25 = U2C U3C U27E8 U2264
 ! . > ⟩ ≥
 keycode 26 = U2E U3E U27E9 U2265
-! p P ≗ Π
-keycode 27 = p P U2257 U3A0
+! p P ⅋ Π
+keycode 27 = p P U214B U3A0
 ! y Y ∧  
 keycode 28 = y Y U2227 U20
-! f F ∀  
-keycode 29 = f F U2200 U20
+! f F ∀ ≗
+keycode 29 = f F U2200 U2257
 ! g G γ Γ
 keycode 30 = g G U3B3 U393
-! c C    
-keycode 31 = c C U20 U20
+! c C ⊗ ⨂
+keycode 31 = c C U2297 U2A02
 ! r R → ρ
 keycode 32 = r R U2192 U3C1
-! l L λ ∣
-keycode 33 = l L U3BB U2223
-! / ? ≟ ∅
-keycode 34 = U2F U3F U225F U2205
-! = + ≡ ⁺
-keycode 35 = U3D U2B U2261 U207A
+! l L λ  
+keycode 33 = l L U3BB U20
+! / ? ≟ ∣
+keycode 34 = U2F U3F U225F U2223
+! = + ≡ ∅
+keycode 35 = U3D U2B U2261 U2205
 ! a A å Å
 keycode 38 = a A UE5 UC5
 ! o O ä Ä
@@ -66,10 +66,10 @@ keycode 47 = s S U3C3 U3A3
 keycode 48 = U2D U5F U2296 U207B
 ! ; : α ∷
 keycode 52 = U3B U3A U3B1 U2237
-! q Q ∎  
-keycode 53 = q Q U220E U20
-! j J ∘  
-keycode 54 = j J U2218 U20
+! q Q ∎ ①
+keycode 53 = q Q U220E U2460
+! j J ∘ ⓪
+keycode 54 = j J U2218 U24EA
 ! k K ∙  
 keycode 55 = k K U2219 U20
 ! x X ∃  
@@ -78,12 +78,12 @@ keycode 56 = x X U2203 U20
 keycode 57 = b B U3B2 U20
 ! m M ⊥  
 keycode 58 = m M U22A5 U20
-! w W    
-keycode 59 = w W U20 U20
-! v V ∨  
-keycode 60 = v V U2228 U20
-! z Z    
-keycode 61 = z Z U20 U20
+! w W ⊸  
+keycode 59 = w W U22B8 U20
+! v V ∨ ＆
+keycode 60 = v V U2228 UFF06
+! z Z ⊕ ⨁
+keycode 61 = z Z U2295 U2A01
 ! [ { ⟦ ⟦
 keycode 20 = U5B U7B U27E6 U27E6
 ! ] } ⟧  
