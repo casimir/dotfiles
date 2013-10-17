@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# sudo modprobe iwldvm
+
 setxkbmap dvorak -option compose:102
 xmodmap ~/.keymaps/fix-gunka-advantage
 xmodmap ~/.keymaps/swapcapsesc
@@ -7,8 +9,9 @@ xmodmap ~/.keymaps/swedish-aoe
 xset r rate 150
 xset b off
 xmodmap -pm
+sudo dhcpcd eno1
 
-sudo echo "Password for dhcpcd"
-sudo dhcpcd eno1 &
 xrandr --output LVDS1 --off --output VGA1 --auto
+# sleep 0.1
+# sudo netcfg eduroam &
 ssh-add
