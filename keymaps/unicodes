@@ -20,10 +20,10 @@ keycode 18 = U39 U28 U2089 U2079
 keycode 19 = U30 U29 U2080 U2070
 ! ' " ′ ″
 keycode 24 = U27 U22 U2032 U2033
-! , < ⟨ ≤
-keycode 25 = U2C U3C U27E8 U2264
-! . > ⟩ ≥
-keycode 26 = U2E U3E U27E9 U2265
+! , < « ⟨
+keycode 25 = U2C U3C UAB U27E8
+! . > » ⟩
+keycode 26 = U2E U3E UBB U27E9
 ! p P ⅋ Π
 keycode 27 = p P U214B U3A0
 ! y Y ∧  
@@ -70,10 +70,10 @@ keycode 52 = U3B U3A U3B1 U2237
 keycode 53 = q Q U220E U2460
 ! j J ∘ ⓪
 keycode 54 = j J U2218 U24EA
-! k K ∙  
-keycode 55 = k K U2219 U20
-! x X ∃  
-keycode 56 = x X U2203 U20
+! k K ∙ ≤
+keycode 55 = k K U2219 U2264
+! x X ∃ ≥
+keycode 56 = x X U2203 U2265
 ! b B β  
 keycode 57 = b B U3B2 U20
 ! m M ⊥  
