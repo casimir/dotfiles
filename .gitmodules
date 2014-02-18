@@ -91,3 +91,6 @@
 [submodule "vim/bundle/llvm"]
 	path = vim/bundle/llvm
 	url = https://github.com/Superbil/llvm.vim.git
+[submodule "vim/bundle/vim-gf"]
+	path = vim/bundle/vim-gf
+	url = https://github.com/gdetrez/vim-gf.git
