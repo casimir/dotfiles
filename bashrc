@@ -103,9 +103,11 @@ terminal() {
 rlp() {
 #        set -o LOCAL_OPTIONS -o ERR_RETURN
         file=$1
-        remotefile=lp/$(basename $file)
         shift
-        chmod u+rw $file
-        scp $file danr@remote12.chalmers.se:$remotefile
-        ssh danr@remote12.chalmers.se lp -d cse-ed-5473-laser1 $* $remotefile
+        cat "$file" | ssh danr@remote12.chalmers.se lp -d cse-ed-5473-laser1 $* -
+                                                                #5102b-laser1
+                                                                #5102b-color1
 }
+
+
+
