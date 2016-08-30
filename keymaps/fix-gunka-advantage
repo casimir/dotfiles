@@ -12,8 +12,10 @@ remove Mod5 = Mode_switch
 ! keycode 134 = Mode_switch
 keycode 37 = Super_L
 keycode 64 = Control_R
-keycode 134 = Alt_L
-keycode 105 = Mode_switch
+! keycode 134 = Alt_L
+! keycode 105 = Mode_switch
+keycode 105 = Alt_L
+keycode 134 = Mode_switch
 
 add Control = Control_R
 add Mod4 = Super_L

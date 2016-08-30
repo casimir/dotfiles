@@ -1,0 +1,4 @@
+setxkbmap dvorak -option "compose:102"
+xmodmap ~/.keymaps/swapcapsesc
+xmodmap ~/.keymaps/swedish-aoe
+xmodmap ~/.keymaps/mode_switch_alt_gr

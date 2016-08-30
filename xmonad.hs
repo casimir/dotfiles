@@ -8,10 +8,8 @@ import XMonad.Actions.DwmPromote
 
 import XMonad.Hooks.ManageDocks
 
-import XMonad.Layout.BoringWindows
 import XMonad.Layout.LayoutCombinators
 import XMonad.Layout.Master
-import XMonad.Layout.Maximize
 import XMonad.Layout.Minimize
 import XMonad.Layout.MouseResizableTile
 import XMonad.Layout.MultiToggle
@@ -19,6 +17,11 @@ import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.Named
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
+import XMonad.Layout.Gaps
+-- import XMonad.Layout.ThreeColumns
+import MyLayout
+
+import XMonad.Hooks.EwmhDesktops
 
 import XMonad.Hooks.ManageHelpers
 
@@ -32,12 +35,25 @@ import Data.List
 import Data.List.Split
 import Data.Maybe
 
+import System.Process
+import System.IO.Unsafe
+import Data.IORef
+
+import Data.Time.Clock
+
+import Control.Monad (when)
+
+import System.Directory
+
 myLayout =
-      avoidStrutsOn [] $ smartBorders $ minimize $ maximize $ boringWindows $
+      -- gaps [(L,400),(R,400)] $
+      avoidStrutsOn [] $ smartBorders $ minimize $
         mkToggle (FULL ?? EOT) $ mkToggle (single MIRROR)
         (    ResizableTall 1 (3/100) (1/2) []
-         ||| mastered (3/100) (1/3) tall
-         ||| mastered (3/100) (1/3) (Mirror tall))
+        ||| ThreeColMid 1 (3/100) (1/2) True
+        ||| mastered (3/100) (1/3) tall
+        ||| mastered (3/100) (1/3) (Mirror tall)
+        )
 
 tall = Tall 1 (3/100) (1/2)
 
@@ -57,6 +73,17 @@ dmenu = "dmenu_run -fn \"-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*\""
      ++ " -nb \"#000\" -nf \"#ccc\" -sb \"#333\" -sf \"#66e\" -l 6 -b"
 
 
+mplayer :: X () -> X () -> X ()
+mplayer m n =
+    do b <- liftIO $ doesFileExist "/home/dan/.mplayer-in"
+       if b then m else n
+
+mcmd :: String -> X ()
+mcmd cmd = (liftIO $ writeFile "/home/dan/.mplayer-in" (cmd ++ "\n"))
+
+mread :: X String
+mread = liftIO (fmap (concat . take 1 . reverse . lines) $ readFile "/home/dan/.mplayer-out")
+
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
   where
     just       = (,) 0
@@ -68,12 +95,15 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
     keylist =
 
         -- Spawn programs
-      [ (super xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9\" -rv +sb")
-      , (super xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9\" +sb")
+      [ (shiftSuper xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9\" -rv +sb")
+      , (shiftSuper xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9\" +sb")
+      , (super xK_r, spawn "urxvt -fn \"xft:inconsolata-14:hintstyle=hintslight\" -letsp -2 +sb -rv")
+      , (super xK_c, spawn "urxvt -fn \"xft:inconsolata-14:hintstyle=hintslight\" -letsp -2 +sb")
+      , (shiftSuper xK_f, spawn "vimb")
       , (super xK_f, spawn "firefox")
-      , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb")
-      , (shiftSuper xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb -rv")
-      , (ctrlSuper xK_space, spawn "togglepad")
+      -- , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb")
+      -- , (shiftSuper xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb -rv")
+      -- , (ctrlSuper xK_space, spawn "togglepad")
 
         -- Take screenshot
       , (super xK_Print, spawn "scrot")
@@ -85,8 +115,14 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
         -- Kill window
       , (shiftSuper xK_d, kill)
 
+      , (shift xK_F11, mplayer (mcmd "step_property time_pos -1") (return ()))
+      , (shift xK_F12, mplayer (mcmd "step_property time_pos +1") (return ()))
+      , (just xK_F10, mplayer (mcmd "pause") (return ()))
+      , (just xK_F11, mplayer (spawn "bash /home/dan/code/sub/get_time_pos.sh") (return ()))
+      , (just xK_F12, mplayer (spawn "bash /home/dan/code/sub/set_time_pos.sh") (return ()))
+
         -- Rotate through the available layout algorithms
-      , (super xK_space, sendMessage NextLayout)
+      , (super xK_space,      sendMessage NextLayout)
 
         --  Reset the layouts on the current workspace to default
       , (shiftSuper xK_space, setLayout $ XMonad.layoutHook conf)
@@ -96,9 +132,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
       , (super xK_w, sequence_ (take 6 $ cycle [sendMessage MirrorExpand,sendMessage ExpandSlave]))
 
         -- Move focus
-      , (super xK_Tab, focusDown)
-      , (super xK_n,   focusDown)
-      , (super xK_t,   focusUp)
+      , (super xK_Tab, windows W.focusDown)
+      , (super xK_n,   windows W.focusDown)
+      , (super xK_t,   windows W.focusUp)
 
         -- Swap the focused window and the master window, and focus master (dwmpromote)
       , (super xK_Return, dwmpromote)
@@ -111,15 +147,16 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
       , (super xK_h, sendMessage Shrink)
       , (super xK_s, sendMessage Expand)
 
-          -- Toggle zoom (full) and mirror, and minimise
+        -- Toggle zoom (full) and mirror
       , (super xK_z,      sendMessage $ Toggle FULL)
-      , (shiftSuper xK_z, withFocused (sendMessage . maximizeRestore))
-      , (ctrlSuper xK_m,  sendMessage $ Toggle MIRROR)
-      , (super xK_m,      withFocused minimizeWindow)
-      , (shiftSuper xK_m, sendMessage RestoreNextMinimizedWin)
+      , (super xK_m,      sendMessage $ Toggle MIRROR)
 
-        -- Push window back into tiling
-      , (shiftSuper xK_b, withFocused $ windows . W.sink)
+        -- Back to tiling
+      , (super xK_b,      withFocused $ windows . W.sink)
+
+        -- Boring window
+      , (shiftSuper xK_b,      withFocused minimizeWindow)
+      --, (shiftSuper xK_b, sendMessage RestoreNextMinimizedWin)
 
         -- [De]Increment the number of windows in the master area
       , (super xK_comma,  sendMessage (IncMasterN 1))
@@ -130,6 +167,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
 
         -- Restart xmonad
       , (super xK_q,       restart "xmonad" True)
+
+      , (super xK_l,       waitLock)
 
       ]
 
@@ -157,9 +196,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
 
      -- mod-[1..9], Switch to workspace N
      -- mod-shift-[1..9], Move client to workspace N
-     [ ((m .|. modMask, k), windows $ f i)
+     [ ((m .|. modMask, k), cond (windows $ f i))
      | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
-     , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+     , (f, m, cond) <- [(W.greedyView, 0, condWait i), (W.shift, shiftMask, id)]]
 
      ++
      -- mod-{up,dn}, Switch to physical/Xinerama screens 1, 2
@@ -168,6 +207,33 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
      | (key, sc) <- zip [xK_Up, xK_Down] [0..]
      , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
+condWait :: String -> X () -> X ()
+condWait "9" m = waitNine (m >> waitLock)
+condWait _ m = m
+
+{-# NOINLINE wait_ref #-}
+wait_ref :: IORef (Maybe UTCTime)
+wait_ref = unsafePerformIO (newIORef Nothing)
+
+waitLock :: X ()
+waitLock = liftIO $ writeIORef wait_ref . Just =<< getCurrentTime
+
+waitNine :: X () -> X ()
+waitNine m =
+  do (b,diff) <- liftIO $ do
+        m <- readIORef wait_ref
+        now <- getCurrentTime
+        case m of
+            Nothing     -> return (True,"")
+            Just before ->
+                do let diff = diffUTCTime now before
+                   return (diff > 600,show diff)
+     if b then m else osd_cat diff
+
+osd_cat :: String -> X ()
+osd_cat s =
+    do liftIO (writeFile "/tmp/osd" s)
+       spawn "osd_cat /tmp/osd --age=1 --pos=bottom --lines=1"
 
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse myMouseBindings
@@ -187,7 +253,6 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
     , ((modMask, button5), const (sequence_ [sendMessage MirrorShrink,sendMessage ShrinkSlave]))
     ]
 
-
 ------------------------------------------------------------------------
 -- Window rules:
 myManageHook = composeAll
@@ -204,7 +269,7 @@ myManageHook = composeAll
 main = xmonad defaults
 
 
-defaults = defaultConfig {
+defaults = ewmh $ def {
     terminal           = myTerminal,
     borderWidth        = myBorderWidth,
     modMask            = myModMask,
@@ -216,5 +281,6 @@ defaults = defaultConfig {
     mouseBindings      = myMouseBindings,
 
     layoutHook         = myLayout,
-    manageHook         = myManageHook
+    manageHook         = myManageHook,
+    handleEventHook    = handleEventHook def <+> fullscreenEventHook
   }

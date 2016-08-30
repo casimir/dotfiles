@@ -1,4 +1,3 @@
-
 noremap h <C-o>
 noremap s <C-i>
 noremap e t
@@ -10,8 +9,17 @@ noremap n 6k
 noremap a <C-o>
 noremap N n
 noremap T N
+noremap + zz
+noremap = zI
+noremap \- zO
 set autocomplete=false
 set editor='gvim'
 set hintchars=aoeuhtnsidpgcrl
 set gui=noaddons,nobookmarks,nomenu,nonavigation,tabs
-set defsearch=google
+set defsearch=duckduckgo
+hi Hint background-color: #ff0000; transform; uppercase; color: white; font-family: monospace; font-size: 16px; font-weight: bold; padding: 1px
+hi CmdLine -append font-size:12px
+hi CmdLine>* -append font-size:12px
+hi StatusLine -append font-size:12px
+hi ModeMsg -append font-size:12px
+hi MoreMsg -append font-size:12px

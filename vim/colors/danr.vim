@@ -69,7 +69,7 @@ hi Operator guifg=#aa00aa gui=NONE
 hi Error guifg=white guibg=#aa0000
 
 " comments
-hi Comment guifg=#4088d0 gui=NONE
+hi Comment guifg=#2048a0 gui=NONE
 hi Todo    guifg=#4088d0 guibg=#ffffff gui=bold
 
 hi Conceal    guifg=#000000 guibg=#ffffff

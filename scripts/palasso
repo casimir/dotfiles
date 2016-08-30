@@ -1,0 +1,16 @@
+#!/bin/bash
+Xephyr -ac -br -noreset -resizeable :1 &
+ZEPHYR_PID=$!
+sleep 1
+export DISPLAY=:1.0
+setxkbmap dvorak -option "compose:102"
+xmodmap ~/.keymaps/swapcapsesc
+xmodmap ~/.keymaps/swedish-aoe
+xmodmap ~/.keymaps/mode_switch_alt_gr
+xset b off
+xset r rate 150
+openbox &
+sleep 1
+#javaws ~/bin/egenrapportering.jnlp
+firefox
+kill $ZEPHYR_PID

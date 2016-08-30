@@ -132,7 +132,7 @@
 (blink-cursor-mode 0)
 
 ;; set font
-(set-default-font "dejavu sans mono-9")
+(set-default-font "dejavu sans mono-15")
 
 ;; also in new frames
 (add-to-list 'default-frame-alist '(font . "dejavu sans mono-9"))

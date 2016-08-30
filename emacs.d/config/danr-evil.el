@@ -59,9 +59,10 @@
 
 (define-key evil-motion-state-map "jh" 'describe-mode)
 (define-key evil-motion-state-map "jk" 'describe-key)
-(define-key evil-motion-state-map "j." 'find-tag)               ;; M-.
-(define-key evil-motion-state-map "g." 'find-tag-other-window)  ;; C-.
-(define-key evil-motion-state-map "g," 'pop-tag-mark)           ;; M-*
+(define-key evil-motion-state-map "jt" 'agda2-goto-definition-keyboard)               ;; M-.
+;; (define-key evil-motion-state-map "jt" 'find-tag)               ;; M-.
+;; (define-key evil-motion-state-map "js" 'find-tag-other-window)  ;; C-.
+;; (define-key evil-motion-state-map "jp" 'pop-tag-mark)           ;; M-*
 
 (define-key evil-motion-state-map "jf" 'ido-find-file)       ;; go open
 (define-key evil-motion-state-map "gk" 'kill-buffer)         ;; go kill
@@ -128,8 +129,8 @@
 (define-key evil-visual-state-map [tab] 'indent-region)
 
 ;; in insert, add and remove tab stops with tab/backtab
-(define-key evil-insert-state-map [tab] 'my-insert-tab-stop)
-(define-key evil-insert-state-map [backtab] 'my-delete-tab-stop)
+;; (define-key evil-insert-state-map [tab] 'my-insert-tab-stop)
+;; (define-key evil-insert-state-map [backtab] 'my-delete-tab-stop)
 
 ;; make all modes enter motion state that are otherwise in emacs mode (for instance debugger)
 (setq evil-motion-state-modes (append evil-emacs-state-modes evil-motion-state-modes))

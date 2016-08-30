@@ -37,60 +37,6 @@
 [submodule "elisp/sass-mode"]
 	path = elisp/sass-mode
 	url = https://github.com/nex3/sass-mode.git
-[submodule "vim/bundle/fugitive"]
-	path = vim/bundle/fugitive
-	url = git://github.com/tpope/vim-fugitive.git
-[submodule "vim/bundle/closetag"]
-	path = vim/bundle/closetag
-	url = git://github.com/docunext/closetag.vim.git
-[submodule "vim/bundle/nerdcommenter"]
-	path = vim/bundle/nerdcommenter
-	url = git://github.com/scrooloose/nerdcommenter.git
-[submodule "vim/bundle/tagbar"]
-	path = vim/bundle/tagbar
-	url = git://github.com/majutsushi/tagbar.git
-[submodule "vim/bundle/coffee-script"]
-	path = vim/bundle/coffee-script
-	url = https://github.com/kchmck/vim-coffee-script.git
-[submodule "vim/bundle/syntastic"]
-	path = vim/bundle/syntastic
-	url = https://github.com/scrooloose/syntastic.git
-[submodule "vim/bundle/markdown"]
-	path = vim/bundle/markdown
-	url = https://github.com/tpope/vim-markdown.git
-[submodule "vim/bundle/easymotion"]
-	path = vim/bundle/easymotion
-	url = https://github.com/Lokaltog/vim-easymotion.git
-[submodule "vim/bundle/haskellmode"]
-	path = vim/bundle/haskellmode
-	url = https://github.com/lukerandall/haskellmode-vim.git
-[submodule "vim/bundle/tabular"]
-	path = vim/bundle/tabular
-	url = https://github.com/godlygeek/tabular.git
-[submodule "vim/bundle/undotree"]
-	path = vim/bundle/undotree
-	url = https://github.com/mbbill/undotree.git
-[submodule "vim/bundle/ghcmod"]
-	path = vim/bundle/ghcmod
-	url = https://github.com/eagletmt/ghcmod-vim.git
-[submodule "vim/bundle/vimproc"]
-	path = vim/bundle/vimproc
-	url = https://github.com/Shougo/vimproc.vim.git
-[submodule "vim/bundle/vim-signify"]
-	path = vim/bundle/vim-signify
-	url = https://github.com/mhinz/vim-signify
-[submodule "vim/bundle/json"]
-	path = vim/bundle/json
-	url = https://github.com/leshill/vim-json.git
-[submodule "vim/bundle/vim2hs"]
-	path = vim/bundle/vim2hs
-	url = https://github.com/dag/vim2hs.git
-[submodule "vim/bundle/ultisnips"]
-	path = vim/bundle/ultisnips
-	url = https://github.com/SirVer/ultisnips.git
 [submodule "vim/bundle/llvm"]
 	path = vim/bundle/llvm
 	url = https://github.com/Superbil/llvm.vim.git
-[submodule "vim/bundle/vim-gf"]
-	path = vim/bundle/vim-gf
-	url = https://github.com/gdetrez/vim-gf.git

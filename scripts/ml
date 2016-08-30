@@ -1,0 +1,5 @@
+#!/bin/bash
+while true; do
+  inotifywait $@ --event MODIFY -q
+  make -j
+done

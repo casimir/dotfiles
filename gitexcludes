@@ -14,6 +14,11 @@
 *.vrb
 *.pdf
 *.bbl
+*.blg
+*.ptb
+*.fls
+*.fdb_latexmk
+*.brf
 
 # Vim temp
 *\.swp
@@ -24,8 +29,20 @@
 .\#*
 *~
 
+# Kakoune temp
+\.*\.kak\.*
+
 # Haskell temp
 dist/
 *\.hi
+*\.dyn_hi
+*\.dyn_o
 
 tags
+
+*\.gfo
+
+#Omake
+.omakedb
+.omakedb.lock
+*\.omc
