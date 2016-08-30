@@ -1,0 +1,2 @@
+#!/bin/bash
+echo -e "\033]710;xft:inconsolata-$1:hintstyle=hintslight\033\\"
