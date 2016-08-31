@@ -1,0 +1,24 @@
+unmap t
+unmap n
+unmap N
+unmap T
+map <Space> navigate next
+map <Return> navigate previous
+map t scroll half-down
+map n scroll half-up
+map <PageDown> scroll full-down
+map <PageUp> scroll full-up
+map w scroll down
+map v scroll up
+# map <PageDown> navigate next
+# map <PageUp> navigate previous
+map i set recolor
+map b set 'guioptions s'
+map B set 'guioptions b'
+set guioptions ''
+map T search backward
+map N search forward
+map = zoom in
+map - zoom out
+map + zoom default
+map c navigate top

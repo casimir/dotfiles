@@ -5,7 +5,7 @@ map = $(foreach x,$(2),$(call $(1),$(x)))
 
 PWD = $(shell pwd)
 LINK_CMD = ln --symbolic --force -T
-LINK_FILES = $(shell ls -I xmonad.hs -I README -I Makefile -I scripts)
+LINK_FILES = $(shell ls -I xmonad.hs -I README -I Makefile -I scripts -I config)
 
 define link_rule
 $(1): $(2)
@@ -23,12 +23,16 @@ xmonad_link:
 	$(LINK_CMD) $(PWD)/xmonad.hs ~/.xmonad/xmonad.hs
 	$(LINK_CMD) $(PWD)/MyLayout.hs ~/.xmonad/MyLayout.hs
 
+zathura_link:
+	mkdir -p ~/config/zathura
+	$(LINK_CMD) $(PWD)/config/zathura/zathurarc ~/config/zathura/zathurarc
+
 scripts_link:
 	$(LINK_CMD) $(PWD)/scripts ~/scripts
 
-all: links xmonad_link scripts_link 
+all: links xmonad_link scripts_link zathura_link
 
-.PHONY: all links $(all_links) xmonad_link scripts_link refresh compile deploy 
+.PHONY: all links $(all_links) zathura_link xmonad_link scripts_link refresh compile deploy
 
 # Emacs stuff
 
