@@ -1,4 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 import XMonad hiding ((|||))
 
@@ -19,7 +20,6 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Gaps
 -- import XMonad.Layout.ThreeColumns
-import MyLayout
 
 import XMonad.Hooks.EwmhDesktops
 
@@ -30,6 +30,7 @@ import Graphics.X11.ExtraTypes.XF86
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
+import Data.Ratio
 import Data.Char
 import Data.List
 import Data.List.Split
@@ -41,7 +42,7 @@ import Data.IORef
 
 import Data.Time.Clock
 
-import Control.Monad (when)
+import Control.Monad
 
 import System.Directory
 
@@ -95,10 +96,12 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
     keylist =
 
         -- Spawn programs
-      [ (shiftSuper xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9\" -rv +sb")
-      , (shiftSuper xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9\" +sb")
-      , (super xK_r, spawn "urxvt -fn \"xft:inconsolata-14:hintstyle=hintslight\" -letsp -2 +sb -rv")
-      , (super xK_c, spawn "urxvt -fn \"xft:inconsolata-14:hintstyle=hintslight\" -letsp -2 +sb")
+      [ (shiftSuper xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9:hintstyle=hintnone\" -rv +sb")
+      , (shiftSuper xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9:hintstyle=hintnone\" +sb")
+      , (super xK_r, spawn "urxvt -fn \"xft:inconsolata-14\" +sb -rv")
+      , (super xK_c, spawn "urxvt -fn \"xft:inconsolata-14\" +sb")
+      , (super xK_minus, spawn "urxvt -fn \"xft:inconsolata-24\" +sb")
+      , (shiftSuper xK_minus, spawn "urxvt -fn \"xft:inconsolata-24\" +sb -rv")
       , (shiftSuper xK_f, spawn "vimb")
       , (super xK_f, spawn "firefox")
       -- , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb")
@@ -284,3 +287,54 @@ defaults = ewmh $ def {
     manageHook         = myManageHook,
     handleEventHook    = handleEventHook def <+> fullscreenEventHook
   }
+
+
+-- My layout!!
+
+-- | Arguments are nmaster, delta, fraction
+data ThreeCol a = ThreeColMid { threeColNMaster :: !Int, threeColDelta :: !Rational, threeColFrac :: !Rational, stable :: Bool }
+                | ThreeCol    { threeColNMaster :: !Int, threeColDelta :: !Rational, threeColFrac :: !Rational, stable :: Bool }
+    deriving (Show,Read)
+
+instance LayoutClass ThreeCol a where
+    pureLayout (ThreeCol n _ f stable) r    = doL stable False n f r
+    pureLayout (ThreeColMid n _ f stable) r = doL stable True n f r
+    handleMessage l m =
+        return $ msum [fmap resize     (fromMessage m)
+                      ,fmap incmastern (fromMessage m)]
+            where resize Shrink = l { threeColFrac = max (-0.5) $ f-d }
+                  resize Expand = l { threeColFrac = min 1 $ f+d }
+                  incmastern (IncMasterN x) = l { threeColNMaster = max 0 (n+x) }
+                  n = threeColNMaster l
+                  d = threeColDelta l
+                  f = threeColFrac l
+    description _ = "ThreeCol"
+
+doL :: Bool -> Bool-> Int-> Rational-> Rectangle-> W.Stack a-> [(a, Rectangle)]
+doL stable m n f r = ap zip (tile3 stable m f r n . length) . W.integrate
+
+-- | tile3.  Compute window positions using 3 panes
+tile3 :: Bool -> Bool -> Rational -> Rectangle -> Int -> Int -> [Rectangle]
+tile3 stable middle f r nmaster n
+    | not stable && (n <= nmaster || nmaster == 0) = splitVertically n r
+    | not stable && (n <= nmaster+1) = splitVertically nmaster s1 ++ splitVertically (n-nmaster) s2
+    | otherwise = splitVertically nmaster r1 ++ splitVertically nslave1 r2 ++ splitVertically nslave2 r3
+        where (r1, r2, r3) = split3HorizontallyBy middle (if f<0 then 1+2*f else f) r
+              (s1, s2) = splitHorizontallyBy (if f<0 then 1+f else f) r
+              nslave = (n - nmaster)
+              nslave1 = ceiling (nslave % 2)
+              nslave2 = (n - nmaster - nslave1)
+
+split3HorizontallyBy :: Bool -> Rational -> Rectangle -> (Rectangle, Rectangle, Rectangle)
+split3HorizontallyBy middle f (Rectangle sx sy sw sh) =
+    if middle
+    then ( Rectangle (sx + fromIntegral r3w) sy r1w sh
+         , Rectangle (sx + fromIntegral r3w + fromIntegral r1w) sy r2w sh
+         , Rectangle sx sy r3w sh )
+    else ( Rectangle sx sy r1w sh
+         , Rectangle (sx + fromIntegral r1w) sy r2w sh
+         , Rectangle (sx + fromIntegral r1w + fromIntegral r2w) sy r3w sh )
+        where r1w = ceiling $ fromIntegral sw * f
+              r2w = ceiling ( (sw - r1w) % 2 )
+              r3w = sw - r1w - r2w
+
