@@ -21,7 +21,6 @@ links: $(all_links)
 xmonad_link:
 	mkdir -p ~/.xmonad
 	$(LINK_CMD) $(PWD)/xmonad.hs ~/.xmonad/xmonad.hs
-	$(LINK_CMD) $(PWD)/MyLayout.hs ~/.xmonad/MyLayout.hs
 
 zathura_link:
 	mkdir -p ~/config/zathura
