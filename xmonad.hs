@@ -70,7 +70,7 @@ myWorkspaces    = map show [1..9]
 myNormalBorderColor = "#102233"
 myFocusedBorderColor  = "#1892f8"
 
-dmenu = "dmenu_run -fn \"-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*\""
+dmenu = "dmenu_run -fn iosevka-18:weight=50"
      ++ " -nb \"#000\" -nf \"#ccc\" -sb \"#333\" -sf \"#66e\" -l 6 -b"
 
 
@@ -96,12 +96,12 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
     keylist =
 
         -- Spawn programs
-      [ (shiftSuper xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9:hintstyle=hintnone\" -rv +sb")
-      , (shiftSuper xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9:hintstyle=hintnone\" +sb")
-      , (super xK_r, spawn "urxvt -fn \"xft:inconsolata-14\" +sb -rv")
-      , (super xK_c, spawn "urxvt -fn \"xft:inconsolata-14\" +sb")
-      , (super xK_minus, spawn "urxvt -fn \"xft:inconsolata-24\" +sb")
-      , (shiftSuper xK_minus, spawn "urxvt -fn \"xft:inconsolata-24\" +sb -rv")
+      [ (shiftSuper xK_r, spawn "urxvt -fn \"xft:iosevka-12:weight=50\" -rv +sb")
+      , (shiftSuper xK_c, spawn "urxvt -fn \"xft:iosevka-12:weight=50\" +sb")
+      , (super xK_r, spawn "urxvt -fn \"xft:iosevka-16:weight=50\" +sb -rv")
+      , (super xK_c, spawn "urxvt -fn \"xft:iosevka-16:weight=50\" +sb")
+      , (super      xK_minus, spawn "urxvt -fn \"xft:iosevka-24:weight=50\" +sb")
+      , (shiftSuper xK_minus, spawn "urxvt -fn \"xft:iosevka-24:weight=50\" +sb -rv")
       , (shiftSuper xK_f, spawn "vimb")
       , (super xK_f, spawn "firefox")
       -- , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb")

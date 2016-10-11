@@ -19,7 +19,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
 " Plug 'airblade/vim-gitgutter'
 
-Plug 'tpope/vim-rsi'            " readline
+" Plug 'tpope/vim-rsi'            " readline
 " Plug 'junegunn/vim-peekaboo'    " registers " @
 " Plug 'junegunn/vim-pseudocl'    " dependency
 " Plug 'junegunn/vim-fnr'         " <leader>R
@@ -36,8 +36,9 @@ Plug 'tpope/vim-commentary'  " gc gcs gcgc
 " Plug 'mbbill/undotree'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 
-Plug 'Yggdroot/indentLine'
-autocmd! User indentLine doautocmd indentLine Syntax
+" " Is this the plugin that messes up insert mode?
+" Plug 'Yggdroot/indentLine'
+" autocmd! User indentLine doautocmd indentLine Syntax
 
 Plug 'scrooloose/nerdtree'
 augroup nerd_loader
@@ -55,6 +56,23 @@ Plug 'groenewege/vim-less'
 Plug 'kchmck/vim-coffee-script'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
+
+Plug 'klen/python-mode'
+let g:pymode_rope_completion = 0
+let g:pymode_rope_complete_on_dot = 0
+let g:pymode_rope_lookup_project = 0
+let g:pymode_lint_ignore = "C901,C0111,F0401"
+let g:pymode_lint_checkers = ['pylint']
+Plug 'davidhalter/jedi-vim'
+Plug 'Valloric/YouCompleteMe'
+Plug 'majutsushi/tagbar'
+
+augroup mypython
+au BufRead *py set ts=4
+augroup END
+
+
+Plug 'metakirby5/codi.vim'
 call plug#end()
 
 filetype plugin on  " Automatically detect file types.
@@ -104,7 +122,7 @@ set nowrap                      " don't wrap
 set scrolljump=1                " lines to scroll when cursor leaves screen
 set scrolloff=0                 " minimum lines to keep above and below cursor
 set sidescroll=1
-" set foldenable                  " auto fold code
+set nofoldenable                " no code folding
 
 set autoindent                  " indent at the same level of the previous line
 set shiftwidth=4                " use indents of 4 spaces
@@ -153,6 +171,8 @@ noremap g3 <C-w>v
 noremap g0 <C-w>c
 noremap g1 <C-w>o
 noremap g= <C-w>=
+
+noremap gy :Goyo<cr>
 
 " clear highlight
 noremap <silent> <leader>/ :noh<cr>

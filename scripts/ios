@@ -1,0 +1,2 @@
+#!/bin/bash
+echo -e "\033]710;xft:iosevka-$1:weight=$2\033\\"
