@@ -8,6 +8,23 @@ fi
 
 #source $HOME/.nix-profile/etc/profile.d/nix.sh
 
+export SB='kark burk bark koala'
+
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+onall() {
+  for i in $SB; do
+   echo -e "$RED$i$NC"
+   ssh -A -T $i $@
+  done
+}
+
+onpar() {
+  for i in $SB; do echo $i; done |
+  xargs -P 10 -I '{}' ssh -A -T {} "$@ |& while read line; do echo -e \"$RED\$(printf %7s {})$NC\" \"\$line\"; done"
+}
+
 export HISTCONTROL=ignorespace:ignoreboth
 export HISTFILESIZE=40000000
 export HISTSIZE=10000
