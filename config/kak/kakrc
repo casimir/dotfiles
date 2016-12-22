@@ -1,0 +1,308 @@
+set global ui_options ncurses_assistant=none
+
+# make Alt-commands available as user commands (unless they are shadowed below)
+%sh{
+python - <<PY
+import string
+import sys
+for i in string.ascii_letters + string.digits:
+  print("map global user {0} <A-{0}>".format(i))
+PY
+}
+
+map global user m <A-m>
+map global user . <A-.>
+map global user a <A-a>
+map global user i <A-i>
+map global user \; <A-:>
+map global user | <A-|>
+map global user ! <A-!>
+map global user 8 *
+map global user * <A-*>
+map global normal * "lbhe*:add-slash-hl<ret>"
+
+set global idle_timeout 50
+
+def -allow-override -params 1 select-closest %{ %sh{
+python - $1 $kak_selection_desc $kak_selections_desc <<PY
+import sys
+goto, current, all = sys.argv[1:]
+all = all.split(':')
+def key(t):
+    desc = t[1]
+    return abs(int(goto) - int(desc.split('.')[0]))
+best_index, _ = min(enumerate(all), key=key)
+current_index = all.index(current)
+rots = best_index - current_index
+if rots < 0: rots += len(all)
+if rots != 0:
+    print("exec {}'".format(rots))
+print("print-selection-info")
+PY
+}}
+
+def -allow-override print-selection-info %{ %sh{
+IFS=':' read -ra sels <<< "$kak_selections_desc"
+for i in "${!sels[@]}"; do
+   if [[ "${sels[$i]}" = "${kak_selection_desc}" ]]; then
+       echo "echo selection $((i+1))/${#sels[@]}";
+       break;
+   fi
+done
+}}
+
+def -allow-override replace-if-all-single-char %{ %sh{
+python - $kak_selections_desc <<PY
+import sys
+for desc in sys.argv[1].split(':'):
+    anchor, cursor = desc.split(',')
+    if anchor != cursor:
+        print("exec c")
+        break
+else:
+    print("one-char-replace")
+PY
+}}
+
+def -allow-override one-char-replace %{
+  hook window -group one-char-replace InsertChar .* %{
+    exec <right><backspace>
+    remove-hooks window one-char-replace
+  }
+  hook window -group one-char-replace InsertEnd .* %{
+   remove-hooks window one-char-replace
+  }
+  exec i
+}
+
+map global normal c :replace-if-all-single-char<ret>
+
+map global user d :delete-buffer<ret>:buffer-next<ret>
+map global user c :comment-line<ret>
+map global user b ":buffer "
+map global user f :jump-file<ret>
+def -allow-override jump-file %{
+  eval %{edit %sh{ ( find . -type f \( \! -path "*.git/*" \) -and \( \! -path ".*sw?" \) | fzf-tmux )}}
+}
+
+def -allow-override rm-slash-hl %{
+  rmhl dynregex_\%reg{<slash>}
+}
+def -allow-override add-slash-hl %{
+  try %{
+    addhl dynregex '%reg{/}' 0:+u 1:+r 2:+ri 3:+rb 4:+rib
+  }
+}
+hook global NormalKey .*[/?NT].* add-slash-hl
+
+map global user u :rm-slash-hl<ret>
+map global normal <esc>   <space>:rm-slash-hl<ret>
+map global normal <space> '\;'
+map global normal ';'     ':'
+map global normal ':'     '<A-;>'
+map global normal _       'I<esc>'
+map global normal <A-s>   <A-l>
+
+alias global colo colorscheme
+alias global wqa write-all-quit
+alias global bd  delete-buffer
+alias global bd! delete-buffer!
+
+map global goto p <esc>:bp<ret>
+map global goto n <esc>:bn<ret>
+map global goto 2 "<esc>:new-client-here<ret>"
+map global goto 3 "<esc>:new-client-here<ret>"
+
+def -allow-override new-client-here %{
+  %sh{
+    echo "new exec :buffer <space> $kak_buffile <ret> $kak_cursor_line g"
+  }
+}
+
+map global normal t     j
+map global normal n     k
+map global normal s     l
+map global normal <A-t> J
+map global normal <A-n> K
+map global normal S     L
+
+# next match
+map global normal N     n:add-slash-hl<ret>
+map global normal <A-N> N:print-selection-info<ret>:add-slash-hl<ret>
+map global normal T     <A-n>:add-slash-hl<ret>
+map global normal <A-T> <A-N>:print-selection-info<ret>:add-slash-hl<ret>
+
+map global normal m     Z
+map global normal M     <A-Z>
+map global normal j     z
+map global normal <a-j> <A-z>
+
+map global normal J     <A-j>
+map global normal <A-J> <A-J>
+
+map global normal k t
+map global normal K T
+
+# split and select
+map global user s s
+map global user t S
+map global user n <A-s>
+map global user '/' :select-all-goto-closest<ret>:add-slash-hl<ret>
+
+def -allow-override select-all-goto-closest %{
+exec %sh{echo "\\%s<ret>:select-closest<space>$kak_cursor_line<ret>"}
+}
+
+# Put view commands on z instead than v
+map global view   z v
+map global view   s l
+map global normal z v
+map global normal Z V
+
+# gG to goto bottom, ge to go to line end
+map global goto G e
+map global goto e l
+
+# Put line selection commands on v rather than x
+map global normal v     x
+map global normal V     X
+map global normal <A-v> <A-x>
+map global normal <A-V> <A-X>
+
+map global normal '%'     m
+map global normal '<A-%>' M
+
+map global normal D '%'
+
+map global normal -- - '"'
+
+map global normal x     r
+map global normal X     R
+map global normal <A-x> :nop<ret>
+
+map global normal r   "<A-'>:print-selection-info<ret>"
+map global normal "'" "':print-selection-info<ret>"
+
+
+def -hidden -allow-override overwrite %{
+  try %{
+    hook buffer -group overwrite InsertChar .* %{exec <right><backspace>}
+    map buffer insert <backspace> <left>
+    hook buffer -group overwrite InsertEnd .* %{
+      remove-hooks buffer overwrite
+      map buffer insert <backspace> <backspace>
+    }
+  }
+}
+
+map global normal R   ":overwrite<ret>i"
+
+# copy to  xclipboard
+map global user y %{<a-|>xsel -i<ret>:echo -color Information %{yanked to X clipboard}<ret>}
+map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
+map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
+map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
+
+map global user w :w<ret>
+
+# reload kakrc and .kak when saving
+rmhooks global reload_kak
+hook -group reload_kak global BufWritePost (.*kakrc|.*\.kak) %{
+  source %val{buffile}
+  echo Reloaded %val{bufname}
+}
+
+rmhooks global reload_xres
+hook -group reload_xres global BufWritePost .*Xresources %{
+  nop %sh{ xrdb -merge ~/.Xresources }
+  echo xrdb -merge %val{bufname}
+}
+
+set global tabstop 4
+
+decl -hidden regex curword
+face CurWord +b
+# default,rgb:4a4a4a
+
+def -allow-override remove_spaces %{ try %{ exec -draft '%s\h+$<ret>d' } }
+
+hook global BufWritePre .* remove_spaces
+
+#source /home/dan/config/kak/danr.kak
+
+colo solarized
+
+def -allow-override my-window-setup %{
+    try %{ addhl number_lines -separator ' '  }
+    try %{ addhl show_matching }
+    try %{ addhl dynregex '%opt{curword}' 0:CurWord }
+
+    # auto indent
+    hook window InsertChar \n %{ exec -draft -itersel K<a-&> }
+
+    # Auto expand tabs into spaces
+    hook window InsertChar \t %{ exec -draft -itersel h@ }
+
+    try %{ set global grepcmd 'rg -n' }
+}
+
+hook global NormalIdle .* %{
+    eval -draft %{ try %{
+        exec <space><a-i>w <a-k>\`\w+\'<ret>
+        set buffer curword "\b\Q%val{selection}\E\b"
+    } catch %{
+        set buffer curword ''
+    } }
+}
+
+hook global WinCreate .* my-window-setup
+
+hook global WinSetOption filetype=python %{
+    jedi-enable-autocomplete
+}
+
+hook global BufCreate .*kak.* "set -add buffer completion_extra_word_char -"
+
+hook global InsertCompletionShow .* %{ map window insert <tab> <c-n>; map window insert <backtab> <c-p> }
+hook global InsertCompletionHide .* %{ unmap window insert <tab> <c-n>; unmap window insert <backtab> <c-p> }
+
+def find -allow-override -params 1 -shell-candidates %{ find . -type f | sed s_^\./__ } %{ edit %arg{1} }
+
+map global goto o "<esc>:find "
+map global goto / "<esc>:grep "
+
+hook global BufOpenFifo '\*grep\*' %{ map global user g ':grep-next<ret>' }
+
+hook global WinSetOption filetype=(c|cpp) %{
+    clang-enable-autocomplete
+    clang-enable-diagnostics
+    alias window lint clang-parse
+    alias window lint-next clang-diagnostics-next
+    %sh{
+        if [ $PWD = "/home/dan/build/kakoune/src" ]; then
+           echo "set buffer clang_options '-std=c++14 -include-pch precomp-header.h.gch -DKAK_DEBUG'"
+        fi
+    }
+    #ycmd-enable-autocomplete
+}
+
+hook global WinSetOption filetype=sh %{
+	set buffer lintcmd 'shellcheck -fgcc -eSC2006'
+	lint-enable
+}
+
+hook global WinSetOption filetype=python %{
+	set buffer lintcmd 'flake8 --filename=*'
+	lint-enable
+}
+
+map global user f '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+
+def -allow-override ide %{
+    rename-client main
+    new rename-client docs
+    new rename-client tools
+    set global docsclient docs
+    set global toolsclient tools
+    set global jumpclient main
+}
