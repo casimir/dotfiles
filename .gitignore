@@ -1,3 +1,2 @@
-elisp/ac-dict
-elisp/auto-complete*el
-emacs.d/ac-comphist.dat
+xmonad/*
+!xmonad/xmonad.hs

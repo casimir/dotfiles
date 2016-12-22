@@ -3,7 +3,7 @@
 	email = dan.rosen@gu.se
 
 [core]
-	editor = vim
+	editor = kak
     excludesfile = ~/.gitexcludes
 
 [branch "master"]

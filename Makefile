@@ -1,47 +1,46 @@
-# Originally based on cofi/dotfiles on github
 
-# map utility function
-map = $(foreach x,$(2),$(call $(1),$(x)))
+pwd = $(shell pwd)
+ln = ln --symbolic --force -T
 
-PWD = $(shell pwd)
-LINK_CMD = ln --symbolic --force -T
-LINK_FILES = $(shell ls -I xmonad.hs -I README -I Makefile -I scripts -I config)
+# ----------------------------------------------------------------------------
 
-define link_rule
-$(1): $(2)
-	$(LINK_CMD) $(PWD)/$(2) ~/.$(2)
-endef
+dotted_sources = $(filter-out config scripts Makefile README.md,$(wildcard *))
+dotted_targets = $(addprefix ~/.,$(dotted_sources))
 
-mk_link = $(eval $(call link_rule,link_$(1),$(1))) link_$(1)
+~/.%: %
+	$(ln) $(pwd)/$< $@
 
-all_links := $(call map,mk_link,$(LINK_FILES))
+# ----------------------------------------------------------------------------
 
-links: $(all_links)
+config_targets = $(addprefix ~/,scripts $(wildcard config/*))
 
-xmonad_link:
-	mkdir -p ~/.xmonad
-	$(LINK_CMD) $(PWD)/xmonad.hs ~/.xmonad/xmonad.hs
+~/%: %
+	$(ln) $(pwd)/$< $@
 
-zathura_link:
-	mkdir -p ~/config/zathura
-	$(LINK_CMD) $(PWD)/config/zathura/zathurarc ~/config/zathura/zathurarc
+# ----------------------------------------------------------------------------
 
-scripts_link:
-	$(LINK_CMD) $(PWD)/scripts ~/scripts
+all: $(dotted_targets) $(config_targets) ~/.kakrc $(vim_plug)
 
-all: links xmonad_link scripts_link zathura_link
+# ----------------------------------------------------------------------------
+# bonus symlink to kakrc
 
-.PHONY: all links $(all_links) zathura_link xmonad_link scripts_link refresh compile deploy
+~/.kakrc:
+	$(ln) $(pwd)/config/kak/kakrc $@
 
-# Emacs stuff
+# ----------------------------------------------------------------------------
+# install VimPlug
+vim_plug=~/.vim/autoload/plug.vim
 
-refresh:
-	 emacs --batch --no-site-file --eval '(byte-recompile-directory "elisp/")'
+$(vim_plug):
+	curl -fLo ~/$@ --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	vim -c PlugInstall -c qa
 
-compile:
-	 emacs --batch --no-site-file --eval '(byte-recompile-directory "elisp/" 0 t)'
+# ----------------------------------------------------------------------------
 
-deploy:
-	(cd $$HOME/.elisp/auto-complete; make install DIR=$$HOME/.elisp)
-	mkdir -p ~/.emacs.d/backups
+.PHONY: all
+
+# ----------------------------------------------------------------------------
+# debugging
+print-%:
+	@echo '$*=$($*)'
 
