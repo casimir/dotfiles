@@ -20,7 +20,9 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Gaps
 -- import XMonad.Layout.ThreeColumns
-
+import XMonad.Layout.BinarySpacePartition
+import XMonad.Layout.BorderResize
+import XMonad.Actions.Navigation2D
 import XMonad.Hooks.EwmhDesktops
 
 import XMonad.Hooks.ManageHelpers
@@ -46,15 +48,7 @@ import Control.Monad
 
 import System.Directory
 
-myLayout =
-      -- gaps [(L,400),(R,400)] $
-      avoidStrutsOn [] $ smartBorders $ minimize $
-        mkToggle (FULL ?? EOT) $ mkToggle (single MIRROR)
-        (    ResizableTall 1 (3/100) (1/2) []
-        ||| ThreeColMid 1 (3/100) (1/2) True
-        ||| mastered (3/100) (1/3) tall
-        ||| mastered (3/100) (1/3) (Mirror tall)
-        )
+myLayout = smartBorders $ mkToggle (FULL ?? EOT) $ borderResize emptyBSP
 
 tall = Tall 1 (3/100) (1/2)
 
@@ -67,111 +61,89 @@ myNumlockMask   = mod2Mask
 
 myWorkspaces    = map show [1..9]
 
-myNormalBorderColor = "#102233"
-myFocusedBorderColor  = "#1892f8"
+yellow  = "#b58900"
+orange  = "#cb4b16"
+red     = "#dc322f"
+magenta = "#d33682"
+violet  = "#6c71c4"
+blue    = "#268bd2"
+cyan    = "#2aa198"
+green   = "#859900"
+
+myNormalBorderColor = "#073642"
+myFocusedBorderColor = green
 
 dmenu = "dmenu_run -fn \"-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*\""
      ++ " -nb \"#000\" -nf \"#ccc\" -sb \"#333\" -sf \"#66e\" -l 6 -b"
 
 
-mplayer :: X () -> X () -> X ()
-mplayer m n =
-    do b <- liftIO $ doesFileExist "/home/dan/.mplayer-in"
-       if b then m else n
-
-mcmd :: String -> X ()
-mcmd cmd = (liftIO $ writeFile "/home/dan/.mplayer-in" (cmd ++ "\n"))
-
-mread :: X String
-mread = liftIO (fmap (concat . take 1 . reverse . lines) $ readFile "/home/dan/.mplayer-out")
-
-myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList keylist
+myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keylist)
   where
     just       = (,) 0
     shift      = (,) shiftMask
     super      = (,) modMask
     shiftSuper = (,) (modMask .|. shiftMask)
     ctrlSuper  = (,) (modMask .|. controlMask)
+    ctrlMask   = controlMask
+    altMask    = mod1Mask
+
+    -- BSP
+    moreKeys =
+        [ ((modMask,               xK_m     ), sendMessage $ ExpandTowards L)
+        , ((modMask,               xK_w     ), sendMessage $ ExpandTowards D)
+        , ((modMask,               xK_v     ), sendMessage $ ExpandTowards U)
+        , ((modMask,               xK_z     ), sendMessage $ ExpandTowards R)
+        , ((modMask .|. shiftMask, xK_m     ), sendMessage $ ShrinkFrom L)
+        , ((modMask .|. shiftMask, xK_w     ), sendMessage $ ShrinkFrom D)
+        , ((modMask .|. shiftMask, xK_v     ), sendMessage $ ShrinkFrom U)
+        , ((modMask .|. shiftMask, xK_z     ), sendMessage $ ShrinkFrom R)
+        , ((modMask,               xK_r     ), sendMessage Rotate)
+        , ((modMask,               xK_slash ), sendMessage RotateR)
+        , ((modMask .|. shiftMask, xK_slash ), sendMessage RotateL)
+        , ((modMask .|. shiftMask, xK_r     ), sendMessage Swap)
+        , ((modMask,               xK_u     ), sendMessage FocusParent)
+        , ((modMask,               xK_l     ), sendMessage MoveNode)
+        , ((modMask .|. shiftMask, xK_l     ), sendMessage SelectNode)
+        , ((modMask,               xK_space ), sendMessage Balance)
+        , ((modMask .|. shiftMask, xK_space ), sendMessage Equalize)
+        ]
 
     keylist =
 
         -- Spawn programs
-      [ (shiftSuper xK_r, spawn "urxvt -fn \"xft:dejavu sans mono-9:hintstyle=hintnone\" -rv +sb")
-      , (shiftSuper xK_c, spawn "urxvt -fn \"xft:dejavu sans mono-9:hintstyle=hintnone\" +sb")
-      , (super xK_r, spawn "urxvt -fn \"xft:inconsolata-14\" +sb -rv")
-      , (super xK_c, spawn "urxvt -fn \"xft:inconsolata-14\" +sb")
-      , (super xK_minus, spawn "urxvt -fn \"xft:inconsolata-24\" +sb")
-      , (shiftSuper xK_minus, spawn "urxvt -fn \"xft:inconsolata-24\" +sb -rv")
+      [ (super xK_c, spawn "urxvt")
+      , (shiftSuper xK_c, spawn "urxvt -rv")
+      , (super xK_minus, spawn "urxvt")
+      , (shiftSuper xK_minus, spawn "urxvt -rv")
       , (shiftSuper xK_f, spawn "vimb")
       , (super xK_f, spawn "firefox")
-      -- , (super xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb")
-      -- , (shiftSuper xK_u, spawn "urxvt -fn \"xft:dejavu sans mono-11:autohint=true\" +sb -rv")
-      -- , (ctrlSuper xK_space, spawn "togglepad")
 
         -- Take screenshot
       , (super xK_Print, spawn "scrot")
 
         -- Dmenu
       , (super xK_g, spawn dmenu)
+
+        -- Lock
       , (super xK_x, spawn "xlock")
 
         -- Kill window
       , (shiftSuper xK_d, kill)
 
-      , (shift xK_F11, mplayer (mcmd "step_property time_pos -1") (return ()))
-      , (shift xK_F12, mplayer (mcmd "step_property time_pos +1") (return ()))
-      , (just xK_F10, mplayer (mcmd "pause") (return ()))
-      , (just xK_F11, mplayer (spawn "bash /home/dan/code/sub/get_time_pos.sh") (return ()))
-      , (just xK_F12, mplayer (spawn "bash /home/dan/code/sub/set_time_pos.sh") (return ()))
-
-        -- Rotate through the available layout algorithms
-      , (super xK_space,      sendMessage NextLayout)
-
-        --  Reset the layouts on the current workspace to default
-      , (shiftSuper xK_space, setLayout $ XMonad.layoutHook conf)
-
-        -- Shrink and expand the windows on the non-master area
-      , (super xK_v, sequence_ (take 6 $ cycle [sendMessage MirrorShrink,sendMessage ShrinkSlave]))
-      , (super xK_w, sequence_ (take 6 $ cycle [sendMessage MirrorExpand,sendMessage ExpandSlave]))
-
-        -- Move focus
+        --Move focus
       , (super xK_Tab, windows W.focusDown)
-      , (super xK_n,   windows W.focusDown)
-      , (super xK_t,   windows W.focusUp)
 
-        -- Swap the focused window and the master window, and focus master (dwmpromote)
-      , (super xK_Return, dwmpromote)
-
-        -- Swap the windows
-      , (shiftSuper xK_n, windows W.swapDown)
-      , (shiftSuper xK_t, windows W.swapUp)
-
-        -- Resize the master area
-      , (super xK_h, sendMessage Shrink)
-      , (super xK_s, sendMessage Expand)
-
-        -- Toggle zoom (full) and mirror
-      , (super xK_z,      sendMessage $ Toggle FULL)
-      , (super xK_m,      sendMessage $ Toggle MIRROR)
+        -- Toggle fullscreen
+      , (super xK_0,      sendMessage (Toggle FULL))
 
         -- Back to tiling
       , (super xK_b,      withFocused $ windows . W.sink)
-
-        -- Boring window
-      , (shiftSuper xK_b,      withFocused minimizeWindow)
-      --, (shiftSuper xK_b, sendMessage RestoreNextMinimizedWin)
-
-        -- [De]Increment the number of windows in the master area
-      , (super xK_comma,  sendMessage (IncMasterN 1))
-      , (super xK_period, sendMessage (IncMasterN (-1)))
 
         -- Quit xmonad
       , (shiftSuper xK_q, io (exitWith ExitSuccess))
 
         -- Restart xmonad
       , (super xK_q,       restart "xmonad" True)
-
-      , (super xK_l,       waitLock)
 
       ]
 
@@ -269,7 +241,19 @@ myManageHook = composeAll
 
 ------------------------------------------------------------------------
 -- Run xmonad
-main = xmonad defaults
+main = xmonad
+  $ navigation2DP def
+      ("n","h","t","s")
+      [("M-", windowGo),
+       ("M-S-", windowSwap),
+       ("M-C-", \x b -> windowSwap x b >> windowGo (opp x) b)]
+      False
+  $ defaults
+  where
+  opp U = D
+  opp D = U
+  opp R = L
+  opp L = R
 
 
 defaults = ewmh $ def {
@@ -288,53 +272,4 @@ defaults = ewmh $ def {
     handleEventHook    = handleEventHook def <+> fullscreenEventHook
   }
 
-
--- My layout!!
-
--- | Arguments are nmaster, delta, fraction
-data ThreeCol a = ThreeColMid { threeColNMaster :: !Int, threeColDelta :: !Rational, threeColFrac :: !Rational, stable :: Bool }
-                | ThreeCol    { threeColNMaster :: !Int, threeColDelta :: !Rational, threeColFrac :: !Rational, stable :: Bool }
-    deriving (Show,Read)
-
-instance LayoutClass ThreeCol a where
-    pureLayout (ThreeCol n _ f stable) r    = doL stable False n f r
-    pureLayout (ThreeColMid n _ f stable) r = doL stable True n f r
-    handleMessage l m =
-        return $ msum [fmap resize     (fromMessage m)
-                      ,fmap incmastern (fromMessage m)]
-            where resize Shrink = l { threeColFrac = max (-0.5) $ f-d }
-                  resize Expand = l { threeColFrac = min 1 $ f+d }
-                  incmastern (IncMasterN x) = l { threeColNMaster = max 0 (n+x) }
-                  n = threeColNMaster l
-                  d = threeColDelta l
-                  f = threeColFrac l
-    description _ = "ThreeCol"
-
-doL :: Bool -> Bool-> Int-> Rational-> Rectangle-> W.Stack a-> [(a, Rectangle)]
-doL stable m n f r = ap zip (tile3 stable m f r n . length) . W.integrate
-
--- | tile3.  Compute window positions using 3 panes
-tile3 :: Bool -> Bool -> Rational -> Rectangle -> Int -> Int -> [Rectangle]
-tile3 stable middle f r nmaster n
-    | not stable && (n <= nmaster || nmaster == 0) = splitVertically n r
-    | not stable && (n <= nmaster+1) = splitVertically nmaster s1 ++ splitVertically (n-nmaster) s2
-    | otherwise = splitVertically nmaster r1 ++ splitVertically nslave1 r2 ++ splitVertically nslave2 r3
-        where (r1, r2, r3) = split3HorizontallyBy middle (if f<0 then 1+2*f else f) r
-              (s1, s2) = splitHorizontallyBy (if f<0 then 1+f else f) r
-              nslave = (n - nmaster)
-              nslave1 = ceiling (nslave % 2)
-              nslave2 = (n - nmaster - nslave1)
-
-split3HorizontallyBy :: Bool -> Rational -> Rectangle -> (Rectangle, Rectangle, Rectangle)
-split3HorizontallyBy middle f (Rectangle sx sy sw sh) =
-    if middle
-    then ( Rectangle (sx + fromIntegral r3w) sy r1w sh
-         , Rectangle (sx + fromIntegral r3w + fromIntegral r1w) sy r2w sh
-         , Rectangle sx sy r3w sh )
-    else ( Rectangle sx sy r1w sh
-         , Rectangle (sx + fromIntegral r1w) sy r2w sh
-         , Rectangle (sx + fromIntegral r1w + fromIntegral r2w) sy r3w sh )
-        where r1w = ceiling $ fromIntegral sw * f
-              r2w = ceiling ( (sw - r1w) % 2 )
-              r3w = sw - r1w - r2w
 
