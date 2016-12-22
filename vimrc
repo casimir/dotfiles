@@ -4,10 +4,10 @@ call plug#begin('~/.vim/plugged')
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
-Plug 'godlygeek/csapprox'
 
 Plug 'bronson/vim-visual-star-search'
 Plug 'vim-scripts/closetag.vim'
+Plug 'altercation/vim-colors-solarized'
 
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
@@ -36,10 +36,6 @@ Plug 'tpope/vim-commentary'  " gc gcs gcgc
 " Plug 'mbbill/undotree'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
 
-" " Is this the plugin that messes up insert mode?
-" Plug 'Yggdroot/indentLine'
-" autocmd! User indentLine doautocmd indentLine Syntax
-
 Plug 'scrooloose/nerdtree'
 augroup nerd_loader
   autocmd!
@@ -64,15 +60,15 @@ let g:pymode_rope_lookup_project = 0
 let g:pymode_lint_ignore = "C901,C0111,F0401"
 let g:pymode_lint_checkers = ['pylint']
 Plug 'davidhalter/jedi-vim'
-Plug 'Valloric/YouCompleteMe'
+" Plug 'Valloric/YouCompleteMe'
 Plug 'majutsushi/tagbar'
 
 augroup mypython
 au BufRead *py set ts=4
 augroup END
 
-
 Plug 'metakirby5/codi.vim'
+
 call plug#end()
 
 filetype plugin on  " Automatically detect file types.
@@ -290,7 +286,7 @@ imap <c-c><c-p> <plug>(fzf-complete-path)
 imap <c-c><c-f> <plug>(fzf-complete-file-ag)
 imap <c-c><c-l> <plug>(fzf-complete-line)
 
-colorscheme danr
+colorscheme solarized
 
 let g:EasyMotion_leader_key = ','
 

@@ -18,12 +18,7 @@ config_targets = $(addprefix ~/,scripts $(wildcard config/*))
 	$(ln) $(pwd)/$< $@
 
 # ----------------------------------------------------------------------------
-
-all: $(dotted_targets) $(config_targets) ~/.kakrc $(vim_plug)
-
-# ----------------------------------------------------------------------------
-# bonus symlink to kakrc
-
+# extra symlink to kakrc
 ~/.kakrc:
 	$(ln) $(pwd)/config/kak/kakrc $@
 
@@ -34,8 +29,9 @@ vim_plug=~/.vim/autoload/plug.vim
 $(vim_plug):
 	curl -fLo ~/$@ --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	vim -c PlugInstall -c qa
-
 # ----------------------------------------------------------------------------
+
+all: $(dotted_targets) $(config_targets) ~/.kakrc $(vim_plug)
 
 .PHONY: all
 
