@@ -168,7 +168,7 @@ rlp2() {
 }
 
 
-export PYTHONPATH=$HOME/code/python:$PYTHONPATH
+export PYTHONPATH=$HOME/python:$HOME/code/python:$PYTHONPATH
 export SB_MODELS=$HOME/code/jbokorp/corpus_import/annotate/models
 export CWB_DATADIR=$HOME/corpora/data
 export CORPUS_REGISTRY=$HOME/corpora/registry

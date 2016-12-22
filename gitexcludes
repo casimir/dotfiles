@@ -46,3 +46,9 @@ tags
 .omakedb
 .omakedb.lock
 *\.omc
+
+\.ropeproject
+pip-selcheck.json
+lib/
+include/
+bin/

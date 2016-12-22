@@ -19,8 +19,12 @@ Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
 " Plug 'airblade/vim-gitgutter'
 
-" Plug 'tpope/vim-rsi'            " readline
-" Plug 'junegunn/vim-peekaboo'    " registers " @
+Plug 'tpope/vim-rsi'            " readline
+let g:rsi_no_meta = 1
+silent! exe "set <S-Left>=\<Esc>b"
+silent! exe "set <S-Right>=\<Esc>f"
+
+Plug 'junegunn/vim-peekaboo'    " registers " @
 " Plug 'junegunn/vim-pseudocl'    " dependency
 " Plug 'junegunn/vim-fnr'         " <leader>R
 Plug 'junegunn/vim-easy-align'  " gaip=
@@ -33,8 +37,11 @@ Plug 'tpope/vim-surround'    " cs"' yss} VS<p>
 " Plug 'tpope/vim-speeddating' " c-a c-x for dates
 " Plug 'tpope/vim-abolish'     " crs crm crc cru :%Subvert/child{,ren}/adult{,s}/g
 Plug 'tpope/vim-commentary'  " gc gcs gcgc
-" Plug 'mbbill/undotree'
+Plug 'mbbill/undotree'
 Plug 'AndrewRadev/splitjoin.vim' " gS gJ
+
+" Plug 'Yggdroot/indentLine'
+" autocmd! User indentLine doautocmd indentLine Syntax
 
 Plug 'scrooloose/nerdtree'
 augroup nerd_loader
@@ -53,26 +60,44 @@ Plug 'kchmck/vim-coffee-script'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
 
+Plug 'ervandew/supertab'
+
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabContextDefaultCompletionType = "<c-n>"
+set completeopt=menuone,longest,preview
+set pumheight=6             " Keep a small completion window
+" close preview window automatically when we move around
+autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
 Plug 'klen/python-mode'
+Plug 'hynek/vim-python-pep8-indent'
+let g:pymode_breakpoint_bind = 'gb'
 let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_lookup_project = 0
+" let g:pymode_lint = 0
+let g:pymode_lint_on_write = 0
 let g:pymode_lint_ignore = "C901,C0111,F0401"
-let g:pymode_lint_checkers = ['pylint']
+" let g:pymode_lint_checkers = ['pylint', 'pep8', 'pep257', 'pyflakes', 'mccabe']
 Plug 'davidhalter/jedi-vim'
-" Plug 'Valloric/YouCompleteMe'
+let g:jedi#show_call_signatures_delay = 0
 Plug 'majutsushi/tagbar'
 
+set splitright
+set splitbelow
+
 augroup mypython
-au BufRead *py set ts=4
+au FileType python setlocal omnifunc=pythoncomplete#Complete
+au FileType python setlocal tabstop=4 shiftwidth=4 tabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 augroup END
 
 Plug 'metakirby5/codi.vim'
-
+Plug 'vimwiki/vimwiki'
 call plug#end()
 
 filetype plugin on  " Automatically detect file types.
-filetype indent off " Just use autoindent
+filetype indent on  " Just use autoindent
 syntax on           " syntax highlighting
 set mouse=a         " automatically enable mouse usage
 set mousehide       " hide the mouse cursor while typing
@@ -113,7 +138,7 @@ set cmdheight=1                 " command height only one line!
 set ignorecase                  " case insensitive search
 set smartcase                   " case sensitive when uc present
 set wildmenu                    " show list instead of just completing
-set wildmode=full               " command <Tab> completion, list matches, then longest common part, then all.
+set wildmode=longest:full,full  " command <Tab> completion, list matches, then longest common part, then all.
 set nowrap                      " don't wrap
 set scrolljump=1                " lines to scroll when cursor leaves screen
 set scrolloff=0                 " minimum lines to keep above and below cursor
@@ -173,6 +198,7 @@ noremap gy :Goyo<cr>
 " clear highlight
 noremap <silent> <leader>/ :noh<cr>
 
+noremap ,a :wa<cr>
 noremap ,s :update<cr>
 noremap ,q :bd<cr>
 noremap ,n :bn<cr>
