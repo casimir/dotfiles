@@ -1,8 +1,17 @@
 URxvt.scrollBar: false
 URxvt.font: xft:Iosevka:size=16:weight=50
-URxvt.perl-ext-common: resize-font
+URxvt.perl-ext-common: font-size
+! https://github.com/majutsushi/urxvt-font-sizes
+! https://aur.archlinux.org/packages/urxvt-font-size-git/
 URxvt.resize-font.smaller: C-minus
-URxvt.resize-font.bigger: C-slash
+URxvt.resize-font.bigger:  C-slash
+URxvt.keysym.C-slash:  font-size:incglobal
+URxvt.keysym.C-minus:  font-size:decglobal
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-backslash:  font-size:show
+URxvt.font-size.step:  2
 
 ! Solarized color scheme for the X Window System
 !
@@ -73,4 +82,5 @@ URxvt*color12:                 S_base0
 URxvt*color13:                 S_violet
 URxvt*color14:                 S_base1
 URxvt*color15:                 S_base3
+
 
