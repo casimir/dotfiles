@@ -168,11 +168,10 @@ rlp2() {
 }
 
 
-export PYTHONPATH=$HOME/code/jbokorp/corpus_import/annotate/python:$PYTHONPATH
+export PYTHONPATH=$HOME/code/python:$PYTHONPATH
 export SB_MODELS=$HOME/code/jbokorp/corpus_import/annotate/models
 export CWB_DATADIR=$HOME/corpora/data
 export CORPUS_REGISTRY=$HOME/corpora/registry
-
 
 PERL_MB_OPT="--install_base \"/home/dan/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/dan/perl5"; export PERL_MM_OPT;

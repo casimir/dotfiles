@@ -73,7 +73,7 @@ green   = "#859900"
 myNormalBorderColor = "#073642"
 myFocusedBorderColor = green
 
-dmenu = "dmenu_run -fn \"-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*\""
+dmenu = "dmenu_run -fn iosevka-18:weight=50"
      ++ " -nb \"#000\" -nf \"#ccc\" -sb \"#333\" -sf \"#66e\" -l 6 -b"
 
 

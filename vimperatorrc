@@ -14,10 +14,10 @@ noremap = zI
 noremap \- zO
 set autocomplete=false
 set editor='gvim'
-set hintchars=aoeuhtnsidpgcrl
+set hintchars=uhetonasidpgcrl
 set gui=noaddons,nobookmarks,nomenu,nonavigation,tabs
 set defsearch=duckduckgo
-hi Hint background-color: #ff0000; transform; uppercase; color: white; font-family: monospace; font-size: 16px; font-weight: bold; padding: 1px
+hi Hint background-color: #ff0000; transform: uppercase; color: white; font-family: monospace; font-size: 16px; font-weight: bold; padding: 1px
 hi CmdLine -append font-size:12px
 hi CmdLine>* -append font-size:12px
 hi StatusLine -append font-size:12px
