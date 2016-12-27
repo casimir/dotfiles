@@ -5,24 +5,24 @@ import XMonad hiding ((|||))
 
 import System.Exit
 
-import XMonad.Actions.DwmPromote
+import XMonad.Hooks.DynamicLog
 
-import XMonad.Hooks.ManageDocks
+import XMonad.Util.Cursor
 
-import XMonad.Layout.LayoutCombinators
-import XMonad.Layout.Master
 import XMonad.Layout.Minimize
 import XMonad.Layout.MouseResizableTile
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.Named
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.Gaps
--- import XMonad.Layout.ThreeColumns
 import XMonad.Layout.BinarySpacePartition
 import XMonad.Layout.BorderResize
+
+import XMonad.Hooks.ServerMode
+
 import XMonad.Actions.Navigation2D
+import XMonad.Actions.WindowBringer
+
 import XMonad.Hooks.EwmhDesktops
 
 import XMonad.Hooks.ManageHelpers
@@ -32,23 +32,12 @@ import Graphics.X11.ExtraTypes.XF86
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
-import Data.Ratio
-import Data.Char
-import Data.List
-import Data.List.Split
-import Data.Maybe
-
-import System.Process
 import System.IO.Unsafe
 import Data.IORef
 
 import Data.Time.Clock
 
-import Control.Monad
-
-import System.Directory
-
-myLayout = smartBorders $ mkToggle (FULL ?? EOT) $ borderResize emptyBSP
+myLayout = smartBorders $ mkToggle1 NBFULL (borderResize emptyBSP)
 
 tall = Tall 1 (3/100) (1/2)
 
@@ -70,12 +59,27 @@ blue    = "#268bd2"
 cyan    = "#2aa198"
 green   = "#859900"
 
-myNormalBorderColor = "#073642"
+base03 = "#002b36"
+base02 = "#073642"
+base01 = "#586e75"
+base00 = "#657b83"
+base0  = "#839496"
+base1  = "#93a1a1"
+base2  = "#eee8d5"
+base3  = "#fdf6e3"
+
+myNormalBorderColor  = base03 -- "#073642"
 myFocusedBorderColor = green
 
-dmenu = "dmenu_run -fn iosevka-18:weight=50"
-     ++ " -nb \"#000\" -nf \"#ccc\" -sb \"#333\" -sf \"#66e\" -l 6 -b"
-
+dmenu :: String
+dmenu = "dmenu_run -fn \"Pragmata Pro-22\" -l 6 -b"
+     ++ concat [ " -" ++ opt ++ " \"" ++ color ++ "\""
+               | (opt,color) <-
+                     [ ("nb", base03)
+                     , ("nf", base1)
+                     , ("sb", cyan)
+                     , ("sf", base03)
+                     ]]
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keylist)
   where
@@ -111,12 +115,16 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
     keylist =
 
         -- Spawn programs
-      [ (super xK_c, spawn "urxvt")
-      , (shiftSuper xK_c, spawn "urxvt -rv")
-      , (super xK_minus, spawn "urxvt")
+      [ (super      xK_c,     spawn "urxvt")
+      , (shiftSuper xK_c,     spawn "urxvt -rv")
+      , (super      xK_minus, spawn "urxvt")
       , (shiftSuper xK_minus, spawn "urxvt -rv")
-      , (shiftSuper xK_f, spawn "vimb")
-      , (super xK_f, spawn "firefox")
+      , (shiftSuper xK_f,     spawn "vimb")
+      , (super      xK_f,     spawn "firefox")
+
+      , (super xK_d, do withFocused minimizeWindow
+                        windows W.focusDown)
+      , (super xK_p, sendMessage RestoreNextMinimizedWin)
 
         -- Take screenshot
       , (super xK_Print, spawn "scrot")
@@ -134,10 +142,13 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
       , (super xK_Tab, windows W.focusDown)
 
         -- Toggle fullscreen
-      , (super xK_0,      sendMessage (Toggle FULL))
+      , (super xK_0,      sendMessage (Toggle NBFULL))
 
         -- Back to tiling
       , (super xK_b,      withFocused $ windows . W.sink)
+
+      --, (super xK_i, bringMenu)
+      --, (super xK_u, gotoMenu)
 
         -- Quit xmonad
       , (shiftSuper xK_q, io (exitWith ExitSuccess))
@@ -171,8 +182,10 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
 
      -- mod-[1..9], Switch to workspace N
      -- mod-shift-[1..9], Move client to workspace N
-     [ ((m .|. modMask, k), cond (windows $ f i))
-     | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
+     [ ((m .|. modMask, k),
+           do cond (windows $ f i)
+              setDefaultCursor cursor)
+     | (i, k, cursor) <- zip3 (XMonad.workspaces conf) [xK_1 .. xK_9] cursors
      , (f, m, cond) <- [(W.greedyView, 0, condWait i), (W.shift, shiftMask, id)]]
 
      ++
@@ -181,6 +194,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
      [ ((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
      | (key, sc) <- zip [xK_Up, xK_Down] [0..]
      , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+
+cursors = cycle [ xC_dot, xC_heart, xC_plus ]
 
 condWait :: String -> X () -> X ()
 condWait "9" m = waitNine (m >> waitLock)
@@ -241,8 +256,37 @@ myManageHook = composeAll
 
 ------------------------------------------------------------------------
 -- Run xmonad
-main = xmonad
-  $ navigation2DP def
+main =
+  do xmconf <- statusBar "xmobar" xmobarConf toggleStrutsKey navconf
+     xmonad xmconf
+         -- (xmconf { layoutHook = mkToggle1 NBFULL (layoutHook xmconf) } )
+
+toggleStrutsKey :: XConfig t -> (KeyMask, KeySym)
+toggleStrutsKey XConfig{modMask = modm} = (modm, xK_b)
+
+xmobarConf =
+  def
+    { ppCurrent = xmobarColor yellow "" . wrap "[" "]"
+    , ppVisible = xmobarColor green "" . wrap "(" ")"
+    , ppHidden  = wrap " " " "
+    , ppHiddenNoWindows  = wrap " " " " . const "-"
+    , ppUrgent  = xmobarColor orange ""
+    , ppWsSep   = ""
+    , ppSep     = " "
+    , ppOrder   = \ (ws:l:_:_) -> case l of
+                      "Full" -> [map oxford ws]
+                      _      -> [ws]
+    }
+
+oxford :: Char -> Char
+oxford '(' = '['
+oxford ')' = ']'
+oxford '[' = '⟦'
+oxford ']' = '⟧'
+oxford c   = c
+
+navconf
+  = navigation2DP def
       ("n","h","t","s")
       [("M-", windowGo),
        ("M-S-", windowSwap),
@@ -254,7 +298,6 @@ main = xmonad
   opp D = U
   opp R = L
   opp L = R
-
 
 defaults = ewmh $ def {
     terminal           = myTerminal,
@@ -269,7 +312,11 @@ defaults = ewmh $ def {
 
     layoutHook         = myLayout,
     manageHook         = myManageHook,
-    handleEventHook    = handleEventHook def <+> fullscreenEventHook
+    startupHook        = do startupHook def
+                            refresh
+                            setDefaultCursor xC_dot,
+    handleEventHook    = handleEventHook def <+> fullscreenEventHook <+>
+                         serverModeEventHookCmd
   }
 
 
