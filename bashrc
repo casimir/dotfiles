@@ -177,8 +177,8 @@ PERL_MB_OPT="--install_base \"/home/dan/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/dan/perl5"; export PERL_MM_OPT;
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export FZF_DEFAULT_COMMAND="find * -name .git -prune -o -type f -print | grep '\.\(dyn_hi\|hi\|o\|dyn_o\)$' -v"
-export FZF_DEFAULT_OPTS="-m --color=light -x"
+export FZF_DEFAULT_COMMAND="rg --files"
+export FZF_DEFAULT_OPTS="-m -e"
 
 [ ! -f dircolors.ansi-dark ] && wget https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark
 eval $(dircolors dircolors.ansi-dark)
