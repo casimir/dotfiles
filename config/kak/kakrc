@@ -77,20 +77,16 @@ def -allow-override one-char-replace %{
 
 map global normal c :replace-if-all-single-char<ret>
 
-map global user d :delete-buffer<ret>:buffer-next<ret>
+map global user d %{ :delete-buffer<ret>:exec ga<ret> }
 map global user c :comment-line<ret>
-map global user b ":buffer "
-map global user f :jump-file<ret>
-def -allow-override jump-file %{
-  eval %{edit %sh{ ( find . -type f \( \! -path "*.git/*" \) -and \( \! -path ".*sw?" \) | fzf-tmux )}}
-}
 
 def -allow-override rm-slash-hl %{
   rmhl dynregex_\%reg{<slash>}
 }
 def -allow-override add-slash-hl %{
+  rm-slash-hl
   try %{
-    addhl dynregex '%reg{/}' 0:+u 1:+r 2:+ri 3:+rb 4:+rib
+    addhl dynregex '%reg{/}' 0:+u 1:CurWord 2:CurWord
   }
 }
 hook global NormalKey .*[/?NT].* add-slash-hl
@@ -98,8 +94,8 @@ hook global NormalKey .*[/?NT].* add-slash-hl
 map global user u :rm-slash-hl<ret>
 map global normal <esc>   <space>:rm-slash-hl<ret>
 map global normal <space> '\;'
-map global normal ';'     ':'
-map global normal ':'     '<A-;>'
+map global normal \;      ':'
+map global normal :       '<A-;>'
 map global normal _       'I<esc>'
 map global normal <A-s>   <A-l>
 
@@ -132,8 +128,8 @@ map global normal <A-N> N:print-selection-info<ret>:add-slash-hl<ret>
 map global normal T     <A-n>:add-slash-hl<ret>
 map global normal <A-T> <A-N>:print-selection-info<ret>:add-slash-hl<ret>
 
-map global normal m     Z
-map global normal M     <A-Z>
+map global normal Y     Z
+map global normal <A-y> <A-Z>
 map global normal j     z
 map global normal <a-j> <A-z>
 
@@ -169,8 +165,8 @@ map global normal V     X
 map global normal <A-v> <A-x>
 map global normal <A-V> <A-X>
 
-map global normal '%'     m
-map global normal '<A-%>' M
+map global normal \%    m
+map global normal <A-%> M
 
 map global normal D '%'
 
@@ -228,14 +224,22 @@ def -allow-override remove_spaces %{ try %{ exec -draft '%s\h+$<ret>d' } }
 
 hook global BufWritePre .* remove_spaces
 
-#source /home/dan/config/kak/danr.kak
-
-colo solarized
+colorscheme solarized
 
 def -allow-override my-window-setup %{
-    try %{ addhl number_lines -separator ' '  }
+    try %{ addhl number_lines -hlcursor -separator ' '  }
     try %{ addhl show_matching }
     try %{ addhl dynregex '%opt{curword}' 0:CurWord }
+
+    hook global WinResize .* %{
+        echo "%val{window_height}:%val{window_width}"
+    }
+
+    rmhl red80
+    addhl group red80
+    addhl -group red80 regex ^[^\n]{80}(\s*[^\n]) 1:red
+
+    set window completers filename:word=all
 
     # auto indent
     hook window InsertChar \n %{ exec -draft -itersel K<a-&> }
@@ -246,6 +250,8 @@ def -allow-override my-window-setup %{
     try %{ set global grepcmd 'rg -n' }
 }
 
+alias global rg grep
+
 hook global NormalIdle .* %{
     eval -draft %{ try %{
         exec <space><a-i>w <a-k>\`\w+\'<ret>
@@ -253,6 +259,11 @@ hook global NormalIdle .* %{
     } catch %{
         set buffer curword ''
     } }
+    set window static_words ''
+}
+
+hook global BufCreate .*(bashrc|xinitrc).* %{
+    set buffer filetype sh
 }
 
 hook global WinCreate .* my-window-setup
@@ -263,12 +274,45 @@ hook global WinSetOption filetype=python %{
 
 hook global BufCreate .*kak.* "set -add buffer completion_extra_word_char -"
 
-hook global InsertCompletionShow .* %{ map window insert <tab> <c-n>; map window insert <backtab> <c-p> }
-hook global InsertCompletionHide .* %{ unmap window insert <tab> <c-n>; unmap window insert <backtab> <c-p> }
+hook global InsertCompletionShow .* %{
+    map window insert <tab> <c-n>
+    map window insert <backtab> <c-p>
+}
+hook global InsertCompletionHide .* %{
+    unmap window insert <tab> <c-n>;
+    unmap window insert <backtab> <c-p>
+}
 
-def find -allow-override -params 1 -shell-candidates %{ find . -type f | sed s_^\./__ } %{ edit %arg{1} }
+def fzf-edit -allow-override %{ %sh{
+    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
+    urxvt -e sh -c "rg --ignore-file .binignore -L --hidden --files | fzf -e -m -1 --preview=\"head -n 8 {}\" --preview-window=up:8 > $tmp"
+    (while read file; do
+        echo "edit $file"
+    done) < $tmp
+    rm $tmp
+} }
 
-map global goto o "<esc>:find "
+
+def fzf-buf -allow-override %{ %sh{
+    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
+    urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | fzf -1 -0 -e --preview=\"head -n 8 {}\" --preview-window=up:8 > $tmp"
+    (while read file; do
+        echo "buffer $file"
+    done) < $tmp
+    rm $tmp
+} }
+
+def fzf-delbuf -allow-override %{ %sh{
+    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
+    urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | fzf -m -e --preview=\"head -n 8 {}\" --preview-window=up:8 > $tmp"
+    (while read file; do
+        echo "delete-buffer $file"
+    done) < $tmp
+    rm $tmp
+} }
+
+map global user b ":fzf-buf<ret>"
+map global goto o "<esc>:fzf-edit<ret>"
 map global goto / "<esc>:grep "
 
 hook global BufOpenFifo '\*grep\*' %{ map global user g ':grep-next<ret>' }
@@ -287,13 +331,13 @@ hook global WinSetOption filetype=(c|cpp) %{
 }
 
 hook global WinSetOption filetype=sh %{
-	set buffer lintcmd 'shellcheck -fgcc -eSC2006'
-	lint-enable
+    set buffer lintcmd 'shellcheck -fgcc -eSC2006'
+    lint-enable
 }
 
 hook global WinSetOption filetype=python %{
-	set buffer lintcmd 'flake8 --filename=*'
-	lint-enable
+    set buffer lintcmd 'flake8 --filename=*'
+    lint-enable
 }
 
 map global user f '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
@@ -306,3 +350,4 @@ def -allow-override ide %{
     set global toolsclient tools
     set global jumpclient main
 }
+
