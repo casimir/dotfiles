@@ -27,6 +27,6 @@ urxvt &
 xset b off
 xset r rate 150
 
-xsetroot -solid '#002b36
+xsetroot -solid '#002b36'
 
 exec xmonad
