@@ -1,5 +1,6 @@
 URxvt.scrollBar: false
-URxvt.font: xft:Iosevka:size=16:weight=50
+! URxvt.font: xft:Iosevka:size=16:weight=50
+URxvt.font: xft:Pragmata Pro:size=16:weight=50
 URxvt.perl-ext-common: font-size
 ! https://github.com/majutsushi/urxvt-font-sizes
 ! https://aur.archlinux.org/packages/urxvt-font-size-git/
@@ -60,8 +61,8 @@ URxvt.font-size.step:  2
 ! URxvt*background:            S_base03
 
 URxvt.intensityStyles:         false
-URxvt*background:              S_base03
-URxvt*foreground:              S_base0
+URxvt*background:              S_base02
+URxvt*foreground:              S_base1
 URxvt*cursorColor:             S_base1
 URxvt*pointerColorBackground:  S_base01
 URxvt*pointerColorForeground:  S_base1
@@ -78,7 +79,7 @@ URxvt*color8:                  S_base03
 URxvt*color9:                  S_orange
 URxvt*color10:                 S_base01
 URxvt*color11:                 S_base00
-URxvt*color12:                 S_base0
+URxvt*color12:                 S_base1
 URxvt*color13:                 S_violet
 URxvt*color14:                 S_base1
 URxvt*color15:                 S_base3
