@@ -1,8 +1,12 @@
+.git
+.svn
+
 *.elc
 
 *.pyc
 
 *.o
+*.so
 
 # Latex temp
 *.aux
@@ -21,33 +25,29 @@
 *.brf
 
 # Vim temp
-*\.swp
-*\.swo
+*.swp
+*.swo
 
 # Emacs temp
-\#*
-.\#*
+*\#*
+*.\#*
 *~
 
 # Kakoune temp
-\.*\.kak\.*
+.*.kak.*
 
 # Haskell temp
-dist/
-*\.hi
-*\.dyn_hi
-*\.dyn_o
+*.hi
+*.dyn_hi
+*.dyn_o
 
-tags
+*.gfo
 
-*\.gfo
+*.agdai
 
 #Omake
-.omakedb
-.omakedb.lock
-*\.omc
+*.omakedb
+*.omakedb.lock
+*.omc
 
-\.ropeproject
-pip-selcheck.json
-include/
-bin/
+*.ropeproject

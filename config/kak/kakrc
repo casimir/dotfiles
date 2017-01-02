@@ -4,21 +4,16 @@ set global ui_options ncurses_assistant=none
 %sh{
 python - <<PY
 import string
-import sys
-for i in string.ascii_letters + string.digits:
-  print("map global user {0} <A-{0}>".format(i))
+for i in string.printable[:95]:
+  if i != '\\\\':
+    lhs = repr(i)
+    rhs = repr('<A-'+i+'>') if i != '>' else '<a-lt>'
+    print('map global user -- ' + lhs + ' ' + rhs)
 PY
 }
 
-map global user m <A-m>
-map global user . <A-.>
-map global user a <A-a>
-map global user i <A-i>
 map global user \; <A-:>
-map global user | <A-|>
-map global user ! <A-!>
-map global user 8 *
-map global user * <A-*>
+map global user 8 *:add-slash-hl<ret>
 map global normal * "lbhe*:add-slash-hl<ret>"
 
 set global idle_timeout 50
@@ -75,10 +70,26 @@ def -allow-override one-char-replace %{
   exec i
 }
 
+# silent: stop completion_extra_word_char
+map global insert <c-s> <c-o>
+# complete here
+map global insert <c-c> <c-x>
+# complete previous
+map global insert <c-t> <c-p>
+# raw insert, use vim binding
+map global insert <c-k> <c-v>
+# paste from normal yank register
+map global insert <c-p> '<c-r>"'
+# execute one normal kak command
+map global insert <c-h> <a-\;>
+
+# execute current selection(s)
+map global user x %{:eval -itersel %val{selection}<ret>}
+
 map global normal c :replace-if-all-single-char<ret>
 
 map global user d %{ :delete-buffer<ret>:exec ga<ret> }
-map global user c :comment-line<ret>
+map global normal '#' :comment-line<ret>
 
 def -allow-override rm-slash-hl %{
   rmhl dynregex_\%reg{<slash>}
@@ -97,21 +108,25 @@ map global normal <space> '\;'
 map global normal \;      ':'
 map global normal :       '<A-;>'
 map global normal _       'I<esc>'
+
+# american sign language bindings
 map global normal <A-s>   <A-l>
+map global normal <A-S>   <A-L>
 
 alias global colo colorscheme
 alias global wqa write-all-quit
 alias global bd  delete-buffer
 alias global bd! delete-buffer!
 
+# my ugly ducklings
 map global goto p <esc>:bp<ret>
 map global goto n <esc>:bn<ret>
-map global goto 2 "<esc>:new-client-here<ret>"
-map global goto 3 "<esc>:new-client-here<ret>"
+map global goto 2 "<esc>:new-client-here<space>F1<ret>"
+map global goto 3 "<esc>:new-client-here<space>F2<ret>"
 
-def -allow-override new-client-here %{
+def -allow-override -params 1 new-client-here %{
   %sh{
-    echo "new exec :buffer <space> $kak_buffile <ret> $kak_cursor_line g"
+    echo "new exec :buffer <space> $kak_buffile <ret> $kak_cursor_line g :%sh{ xdotool <space> key <space> alt+$1 }<ret>"
   }
 }
 
@@ -122,27 +137,76 @@ map global normal <A-t> J
 map global normal <A-n> K
 map global normal S     L
 
+map global normal ( :goto-line-start<ret>
+map global normal <A-(> :extend-line-first-word<ret>
+
+def -allow-override goto-line-start %{ try %{ exec gh <a-k> \A\s <ret> <a-K> $ <ret> wl } }
+def -allow-override extend-line-first-word %{ try %{ exec Gh <a-k> \A\s <ret> WL } }
+
+def -allow-override move-forward-to-line-start %{
+    eval -itersel %{
+        try %{
+            exec '<a-:><a-;>' <a-k>\A^\h*\z<ret> :goto-line-start<ret>
+        }
+    }
+}
+
+# worm-movements: moving both anchors
+map global normal <c-h> 'H<a-;>H<a-;>'
+map global normal <c-s> 'L<a-;>L<a-;>'
+# worm could also go "through text" text:
+# Ysdjhj:<space>Pj
+# this would be C-t M-t in emacs on speed, especially with <C-WEB> <C-NT>
+# this should probably be a mini mode, a worm mode
+# which toggles these maps
+# even though it makes sense to do them for just one command
+
+map global goto t j
+map global goto n k
+map global goto s l
+map global goto T j
+map global goto N k
+map global goto S l
+map global goto G e
+
 # next match
 map global normal N     n:add-slash-hl<ret>
 map global normal <A-N> N:print-selection-info<ret>:add-slash-hl<ret>
 map global normal T     <A-n>:add-slash-hl<ret>
 map global normal <A-T> <A-N>:print-selection-info<ret>:add-slash-hl<ret>
 
-map global normal Y     Z
-map global normal <A-y> <A-Z>
+map global normal x     :nop<ret>
+map global normal X     :nop<ret>
+map global normal <A-x> :nop<ret>
+
+map global normal x     Z
+map global normal <a-x> <A-Z>
 map global normal j     z
 map global normal <a-j> <A-z>
 
 map global normal J     <A-j>
 map global normal <A-J> <A-J>
 
-map global normal k t
-map global normal K T
+map global normal k     t
+map global normal K     <a-t>
+map global normal <a-k> T
+map global normal <a-K> <a-T>
+
+map global normal f     f
+map global normal F     <a-f>
+map global normal <a-f> F
+map global normal <a-F> <a-F>
+
+map global user k <a-k>
+map global user K <a-K>
 
 # split and select
 map global user s s
 map global user t S
-map global user n <A-s>
+map global normal l <A-s>
+map global normal L :nop<ret>
+map global normal <a-l> :nop<ret>
+map global normal <a-L> :nop<ret>
 map global user '/' :select-all-goto-closest<ret>:add-slash-hl<ret>
 
 def -allow-override select-all-goto-closest %{
@@ -155,28 +219,37 @@ map global view   s l
 map global normal z v
 map global normal Z V
 
-# gG to goto bottom, ge to go to line end
-map global goto G e
-map global goto e l
+def -allow-override select-line-nicely %{
+    goto-line-start
+    exec 'Gl'
+    # should make it so that if it is nicely selected, selects the next
+}
 
 # Put line selection commands on v rather than x
-map global normal v     x
+map global normal v     :select-line-nicely<ret>
 map global normal V     X
 map global normal <A-v> <A-x>
 map global normal <A-V> <A-X>
 
-map global normal \%    m
-map global normal <A-%> M
+def -allow-override -params 1 setf %{
+  set buffer filetype %arg{1}
+}
 
-map global normal D '%'
+# make new selections above and under
+map global normal <c-t> C
+map global normal <c-n> <a-C>''
+map global normal <a-C> <a-C>''
+map global normal C     :nop<ret>
+# will be used for other purposes later, vc for :select-line-nicely<ret>c
+map global normal d     d
+                        # :move-forward-to-line-start<ret>
+                        # if we remove a big chunk, we can go to line start
+                        # but if we only remove single characters we shouldn't
+map global normal D     <a-x>d:move-forward-to-line-start<ret>
 
 map global normal -- - '"'
 
-map global normal x     r
-map global normal X     R
-map global normal <A-x> :nop<ret>
-
-map global normal r   "<A-'>:print-selection-info<ret>"
+map global normal '"' "<A-'>:print-selection-info<ret>"
 map global normal "'" "':print-selection-info<ret>"
 
 
@@ -191,13 +264,32 @@ def -hidden -allow-override overwrite %{
   }
 }
 
-map global normal R   ":overwrite<ret>i"
+map global normal r r
+# overwrite a'la vim's R
+map global normal R :overwrite<ret>i
+
+# paste and replace on <a-r> for now
+map global normal <a-r> R
 
 # copy to  xclipboard
 map global user y %{<a-|>xsel -i<ret>:echo -color Information %{yanked to X clipboard}<ret>}
 map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
 map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
 map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
+
+# auto-copy on y to x clipboard
+hook global NormalKey y %{ nop %sh{
+  printf '%s' "${kak_reg_dquote}" | xsel --input
+}}
+
+
+# WIP: this doesn't respect the newlines in the clipboard
+def -allow-override set-xclip-clipboard %{ %sh{
+  print "set-register c '%s"' "$(xclip -o)"
+}}
+
+# hook global NormalIdle .* test
+
 
 map global user w :w<ret>
 
@@ -237,7 +329,7 @@ def -allow-override my-window-setup %{
 
     rmhl red80
     addhl group red80
-    addhl -group red80 regex ^[^\n]{80}(\s*[^\n]) 1:red
+    addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,red
 
     set window completers filename:word=all
 
@@ -252,15 +344,17 @@ def -allow-override my-window-setup %{
 
 alias global rg grep
 
-hook global NormalIdle .* %{
-    eval -draft %{ try %{
+def -hidden -allow-override _update_curword %{
+    eval -no-hooks -draft %{ try %{
         exec <space><a-i>w <a-k>\`\w+\'<ret>
         set buffer curword "\b\Q%val{selection}\E\b"
     } catch %{
         set buffer curword ''
     } }
-    set window static_words ''
 }
+
+hook global NormalIdle .* _update_curword
+hook global NormalKey .* _update_curword
 
 hook global BufCreate .*(bashrc|xinitrc).* %{
     set buffer filetype sh
@@ -283,36 +377,54 @@ hook global InsertCompletionHide .* %{
     unmap window insert <backtab> <c-p>
 }
 
-def fzf-edit -allow-override %{ %sh{
+def fzf -params 0..1 -allow-override %{ %sh{
     tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    urxvt -e sh -c "rg --ignore-file .binignore -L --hidden --files | fzf -e -m -1 --preview=\"head -n 8 {}\" --preview-window=up:8 > $tmp"
-    (while read file; do
-        echo "edit $file"
-    done) < $tmp
-    rm $tmp
+    edit=$(mktemp /tmp/kak-edit.XXXXXX)
+    echo 'echo eval -client $kak_client "edit $1" | kak -p $kak_session' > $edit
+    chmod 755 $edit
+    (
+        urxvt -e sh -c "rg --ignore-file ~/.binignore -L --hidden --files $1 | fzf -e -m --preview=\"head -n 8 {}\" --preview-window=up:8 --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        (while read file; do
+            $edit $file
+        done) < $tmp
+        rm $tmp
+    ) > /dev/null 2>&1 < /dev/null &
 } }
 
-
-def fzf-buf -allow-override %{ %sh{
+def bufzf -allow-override %{ %sh{
     tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | fzf -1 -0 -e --preview=\"head -n 8 {}\" --preview-window=up:8 > $tmp"
-    (while read file; do
-        echo "buffer $file"
-    done) < $tmp
-    rm $tmp
+    setbuf=$(mktemp /tmp/kak-setbuf.XXXXXX)
+    delbuf=$(mktemp /tmp/kak-delbuf.XXXXXX)
+    echo 'echo eval -client $kak_client "buffer        $1" | kak -p $kak_session' > $setbuf
+    echo 'echo eval -client $kak_client "delete-buffer $1" | kak -p $kak_session' > $delbuf
+    echo 'echo eval -client $kak_client bufzf              | kak -p $kak_session' >> $delbuf
+    chmod 755 $setbuf
+    chmod 755 $delbuf
+    (
+        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
+            fzf -0 -1 -e '--preview=$setbuf {}' --preview-window=right:0 --expect ctrl-d > $tmp"
+        if [ -s $tmp ]; then
+            ( read action
+              read buf
+              if [ "$action" == "ctrl-d" ]; then
+                  $delbuf $buf
+              else
+                  $setbuf $buf
+              fi) < $tmp
+        else
+            $setbuf $kak_bufname
+        fi
+        rm $tmp
+    ) > /dev/null 2>&1 < /dev/null &
 } }
 
-def fzf-delbuf -allow-override %{ %sh{
-    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | fzf -m -e --preview=\"head -n 8 {}\" --preview-window=up:8 > $tmp"
-    (while read file; do
-        echo "delete-buffer $file"
-    done) < $tmp
-    rm $tmp
-} }
+# fzf-line:
+# rg \$ -n | fzf '-d:' --with-nth=3.. --preview 'echo {1}:{2}; tail -n +{2} {1}' --no-sort
 
-map global user b ":fzf-buf<ret>"
-map global goto o "<esc>:fzf-edit<ret>"
+map global user b ":bufzf<ret>"
+map global user h "<esc>:fzf ~<ret>"
+map global user f "<esc>:fzf<ret>"
+map global goto o "<esc>:info ,f<ret>"
 map global goto / "<esc>:grep "
 
 hook global BufOpenFifo '\*grep\*' %{ map global user g ':grep-next<ret>' }
@@ -323,7 +435,7 @@ hook global WinSetOption filetype=(c|cpp) %{
     alias window lint clang-parse
     alias window lint-next clang-diagnostics-next
     %sh{
-        if [ $PWD = "/home/dan/build/kakoune/src" ]; then
+        if [ $PWD = "/home/dan/code/kakoune/src" ]; then
            echo "set buffer clang_options '-std=c++14 -include-pch precomp-header.h.gch -DKAK_DEBUG'"
         fi
     }
@@ -340,7 +452,9 @@ hook global WinSetOption filetype=python %{
     lint-enable
 }
 
-map global user f '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+map global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+map global goto q <esc><a-i>p,q
+# ^ similar to gqq in vim
 
 def -allow-override ide %{
     rename-client main

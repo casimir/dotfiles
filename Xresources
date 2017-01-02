@@ -1,12 +1,14 @@
 URxvt.scrollBar: false
-! URxvt.font: xft:Iosevka:size=16:weight=50
-URxvt.font: xft:Pragmata Pro:size=16:weight=50
+URxvt.font: xft:Iosevka Term Slab:size=16:weight=50
+URxvt.boldFont: xft:Iosevka Term Slab:size=16:weight=70
 URxvt.perl-ext-common: font-size
+URxvt*dynamicColors: true
 ! https://github.com/majutsushi/urxvt-font-sizes
 ! https://aur.archlinux.org/packages/urxvt-font-size-git/
 URxvt.resize-font.smaller: C-minus
 URxvt.resize-font.bigger:  C-slash
 URxvt.keysym.C-slash:  font-size:incglobal
+URxvt.keysym.C-plus:  font-size:incglobal
 URxvt.keysym.C-minus:  font-size:decglobal
 URxvt.keysym.C-Up:     font-size:increase
 URxvt.keysym.C-Down:   font-size:decrease
@@ -32,9 +34,11 @@ URxvt.font-size.step:  2
 
 
 ! Dark
+! #define S_base03        #002b36
+! #define S_base02        #073642
 
-#define S_base03        #002b36
-#define S_base02        #073642
+#define S_base03        #1c1c1c
+#define S_base02        #303030
 #define S_base01        #586e75
 #define S_base00        #657b83
 #define S_base0         #839496
@@ -60,28 +64,31 @@ URxvt.font-size.step:  2
 !
 ! URxvt*background:            S_base03
 
-URxvt.intensityStyles:         false
-URxvt*background:              S_base02
-URxvt*foreground:              S_base1
-URxvt*cursorColor:             S_base1
-URxvt*pointerColorBackground:  S_base01
-URxvt*pointerColorForeground:  S_base1
+URxvt.keysym.C-7: command:\033]10;S_base1\007\033]11;S_base03\007
+URxvt.keysym.C-8: command:\033]10;S_base02\007\033]11;S_base3\007
 
-URxvt*color0:                  S_base02
-URxvt*color1:                  S_red
-URxvt*color2:                  S_green
-URxvt*color3:                  S_yellow
-URxvt*color4:                  S_blue
-URxvt*color5:                  S_magenta
-URxvt*color6:                  S_cyan
-URxvt*color7:                  S_base2
-URxvt*color8:                  S_base03
-URxvt*color9:                  S_orange
-URxvt*color10:                 S_base01
-URxvt*color11:                 S_base00
-URxvt*color12:                 S_base1
-URxvt*color13:                 S_violet
-URxvt*color14:                 S_base1
-URxvt*color15:                 S_base3
+URxvt.intensityStyles:         false
+*background:              S_base03
+*foreground:              S_base1
+*cursorColor:             S_base1
+*pointerColorBackground:  S_base01
+*pointerColorForeground:  S_base1
+
+*color0:                  S_base02
+*color1:                  S_red
+*color2:                  S_green
+*color3:                  S_yellow
+*color4:                  S_blue
+*color5:                  S_magenta
+*color6:                  S_cyan
+*color7:                  S_base2
+*color8:                  S_base03
+*color9:                  S_orange
+*color10:                 S_base01
+*color11:                 S_base00
+*color12:                 S_base1
+*color13:                 S_violet
+*color14:                 S_base1
+*color15:                 S_base3
 
 

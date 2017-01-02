@@ -32,10 +32,12 @@ export PROMPT_COMMAND="history -a"
 shopt -s histappend
 
 export XDG_CONFIG_HOME=$HOME/config
-export GIT_EDITOR='vim'
+export GIT_EDITOR='kak'
+export EDITOR='kak'
 export PATH=/home/dan/build/pakcs-1.11.1/bin:$PATH
 export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$HOME/code/provers:$PATH
 export PATH=$HOME/.cabal/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/code/jbofihe:$PATH
 export PATH=$HOME/.gem/ruby/*/bin:$PATH
 

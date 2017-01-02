@@ -1,16 +1,17 @@
 Config { font = "xft:Pragmata Pro-12"
        , additionalFonts = []
-       , borderColor = "#002b36"
+       , borderColor = "#1c1c1c"
        , border = TopB
        , borderWidth = 0
-       , bgColor = "#002b36"
+       , bgColor = -- "#002b36"
+                   "#1c1c1c"
        , fgColor = "#93a1a1"
        , alpha = 255
        , position = Bottom
        , textOffset = -1
        , iconOffset = -1
        , lowerOnStart = True
-       , pickBroadest = False
+       , pickBroadest = True
        , persistent = False
        , hideOnStart = False
        , iconRoot = "."
@@ -18,7 +19,7 @@ Config { font = "xft:Pragmata Pro-12"
        , overrideRedirect = True
        , commands = [ Run StdinReader
                     , Run Date "%H:%M" "time" 10
-                    , Run Date "%_d/%m" "date" 10
+                    , Run Date "%-d/%-m" "date" 10
                     ]
        , sepChar = "%"
        , alignSep = "}{"

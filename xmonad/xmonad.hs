@@ -1,5 +1,6 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
+{-# OPTIONS_GHC -i/home/dan/.xmonad/ -v #-}
 
 import XMonad hiding ((|||))
 
@@ -15,7 +16,7 @@ import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.BinarySpacePartition
+import BinarySpacePartition
 import XMonad.Layout.BorderResize
 
 import XMonad.Hooks.ServerMode
@@ -30,10 +31,12 @@ import XMonad.Hooks.ManageHelpers
 import Graphics.X11.ExtraTypes.XF86
 
 import qualified XMonad.StackSet as W
+import qualified XMonad.Core     as W
 import qualified Data.Map        as M
 
 import System.IO.Unsafe
 import Data.IORef
+import Data.Maybe
 
 import Data.Time.Clock
 
@@ -59,8 +62,10 @@ blue    = "#268bd2"
 cyan    = "#2aa198"
 green   = "#859900"
 
-base03 = "#002b36"
-base02 = "#073642"
+base03 = "#1c1c1c"
+base02 = "#303030"
+-- base03 = "#002b36"
+-- base02 = "#073642"
 base01 = "#586e75"
 base00 = "#657b83"
 base0  = "#839496"
@@ -68,14 +73,14 @@ base1  = "#93a1a1"
 base2  = "#eee8d5"
 base3  = "#fdf6e3"
 
-myNormalBorderColor  = base03 -- "#073642"
+myNormalBorderColor  = base02 -- "#073642"
 myFocusedBorderColor = green
 
 dmenu :: String
-dmenu = "dmenu_run -fn \"Pragmata Pro-22\" -l 6 -b"
-     ++ concat [ " -" ++ opt ++ " \"" ++ color ++ "\""
+dmenu = "dmenu_run -fn \"Iosevka Term Slab-22:weight=50\" -l 6 -b"
+     ++ concat [ " -" ++ opt ++ " " ++ show color
                | (opt,color) <-
-                     [ ("nb", base03)
+                     [ ("nb", base02)
                      , ("nf", base1)
                      , ("sb", cyan)
                      , ("sf", base03)
@@ -106,8 +111,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
         , ((modMask .|. shiftMask, xK_slash ), sendMessage RotateL)
         , ((modMask .|. shiftMask, xK_r     ), sendMessage Swap)
         , ((modMask,               xK_u     ), sendMessage FocusParent)
-        , ((modMask,               xK_l     ), sendMessage MoveNode)
-        , ((modMask .|. shiftMask, xK_l     ), sendMessage SelectNode)
+        , ((modMask,               xK_p     ), sendMessage MoveNode)
+        , ((modMask,               xK_d     ), sendMessage SelectNode)
         , ((modMask,               xK_space ), sendMessage Balance)
         , ((modMask .|. shiftMask, xK_space ), sendMessage Equalize)
         ]
@@ -122,9 +127,12 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
       , (shiftSuper xK_f,     spawn "vimb")
       , (super      xK_f,     spawn "firefox")
 
-      , (super xK_d, do withFocused minimizeWindow
-                        windows W.focusDown)
-      , (super xK_p, sendMessage RestoreNextMinimizedWin)
+      , ((altMask, xK_F1),    sendMessage (setAxisCrumbMessage Horizontal) >> sendMessage Swap)
+      , ((altMask, xK_F2),    sendMessage (setAxisCrumbMessage Vertical) >> sendMessage Swap)
+
+      -- , (super xK_d, do withFocused minimizeWindow
+      --                   windows W.focusDown)
+      -- , (super xK_p, sendMessage RestoreNextMinimizedWin)
 
         -- Take screenshot
       , (super xK_Print, spawn "scrot")
@@ -186,14 +194,34 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
            do cond (windows $ f i)
               setDefaultCursor cursor)
      | (i, k, cursor) <- zip3 (XMonad.workspaces conf) [xK_1 .. xK_9] cursors
-     , (f, m, cond) <- [(W.greedyView, 0, condWait i), (W.shift, shiftMask, id)]]
+     , (f, m, cond) <- [(W.view, 0, condWait i), (W.shift, shiftMask, id)]]
 
      ++
-     -- mod-{up,dn}, Switch to physical/Xinerama screens 1, 2
-     -- mod-shift-{up,dn}, Move client to screen 1, 2
-     [ ((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
-     | (key, sc) <- zip [xK_Up, xK_Down] [0..]
-     , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+
+     -- mod-o,       Switch to other screen
+     -- mod-shift-o, Move client to other screen
+     [ ((m .|. modMask, xK_o),
+           windows $ \ ss -> case W.visible ss of
+                               other:_ -> f (W.tag (W.workspace other)) ss
+                               []      -> ss)
+     | (m, f) <- [(0,         W.view)
+                 ,(shiftMask, W.shift)]
+     ]
+
+     ++
+
+     -- keep focus on this screen, but switch workspaces between it and the other
+     [ (super xK_e, windows $ \ ss ->
+         let rot (x:y:zs) = y:x:zs
+             rot zs       = zs
+             swap_ws x y  = x { W.workspace = W.workspace y }
+             me:other     = rot (W.current ss : W.visible ss)
+         in  ss { W.current = swap_ws (W.current ss) me
+                , W.visible = zipWith swap_ws (W.visible ss) other
+                })
+     ]
+
+
 
 cursors = cycle [ xC_dot, xC_heart, xC_plus ]
 
@@ -267,30 +295,47 @@ toggleStrutsKey XConfig{modMask = modm} = (modm, xK_b)
 xmobarConf =
   def
     { ppCurrent = xmobarColor yellow "" . wrap "[" "]"
-    , ppVisible = xmobarColor green "" . wrap "(" ")"
+    , ppVisible = wrap "(" ")"
     , ppHidden  = wrap " " " "
     , ppHiddenNoWindows  = wrap " " " " . const "-"
     , ppUrgent  = xmobarColor orange ""
     , ppWsSep   = ""
     , ppSep     = " "
-    , ppOrder   = \ (ws:l:_:_) -> case l of
+    , ppOrder   = \ (ws:l:_:_) -> map (map nopar) $ case l of
                       "Full" -> [map oxford ws]
                       _      -> [ws]
     }
+-- "<icon=/home/dan/blarg.xpm/>"n
 
 oxford :: Char -> Char
-oxford '(' = '['
-oxford ')' = ']'
-oxford '[' = '⟦'
+oxford '[' = '⟦' -- urk, no oxford brackets in Iosevka :(
 oxford ']' = '⟧'
 oxford c   = c
+
+nopar :: Char -> Char
+nopar '(' = '['
+nopar ')' = ']'
+nopar c   = c
+
+-- want to have a Navigation2D that moves inside the
+-- BSP layout, namely that it takes the window
+-- in the direction, splits it, and puts the current window
+-- in the other split.
+--
+-- this makes a lot of sense with multiple workspaces
 
 navconf
   = navigation2DP def
       ("n","h","t","s")
       [("M-", windowGo),
        ("M-S-", windowSwap),
-       ("M-C-", \x b -> windowSwap x b >> windowGo (opp x) b)]
+       ("M-C-", \x b -> do sendMessage SelectNode
+                           windowGo x b
+                           sendMessage MoveNode
+       )
+       --("M-C-", windowToScreen)
+       --("M-C-", \x b -> windowSwap x b >> windowGo (opp x) b)
+       ]
       False
   $ defaults
   where
