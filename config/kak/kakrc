@@ -70,7 +70,7 @@ def -allow-override one-char-replace %{
   exec i
 }
 
-# silent: stop completion_extra_word_char
+# silent: stop completion
 map global insert <c-s> <c-o>
 # complete here
 map global insert <c-c> <c-x>
@@ -86,6 +86,13 @@ map global insert <c-h> <a-\;>
 # execute current selection(s)
 map global user x %{:eval -itersel %val{selection}<ret>}
 
+# insert with support for count
+def -allow-override -params 1 urk %{
+    exec -no-hooks \;i.<esc>hyd %arg{1} P %arg{1} Hs.<ret><a-space>c
+}
+map global user i %{:urk %val{count}<ret>}
+
+# less intrusive c
 map global normal c :replace-if-all-single-char<ret>
 
 map global user d %{ :delete-buffer<ret>:exec ga<ret> }
