@@ -237,6 +237,8 @@ map global normal v     :select-line-nicely<ret>
 map global normal V     X
 map global normal <A-v> <A-x>
 map global normal <A-V> <A-X>
+map global normal <c-v> '<a-:><a-;>K<a-H>'
+
 
 def -allow-override -params 1 setf %{
   set buffer filetype %arg{1}
