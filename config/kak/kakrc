@@ -390,11 +390,13 @@ def fzf -params 0..1 -allow-override %{ %sh{
     echo 'echo eval -client $kak_client "edit $1" | kak -p $kak_session' > $edit
     chmod 755 $edit
     (
-        urxvt -e sh -c "rg --ignore-file ~/.binignore -L --hidden --files $1 | fzf -e -m --preview=\"head -n 8 {}\" --preview-window=up:8 --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        # urxvt -e sh -c "rg --ignore-file ~/.binignore -L --hidden --files $1 | fzf -e -m --preview=\"head -n 8 {}\" --preview-window=up:8 --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        urxvt -e sh -c "rg --ignore-file ~/.binignore -L --hidden --files $1 | fzf -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
         done) < $tmp
         rm $tmp
+        rm $edit
     ) > /dev/null 2>&1 < /dev/null &
 } }
 
@@ -409,11 +411,12 @@ def bufzf -allow-override %{ %sh{
     chmod 755 $delbuf
     (
         urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
-            fzf -0 -1 -e '--preview=$setbuf {}' --preview-window=right:0 --expect ctrl-d > $tmp"
+            fzf -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
             ( read action
               read buf
               if [ "$action" == "ctrl-d" ]; then
+                  $setbuf $kak_bufname
                   $delbuf $buf
               else
                   $setbuf $buf
@@ -422,6 +425,8 @@ def bufzf -allow-override %{ %sh{
             $setbuf $kak_bufname
         fi
         rm $tmp
+        rm $setbuf
+        rm $delbuf
     ) > /dev/null 2>&1 < /dev/null &
 } }
 

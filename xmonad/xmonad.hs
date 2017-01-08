@@ -74,7 +74,7 @@ base2  = "#eee8d5"
 base3  = "#fdf6e3"
 
 myNormalBorderColor  = base02 -- "#073642"
-myFocusedBorderColor = green
+myFocusedBorderColor = cyan -- green
 
 dmenu :: String
 dmenu = "dmenu_run -fn \"Iosevka Term Slab-22:weight=50\" -l 6 -b"
