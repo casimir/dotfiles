@@ -1,8 +1,8 @@
 URxvt.scrollBar: false
-URxvt.font: xft:Iosevka Term Slab:size=16:weight=50
-URxvt.boldFont: xft:Iosevka Term Slab:size=16:weight=70
+URxvt.font: xft:Iosevka Term Slab:size=22:weight=50
+URxvt.boldFont: xft:Iosevka Term Slab:size=22:weight=70
 URxvt.perl-ext-common: font-size
-URxvt*dynamicColors: true
+URxvt*dynamicColors: on
 ! https://github.com/majutsushi/urxvt-font-sizes
 ! https://aur.archlinux.org/packages/urxvt-font-size-git/
 URxvt.resize-font.smaller: C-minus
@@ -14,9 +14,11 @@ URxvt.keysym.C-Up:     font-size:increase
 URxvt.keysym.C-Down:   font-size:decrease
 URxvt.keysym.C-equal:  font-size:reset
 URxvt.keysym.C-backslash:  font-size:show
-URxvt.font-size.step:  2
 URxvt.internalBorder: 0
 URxvt.externalBorder: 0
+URxvt.font-size.step: 1
+
+URxvt.iso14755:         False
 
 ! Solarized color scheme for the X Window System
 !
@@ -51,14 +53,14 @@ URxvt.externalBorder: 0
 
 ! Light
 
-! #define S_base03        #fdf6e3
-! #define S_base02        #eee8d5
-! #define S_base01        #93a1a1
-! #define S_base00        #839496
-! #define S_base0         #657b83
-! #define S_base1         #586e75
-! #define S_base2         #073642
-! #define S_base3         #002b36
+#define S_base03        #fdf6e3
+#define S_base02        #eee8d5
+#define S_base01        #93a1a1
+#define S_base00        #839496
+#define S_base0         #657b83
+#define S_base1         #586e75
+#define S_base2         #073642
+#define S_base3         #002b36
 
 
 ! To only apply colors to your terminal, for example, prefix
@@ -67,10 +69,11 @@ URxvt.externalBorder: 0
 ! URxvt*background:            S_base03
 
 URxvt.keysym.C-7: command:\033]10;S_base1\007\033]11;S_base03\007
-URxvt.keysym.C-8: command:\033]10;S_base02\007\033]11;S_base3\007
+URxvt.keysym.C-8: command:\033]10;S_base01\007\033]11;S_base3\007
 
 URxvt.intensityStyles:         false
 *background:              S_base03
+URxvt.borderColor:        S_base03
 *foreground:              S_base1
 *cursorColor:             S_base1
 *pointerColorBackground:  S_base01
