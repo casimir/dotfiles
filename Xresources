@@ -68,16 +68,16 @@ URxvt.iso14755:         False
 !
 ! URxvt*background:            S_base03
 
-URxvt.keysym.C-7: command:\033]10;S_base1\007\033]11;S_base03\007
+URxvt.keysym.C-7: command:\033]10;S_base2\007\033]11;S_base03\007
 URxvt.keysym.C-8: command:\033]10;S_base01\007\033]11;S_base3\007
 
 URxvt.intensityStyles:         false
 *background:              S_base03
 URxvt.borderColor:        S_base03
-*foreground:              S_base1
-*cursorColor:             S_base1
+*foreground:              S_base2
+*cursorColor:             S_base2
 *pointerColorBackground:  S_base01
-*pointerColorForeground:  S_base1
+*pointerColorForeground:  S_base2
 
 *color0:                  S_base02
 *color1:                  S_red

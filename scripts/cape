@@ -1,0 +1,19 @@
+#!/bin/sh
+killall xcape
+setxkbmap dvorak -option "compose:102"
+for file in $@; do
+    echo $file
+    xmodmap $1
+done
+xmodmap ~/.keymaps/swedish-aoe
+xmodmap -e 'clear Mod1'
+xmodmap -e 'clear Control'
+xmodmap -e 'keysym Escape = Control_R'
+xmodmap -e 'keysym Tab = Alt_R'
+xmodmap -e 'add Control = Control_R'
+xmodmap -e 'add Mod1 = Alt_L Alt_R'
+xmodmap -e 'keycode 255 = Escape Escape'
+xmodmap -e 'keycode 254 = Tab Tab'
+xcape -e 'Control_R=Escape;Alt_R=Tab;Super_L=Delete;Alt_L=BackSpace;Mode_switch=Return'
+xset r rate 150
+xset b off

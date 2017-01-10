@@ -1,5 +1,16 @@
 
-#if [[ "$HOSTNAME" == "gunka" ]]; then
+cd ~/.keymaps
+cape swapcapsesc
+xmodmap mode_switch_alt_gr
+if [[ "$HOSTNAME" == "gunka" ]]; then
+    lsusb | grep Kinesis >/dev/null && cape fix-gunka-advantage
+fi
+if [[ "$HOSTNAME" == "melocoton" ]]; then
+    lsusb | grep Kinesis >/dev/null && cape fix-advantage
+fi
+
+cd ~
+
     #xrandr | grep 'VGA. connected' && xrandr --output LVDS1 --off --output VGA1 --auto
     #xrandr | grep 'VGA. connected' && xrandr --output LVDS2 --off --output VGA2 --auto
     #sudo wpa_supplicant -c /etc/wpa_supplicant.conf -i wlp3s0 -Dnl80211 > .log-wpa &
@@ -14,12 +25,7 @@ fi
 
 eval `ssh-agent`
 
-setxkbmap dvorak -option "compose:102"
-xmodmap ~/.keymaps/swapcapsesc
-xmodmap ~/.keymaps/swedish-aoe
-xmodmap ~/.keymaps/mode_switch_alt_gr
-
-# xflux -l 57.70887 -g 11.97456
+xflux -l 57.70887 -g 11.97456
 
 xrdb .Xresources
 urxvt &
