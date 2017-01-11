@@ -343,10 +343,10 @@ def -allow-override my-window-setup %{
     set window completers filename:word=all
 
     # auto indent
-    hook window InsertChar \n %{ exec -draft -itersel K<a-&> }
+    hook -group copyindent window InsertChar \n %{ exec -draft -itersel K<a-&> }
 
     # Auto expand tabs into spaces
-    hook window InsertChar \t %{ exec -draft -itersel h@ }
+    hook -group expandtabs window InsertChar \t %{ exec -draft -itersel h@ }
 
     try %{ set global grepcmd 'rg -n' }
 }
