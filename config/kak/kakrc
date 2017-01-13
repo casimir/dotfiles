@@ -78,19 +78,29 @@ map global insert <c-c> <c-x>
 map global insert <c-t> <c-p>
 # raw insert, use vim binding
 map global insert <c-k> <c-v>
-# paste from normal yank register
-map global insert <c-p> '<c-r>"'
+# paste from normal yank register, readline key
+map global insert <c-y> '<c-r>"'
 # execute one normal kak command
 map global insert <c-h> <a-\;>
 
 # execute current selection(s)
 map global user x %{:eval -itersel %val{selection}<ret>}
 
-# insert with support for count
+# Insert with support for count
+# FIXME: does not work at EOL!
 def -allow-override -params 1 urk %{
-    exec -no-hooks \;i.<esc>hyd %arg{1} P %arg{1} Hs.<ret><a-space>c
+    exec -itersel -no-hooks \;i.<esc>hyd %arg{1} P %arg{1} Hs.<ret><a-space>
+    exec -no-hooks c
 }
-map global user i %{:urk %val{count}<ret>}
+def -allow-override -params 1 urkproxy %{ %sh{
+    if [[ $1 -eq 0 ]]; then
+        echo exec i;
+    else
+        echo urk $1
+    fi
+  }
+}
+map global normal i %{:urkproxy %val{count}<ret>}
 
 # less intrusive c
 map global normal c :replace-if-all-single-char<ret>
@@ -98,25 +108,24 @@ map global normal c :replace-if-all-single-char<ret>
 map global user d %{ :delete-buffer<ret>:exec ga<ret> }
 map global normal '#' :comment-line<ret>
 
-def -allow-override rm-slash-hl %{
+def -allow-override noh %{
   rmhl dynregex_\%reg{<slash>}
 }
 def -allow-override add-slash-hl %{
-  rm-slash-hl
+  noh
   try %{
     addhl dynregex '%reg{/}' 0:+u 1:CurWord 2:CurWord
   }
 }
 hook global NormalKey .*[/?NT].* add-slash-hl
 
-map global user u :rm-slash-hl<ret>
-map global normal <esc>   <space>:rm-slash-hl<ret>
+map global normal <esc>   <space>:noh<ret>
 map global normal <space> '\;'
 map global normal \;      ':'
 map global normal :       '<A-;>'
 map global normal _       'I<esc>'
 
-# american sign language bindings
+# american sign language bindings for EOL
 map global normal <A-s>   <A-l>
 map global normal <A-S>   <A-L>
 
@@ -125,11 +134,6 @@ alias global wqa write-all-quit
 alias global bd  delete-buffer
 alias global bd! delete-buffer!
 
-# my ugly ducklings
-map global goto p <esc>:bp<ret>
-map global goto n <esc>:bn<ret>
-map global goto 2 "<esc>:new-client-here<space>F1<ret>"
-map global goto 3 "<esc>:new-client-here<space>F2<ret>"
 
 def -allow-override -params 1 new-client-here %{
   %sh{
@@ -137,6 +141,7 @@ def -allow-override -params 1 new-client-here %{
   }
 }
 
+# dvorak movement
 map global normal t     j
 map global normal n     k
 map global normal s     l
@@ -168,6 +173,8 @@ map global normal <c-s> 'L<a-;>L<a-;>'
 # which toggles these maps
 # even though it makes sense to do them for just one command
 
+
+# deprecated
 map global goto t j
 map global goto n k
 map global goto s l
@@ -176,55 +183,120 @@ map global goto N k
 map global goto S l
 map global goto G e
 
+# []
+
+map global normal f [
+map global normal F {
+map global normal g ]
+map global normal G }
+
+# objects, objects...
+# shouldn't p be parens?
+# some upper-case variants:
+map global object P p
+map global object I i
+
 # next match
 map global normal N     n:add-slash-hl<ret>
 map global normal <A-N> N:print-selection-info<ret>:add-slash-hl<ret>
 map global normal T     <A-n>:add-slash-hl<ret>
 map global normal <A-T> <A-N>:print-selection-info<ret>:add-slash-hl<ret>
 
-map global normal x     :nop<ret>
 map global normal X     :nop<ret>
 map global normal <A-x> :nop<ret>
 
-map global normal x     Z
-map global normal <a-x> <A-Z>
+# jump and save sels
+map global user   x     Z
+map global normal x     <A-Z>
 map global normal j     z
-map global normal <a-j> <A-z>
+map global user   j     <A-z>
 
-map global normal J     <A-j>
-map global normal <A-J> <A-J>
+# J
+map global normal J     <A-J>
+map global user   J     <A-j>
 
+# FT
 map global normal k     t
 map global normal K     <a-t>
 map global normal <a-k> T
 map global normal <a-K> <a-T>
 
-map global normal f     f
-map global normal F     <a-f>
-map global normal <a-f> F
-map global normal <a-F> <a-F>
-
-map global user k <a-k>
-map global user K <a-K>
+map global normal q     f
+map global normal Q     <a-f>
+map global normal <a-q> F
+map global normal <a-Q> <a-F>
 
 # split and select
-map global user s s
-map global user t S
+map global user '/' s
+map global user s S
+map global user a :select-all-goto-closest<ret>:add-slash-hl<ret>
 map global normal l <A-s>
 map global normal L :nop<ret>
 map global normal <a-l> :nop<ret>
 map global normal <a-L> :nop<ret>
-map global user '/' :select-all-goto-closest<ret>:add-slash-hl<ret>
 
 def -allow-override select-all-goto-closest %{
 exec %sh{echo "\\%s<ret>:select-closest<space>$kak_cursor_line<ret>"}
 }
 
-# Put view commands on z instead than v
-map global view   z v
-map global view   s l
-map global normal z v
+def -allow-override -params 1 z-submap %{
+    decl -hidden int _zcount %arg{1}
+    on-key %{%sh{
+      case $kak_key in
+        z) echo exec vc ;;
+        t) echo exec vt ;;
+        b) echo exec vb ;;
+        c) echo exec gc ;;
+        B) echo exec gb ;;
+        T) echo exec gt ;;
+        g) if [ "$kak_opt__zcount" -eq 0 ]; then
+             echo exec gg;
+           else
+             echo exec $kak_opt__zcount g;
+           fi
+           ;;
+        m) echo exec ge ;;
+        k) echo exec '<A-K>' ;;
+        o) echo exec '<A-a>' ;;
+        i) echo exec '<A-i>' ;;
+        a) echo exec 'gh' ;;
+        A) echo exec 'Gh' ;;
+        e) echo exec 'gl' ;;
+        E) echo exec 'Gl' ;;
+        q) echo exec ':q<ret>' ;;
+        v) echo exec ':new-client-here<space>F1<ret>' ;;
+        n) echo exec ':new-client-here<space>F2<ret>' ;;
+        f) echo exec 'gf' ;;
+        1) echo exec 'ga' ;;
+        2) echo exec 'g.' ;;
+        *) echo echo "$kak_key unbound" ;;
+      esac
+    }}
+}
+
+map global normal z ':z-submap %val{count}<ret>'
 map global normal Z V
+
+map global user k <a-k>
+map global user K ':echo zk<ret>'
+
+# deprecated bindings
+map global goto l '<esc>:echo ze<ret>'
+map global goto h '<esc>:echo za<ret>'
+map global goto p '<esc>:echo bp<ret>'
+map global goto n '<esc>:echo bn<ret>'
+map global goto 2 '<esc>:echo zv<ret>'
+map global goto 3 '<esc>:echo zn<ret>'
+map global goto g '<esc>:echo zg<ret>'
+map global goto G '<esc>:echo zm<ret>'
+
+
+map global user . :jedi<space>goto<ret>
+map global user m :jedi<space>docstring<ret>
+map global user u :jedi<space>usages<ret>
+
+def -allow-override -docstring Q rec 'exec Q'
+def -allow-override -docstring q play 'exec q'
 
 def -allow-override select-line-nicely %{
     goto-line-start
@@ -249,7 +321,7 @@ map global normal <c-t> C
 map global normal <c-n> <a-C>''
 map global normal <a-C> <a-C>''
 map global normal C     :nop<ret>
-# will be used for other purposes later, vc for :select-line-nicely<ret>c
+
 map global normal d     d
                         # :move-forward-to-line-start<ret>
                         # if we remove a big chunk, we can go to line start
@@ -372,6 +444,7 @@ hook global BufCreate .*(bashrc|xinitrc).* %{
 hook global WinCreate .* my-window-setup
 
 hook global WinSetOption filetype=python %{
+    try jedi-start
     jedi-enable-autocomplete
 }
 
@@ -450,7 +523,8 @@ hook global WinSetOption filetype=(c|cpp) %{
     alias window lint-next clang-diagnostics-next
     %sh{
         if [ $PWD = "/home/dan/code/kakoune/src" ]; then
-           echo "set buffer clang_options '-std=c++14 -include-pch precomp-header.h.gch -DKAK_DEBUG'"
+           echo "set buffer clang_options '-std=c++14 -DKAK_DEBUG'"
+           # -include-pch precomp-header.h.gch -DKAK_DEBUG'"
         fi
     }
     #ycmd-enable-autocomplete
