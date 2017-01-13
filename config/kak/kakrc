@@ -149,9 +149,6 @@ map global normal <A-t> J
 map global normal <A-n> K
 map global normal S     L
 
-map global normal ( :goto-line-start<ret>
-map global normal <A-(> :extend-line-first-word<ret>
-
 def -allow-override goto-line-start %{ try %{ exec gh <a-k> \A\s <ret> <a-K> $ <ret> wl } }
 def -allow-override extend-line-first-word %{ try %{ exec Gh <a-k> \A\s <ret> WL } }
 
@@ -263,6 +260,8 @@ def -allow-override -params 1 z-submap %{
         A) echo exec 'Gh' ;;
         e) echo exec 'gl' ;;
         E) echo exec 'Gl' ;;
+        h) echo goto-line-start ;;
+        H) echo extend-line-first-word ;;
         q) echo exec ':q<ret>' ;;
         v) echo exec ':new-client-here<space>F1<ret>' ;;
         n) echo exec ':new-client-here<space>F2<ret>' ;;
