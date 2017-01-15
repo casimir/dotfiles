@@ -305,8 +305,18 @@ map global user w :w<ret>
 # reload kakrc and .kak when saving
 rmhooks global reload_kak
 hook -group reload_kak global BufWritePost (.*kakrc|.*\.kak) %{
-  source %val{buffile}
+  decl -hidden str reload_file
+  %sh{
+    tmp=$(mktemp /tmp/kak-source.XXXXXX)
+    echo set buffer reload_file $tmp
+  }
+  write %opt{reload_file}
+  %sh{
+    sed -i 's/^def \([^:]*\)$/def -allow-override \1/' $kak_opt_reload_file
+  }
+  source %opt{reload_file}
   echo Reloaded %val{bufname}
+  %sh{ rm $kak_opt_reload_file }
 }
 
 rmhooks global reload_xres
@@ -386,14 +396,29 @@ hook global InsertCompletionHide .* %{
     unmap window insert <backtab> <c-p>
 }
 
-def fzf -params 0..1 -allow-override %{ %sh{
+def fzf-file -params 0..1 %{
+    fzf "edit $1" "rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
+}
+
+def fzf-git -params 0..1 %{
+    fzf "edit $1" "git ls-tree --name-only -r HEAD %arg{1}"
+}
+
+def fzf-tag -params 0..1 %{
+    fzf "tag $1" "readtags -l | cut -f1 | sort -u"
+}
+
+def fzf-cd -params 0..1 %{
+    fzf "cd $1" "find %arg{1} -type d -path *.git -prune -o -type d -print"
+}
+
+def fzf -params 2 %{ %sh{
     tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
     edit=$(mktemp /tmp/kak-edit.XXXXXX)
-    echo 'echo eval -client $kak_client "edit $1" | kak -p $kak_session' > $edit
+    echo "echo eval -client $kak_client \"$1\" | kak -p $kak_session" > $edit
     chmod 755 $edit
     (
-        # urxvt -e sh -c "rg --ignore-file ~/.binignore -L --hidden --files $1 | fzf -e -m --preview=\"head -n 8 {}\" --preview-window=up:8 --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
-        urxvt -e sh -c "rg --ignore-file ~/.binignore -L --hidden --files $1 | fzf -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        urxvt -e sh -c "$2 | fzf -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
         done) < $tmp
@@ -402,7 +427,7 @@ def fzf -params 0..1 -allow-override %{ %sh{
     ) > /dev/null 2>&1 < /dev/null &
 } }
 
-def bufzf -allow-override %{ %sh{
+def bufzf %{ %sh{
     tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
     setbuf=$(mktemp /tmp/kak-setbuf.XXXXXX)
     delbuf=$(mktemp /tmp/kak-delbuf.XXXXXX)
@@ -436,8 +461,11 @@ def bufzf -allow-override %{ %sh{
 # rg \$ -n | fzf '-d:' --with-nth=3.. --preview 'echo {1}:{2}; tail -n +{2} {1}' --no-sort
 
 map global user b ":bufzf<ret>"
-map global user h "<esc>:fzf ~<ret>"
-map global user f "<esc>:fzf<ret>"
+map global user h "<esc>:fzf-file ~<ret>"
+map global user H "<esc>:fzf-cd ~<ret>"
+map global user f "<esc>:fzf-file<ret>"
+map global user g "<esc>:fzf-git<ret>"
+map global user c "<esc>:fzf-cd<ret>"
 map global goto o "<esc>:info ,f<ret>"
 map global goto / "<esc>:grep "
 
@@ -470,7 +498,7 @@ map global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
 map global goto q <esc><a-i>p,q
 # ^ similar to gqq in vim
 
-def -allow-override ide %{
+def ide %{
     rename-client main
     new rename-client docs
     new rename-client tools
@@ -478,4 +506,3 @@ def -allow-override ide %{
     set global toolsclient tools
     set global jumpclient main
 }
-
