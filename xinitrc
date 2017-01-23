@@ -11,14 +11,9 @@ fi
 
 cd ~
 
-    #xrandr | grep 'VGA. connected' && xrandr --output LVDS1 --off --output VGA1 --auto
-    #xrandr | grep 'VGA. connected' && xrandr --output LVDS2 --off --output VGA2 --auto
-    #sudo wpa_supplicant -c /etc/wpa_supplicant.conf -i wlp3s0 -Dnl80211 > .log-wpa &
-    #sudo dhcpcd wlp3s0 > .log-dhcp &
-    #disown -a
-    # lsusb | grep Kinesis >/dev/null && gunka-advantage
-#fi
-
+if [[ "$HOSTNAME" == "gunka" ]]; then
+    xrandr | grep 'VGA. connected' && xrandr --output LVDS1 --auto --output VGA1 --auto --right-of LVDS1
+fi
 if [[ "$HOSTNAME" == "melocoton" ]]; then
     xrandr | grep 'DP1-2 connected' && xrandr --output eDP1 --off --output DP1-2 --auto
 fi

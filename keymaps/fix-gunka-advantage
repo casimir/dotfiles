@@ -9,7 +9,8 @@ keycode 66 = Escape
 
 keycode 37 = Super_L
 keycode 64 = Control_L
-keycode 134 = Alt_L
+keycode 119 = Alt_L
+keycode 134 = Delete
 keycode 105 = Mode_switch
 
 add Lock = Caps_Lock
