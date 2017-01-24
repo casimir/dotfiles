@@ -7,9 +7,10 @@ for file in $@; do
 done
 xmodmap ~/.keymaps/swedish-aoe
 xmodmap -e 'clear Control'
-xmodmap -e 'keysym Tab = Control_R'
+xmodmap -e 'keycode 23 = Control_R'
 xmodmap -e 'add Control = Control_R'
 xmodmap -e 'keycode 254 = Tab Tab'
+xmodmap -e 'keycode 49 = grave asciitilde Tab ISO_Left_Tab'
 if [[ $(lsusb | grep -i kinesis) ]]; then
     xcape -e 'Control_R=Tab;Alt_L=Delete'
 else
