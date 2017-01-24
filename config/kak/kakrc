@@ -490,7 +490,7 @@ def fzf -params 2 %{ %sh{
     echo "echo eval -client $kak_client \"$1\" | kak -p $kak_session" > $edit
     chmod 755 $edit
     (
-        urxvt -e sh -c "$2 | fzf -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        urxvt -e sh -c "$2 | fzf --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
         done) < $tmp
@@ -510,7 +510,7 @@ def bufzf %{ %sh{
     chmod 755 $delbuf
     (
         urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
-            fzf -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
+            fzf --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
             ( read action
               read buf

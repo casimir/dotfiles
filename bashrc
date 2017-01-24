@@ -180,7 +180,7 @@ PERL_MM_OPT="INSTALL_BASE=/home/dan/perl5"; export PERL_MM_OPT;
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_COMMAND="rg --files"
-export FZF_DEFAULT_OPTS="-m -e"
+export FZF_DEFAULT_OPTS="-m -e --color=16"
 
 (cd $HOME
 [ ! -f dircolors.ansi-dark ] && wget https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark
