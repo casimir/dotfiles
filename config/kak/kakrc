@@ -203,8 +203,8 @@ map global normal X     :nop<ret>
 map global normal <A-x> :nop<ret>
 
 # jump and save sels
-map global user   x     Z
-map global normal x     <A-Z>
+map global normal x     Z
+map global user   x     <A-Z>
 map global normal j     z
 map global user   j     <A-z>
 
@@ -579,3 +579,4 @@ def ide %{
     set global toolsclient tools
     set global jumpclient main
 }
+
