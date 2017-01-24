@@ -1,16 +1,16 @@
 set global ui_options ncurses_assistant=none
 
 # make Alt-commands available as user commands (unless they are shadowed below)
-%sh{
-python - <<PY
-import string
-for i in string.printable[:95]:
-  if i != '\\\\':
-    lhs = repr(i)
-    rhs = repr('<A-'+i+'>') if i != '>' else '<a-lt>'
-    print('map global user -- ' + lhs + ' ' + rhs)
-PY
-}
+# %sh{
+# python - <<PY
+# import string
+# for i in string.printable[:95]:
+#   if i != '\\\\':
+#     lhs = repr(i)
+#     rhs = repr('<A-'+i+'>') if i != '>' else '<a-lt>'
+#     print('map global user -- ' + lhs + ' ' + rhs)
+# PY
+# }
 
 map global user \; <A-:>
 map global user 8 *:add-slash-hl<ret>
@@ -128,6 +128,10 @@ map global normal _       'I<esc>'
 # american sign language bindings for EOL
 map global normal <A-s>   <A-l>
 map global normal <A-S>   <A-L>
+map global normal <A-h>   gi
+map global normal <A-H>   Gi
+map global normal <A-a>   <A-h>
+map global normal <A-A>   <A-H>
 
 alias global colo colorscheme
 alias global wqa write-all-quit
@@ -142,12 +146,37 @@ def -allow-override -params 1 new-client-here %{
 }
 
 # dvorak movement
-map global normal t     j
-map global normal n     k
-map global normal s     l
-map global normal <A-t> J
-map global normal <A-n> K
-map global normal S     L
+map global normal t j
+map global normal n k
+map global normal s l
+map global normal T J
+map global normal N K
+map global normal S L
+
+map global goto t j
+map global goto n k
+map global goto s l
+map global goto T j
+map global goto N k
+map global goto S l
+map global goto G e
+
+map global goto a i
+
+map global view t j
+map global view n k
+map global view s l
+map global view T j
+map global view N k
+map global view S l
+map global view G e
+
+map global view z c
+map global view u t
+map global view d b
+
+map global normal <a-g> g
+map global normal <a-G> G
 
 def -allow-override goto-line-start %{ try %{ exec gh <a-k> \A\s <ret> <a-K> $ <ret> wl } }
 def -allow-override extend-line-first-word %{ try %{ exec Gh <a-k> \A\s <ret> WL } }
@@ -160,32 +189,6 @@ def -allow-override move-forward-to-line-start %{
     }
 }
 
-# worm-movements: moving both anchors
-map global normal <c-h> 'H<a-;>H<a-;>'
-map global normal <c-s> 'L<a-;>L<a-;>'
-# worm could also go "through text" text:
-# Ysdjhj:<space>Pj
-# this would be C-t M-t in emacs on speed, especially with <C-WEB> <C-NT>
-# this should probably be a mini mode, a worm mode
-# which toggles these maps
-# even though it makes sense to do them for just one command
-
-
-# deprecated
-map global goto t j
-map global goto n k
-map global goto s l
-map global goto T j
-map global goto N k
-map global goto S l
-map global goto G e
-
-# []
-
-map global normal f [
-map global normal F {
-map global normal g ]
-map global normal G }
 
 # objects, objects...
 # shouldn't p be parens?
@@ -194,10 +197,10 @@ map global object P p
 map global object I i
 
 # next match
-map global normal N     n:add-slash-hl<ret>
-map global normal <A-N> N:print-selection-info<ret>:add-slash-hl<ret>
-map global normal T     <A-n>:add-slash-hl<ret>
-map global normal <A-T> <A-N>:print-selection-info<ret>:add-slash-hl<ret>
+map global normal g n:add-slash-hl<ret>
+map global normal G N:print-selection-info<ret>:add-slash-hl<ret>
+map global normal f <A-n>:add-slash-hl<ret>
+map global normal F <A-N>:print-selection-info<ret>:add-slash-hl<ret>
 
 map global normal X     :nop<ret>
 map global normal <A-x> :nop<ret>
@@ -232,6 +235,9 @@ map global normal L :nop<ret>
 map global normal <a-l> :nop<ret>
 map global normal <a-L> :nop<ret>
 
+map global normal <a-o> <a-a>
+map global normal <a-O> <a-A>
+
 def -allow-override select-all-goto-closest %{
 exec %sh{echo "\\%s<ret>:select-closest<space>$kak_cursor_line<ret>"}
 }
@@ -243,32 +249,31 @@ def -allow-override -params 1 z-submap %{
         z) echo exec vc ;;
         t) echo exec vt ;;
         b) echo exec vb ;;
-        c) echo exec gc ;;
-        B) echo exec gb ;;
+        Z) echo exec gc ;;
         T) echo exec gt ;;
+        B) echo exec gb ;;
         g) if [ "$kak_opt__zcount" -eq 0 ]; then
              echo exec gg;
            else
              echo exec $kak_opt__zcount g;
            fi
            ;;
-        m) echo exec ge ;;
+        G) if [ "$kak_opt__zcount" -eq 0 ]; then
+             echo exec Gg;
+           else
+             echo exec $kak_opt__zcount G;
+           fi
+           ;;
         k) echo exec '<A-K>' ;;
         o) echo exec '<A-a>' ;;
         i) echo exec '<A-i>' ;;
-        a) echo exec 'gh' ;;
-        A) echo exec 'Gh' ;;
-        e) echo exec 'gl' ;;
-        E) echo exec 'Gl' ;;
-        h) echo goto-line-start ;;
-        H) echo extend-line-first-word ;;
         q) echo exec ':q<ret>' ;;
         v) echo exec ':new-client-here<space>F1<ret>' ;;
-        n) echo exec ':new-client-here<space>F2<ret>' ;;
-        f) echo exec 'gf' ;;
-        1) echo exec 'ga' ;;
-        2) echo exec 'g.' ;;
-        *) echo echo "$kak_key unbound" ;;
+        w) echo exec ':new-client-here<space>F2<ret>' ;;
+        [AEHS])   echo exec G; echo exec -with-maps $kak_key ;;
+        [aehsfa]) echo exec g; echo exec -with-maps $kak_key ;;
+        m) echo exec V ;;
+        *) echo echo "$kak_key" unbound ;;
       esac
     }}
 }
@@ -280,15 +285,10 @@ map global user k <a-k>
 map global user K ':echo zk<ret>'
 
 # deprecated bindings
-map global goto l '<esc>:echo ze<ret>'
-map global goto h '<esc>:echo za<ret>'
 map global goto p '<esc>:echo bp<ret>'
 map global goto n '<esc>:echo bn<ret>'
 map global goto 2 '<esc>:echo zv<ret>'
-map global goto 3 '<esc>:echo zn<ret>'
-map global goto g '<esc>:echo zg<ret>'
-map global goto G '<esc>:echo zm<ret>'
-
+map global goto 3 '<esc>:echo zw<ret>'
 
 map global user . :jedi<space>goto<ret>
 map global user m :jedi<space>docstring<ret>
@@ -317,8 +317,7 @@ def -allow-override -params 1 setf %{
 
 # make new selections above and under
 map global normal <c-t> C
-map global normal <c-n> <a-C>''
-map global normal <a-C> <a-C>''
+map global normal <c-n> <a-C>
 map global normal C     :nop<ret>
 
 map global normal d     d
@@ -490,6 +489,7 @@ def fzf -params 2 %{ %sh{
     echo "echo eval -client $kak_client \"$1\" | kak -p $kak_session" > $edit
     chmod 755 $edit
     (
+        # todo: expect ctrl-[vw] to make execute in new windows instead
         urxvt -e sh -c "$2 | fzf --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
@@ -509,6 +509,7 @@ def bufzf %{ %sh{
     chmod 755 $setbuf
     chmod 755 $delbuf
     (
+        # todo: expect ctrl-[vw] to make execute in new windows instead
         urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
             fzf --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
@@ -533,8 +534,8 @@ def bufzf %{ %sh{
 # rg \$ -n | fzf '-d:' --with-nth=3.. --preview 'echo {1}:{2}; tail -n +{2} {1}' --no-sort
 
 map global user b ":bufzf<ret>"
-map global user h "<esc>:fzf-file ~<ret>"
-map global user H "<esc>:fzf-cd ~<ret>"
+map global user F "<esc>:fzf-file ~<ret>"
+map global user C "<esc>:fzf-cd ~<ret>"
 map global user f "<esc>:fzf-file<ret>"
 map global user g "<esc>:fzf-git<ret>"
 map global user c "<esc>:fzf-cd<ret>"
