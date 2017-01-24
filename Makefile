@@ -4,7 +4,7 @@ ln = ln --symbolic --force -T
 
 # ----------------------------------------------------------------------------
 
-dotted_sources = $(filter-out config scripts Makefile README.md,$(wildcard *))
+dotted_sources = $(filter-out config scripts Makefile README.md UNLICENSE,$(wildcard *))
 dotted_targets = $(addprefix ~/.,$(dotted_sources))
 
 ~/.%: %
