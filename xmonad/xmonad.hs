@@ -77,7 +77,7 @@ myNormalBorderColor  = base02 -- "#073642"
 myFocusedBorderColor = cyan -- green
 
 dmenu :: String
-dmenu = "dmenu_run -fn \"Iosevka Term Slab-22:weight=50\" -l 6 -b"
+dmenu = "dmenu_run -fn \"Iosevka Slab-22:weight=50\" -l 6 -b"
      ++ concat [ " -" ++ opt ++ " " ++ show color
                | (opt,color) <-
                      [ ("nb", base02)

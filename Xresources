@@ -1,6 +1,6 @@
 URxvt.scrollBar: false
-URxvt.font: xft:Iosevka Term Slab:size=22:weight=50
-URxvt.boldFont: xft:Iosevka Term Slab:size=22:weight=70
+URxvt.font: xft:Iosevka Slab:size=22:weight=50
+URxvt.boldFont: xft:Iosevka Slab:size=22:weight=70
 URxvt.perl-ext-common: font-size
 URxvt*dynamicColors: on
 ! https://github.com/majutsushi/urxvt-font-sizes

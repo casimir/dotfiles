@@ -1,4 +1,4 @@
-Config { font = "xft:Iosevka Term Slab-12"
+Config { font = "xft:Iosevka-12"
        , additionalFonts = []
        , borderColor = "#1c1c1c"
        , border = TopB
