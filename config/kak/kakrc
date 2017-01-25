@@ -119,8 +119,8 @@ def -allow-override add-slash-hl %{
 }
 hook global NormalKey .*[/?NT].* add-slash-hl
 
-map global normal <esc>   <space>:noh<ret>
-map global normal <space> '\;'
+map global normal <space> <space>:noh<ret>
+map global normal <esc>   '\;'
 map global normal \;      ':'
 map global normal :       '<A-;>'
 map global normal _       'I<esc>'
@@ -246,10 +246,10 @@ def -allow-override -params 1 z-submap %{
     decl -hidden int _zcount %arg{1}
     on-key %{%sh{
       case $kak_key in
-        z) echo exec vc ;;
+        [cz]) echo exec vc ;;
         t) echo exec vt ;;
         b) echo exec vb ;;
-        Z) echo exec gc ;;
+        [CZ]) echo exec gc ;;
         T) echo exec gt ;;
         B) echo exec gb ;;
         g) if [ "$kak_opt__zcount" -eq 0 ]; then
@@ -490,7 +490,7 @@ def fzf -params 2 %{ %sh{
     chmod 755 $edit
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "$2 | fzf --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        urxvt -e sh -c "xdotool key alt+F1; $2 | fzf --reverse --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
         done) < $tmp
@@ -510,8 +510,8 @@ def bufzf %{ %sh{
     chmod 755 $delbuf
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
-            fzf --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
+        urxvt -e sh -c "xdotool key alt+F1; echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
+            fzf --reverse --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
             ( read action
               read buf
