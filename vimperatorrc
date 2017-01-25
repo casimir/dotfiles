@@ -7,6 +7,8 @@ noremap , F
 noremap t 6j
 noremap n 6k
 noremap a <C-o>
+noremap zg gg
+noremap ze G
 noremap N n
 noremap T N
 noremap + zz

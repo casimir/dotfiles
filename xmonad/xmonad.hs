@@ -336,7 +336,7 @@ navconf
        --("M-C-", windowToScreen)
        --("M-C-", \x b -> windowSwap x b >> windowGo (opp x) b)
        ]
-      False
+      True
   $ defaults
   where
   opp U = D
