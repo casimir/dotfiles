@@ -26,8 +26,8 @@ onpar() {
 }
 
 export HISTCONTROL=ignorespace:ignoreboth
-export HISTFILESIZE=40000000
-export HISTSIZE=10000
+export HISTFILESIZE=4000000000
+export HISTSIZE=1000000
 export PROMPT_COMMAND="history -a"
 shopt -s histappend
 
