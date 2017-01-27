@@ -1,0 +1,30 @@
+nn g n
+nn f t
+
+nn t 3j
+nn n 3k
+
+nn zg gg
+nn ze G
+
+nn + zz
+nn = zI
+nn \- zO
+
+cn <C-p> <Up>
+cn <C-n> <Down>
+
+nn e t
+nn E T
+nn . f
+nn , F
+nn Y ;y
+
+nn ; :
+nn : ;
+
+nn a <C-o>
+nn h <C-o>
+nn s <C-i>
+
+set webinspector=true
