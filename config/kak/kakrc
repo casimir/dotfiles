@@ -117,10 +117,10 @@ def -allow-override add-slash-hl %{
     addhl dynregex '%reg{/}' 0:+u 1:CurWord 2:CurWord
   }
 }
-hook global NormalKey .*[/?NT].* add-slash-hl
+hook global NormalKey .*[/?nN].* add-slash-hl
 
-map global normal <space> <space>:noh<ret>
-map global normal <esc>   '\;'
+map global normal <space> <space>
+map global normal <esc>   '\;:noh<ret>'
 map global normal \;      ':'
 map global normal :       '<A-;>'
 map global normal _       'I<esc>'
@@ -242,44 +242,84 @@ def -allow-override select-all-goto-closest %{
 exec %sh{echo "\\%s<ret>:select-closest<space>$kak_cursor_line<ret>"}
 }
 
-def -allow-override -params 1 z-submap %{
-    decl -hidden int _zcount %arg{1}
-    on-key %{%sh{
-      case $kak_key in
-        [cz]) echo exec vc ;;
-        t) echo exec vt ;;
-        b) echo exec vb ;;
-        [CZ]) echo exec gc ;;
-        T) echo exec gt ;;
-        B) echo exec gb ;;
-        g) if [ "$kak_opt__zcount" -eq 0 ]; then
-             echo exec gg;
-           else
-             echo exec $kak_opt__zcount g;
-           fi
-           ;;
-        G) if [ "$kak_opt__zcount" -eq 0 ]; then
-             echo exec Gg;
-           else
-             echo exec $kak_opt__zcount G;
-           fi
-           ;;
-        k) echo exec '<A-K>' ;;
-        o) echo exec '<A-a>' ;;
-        i) echo exec '<A-i>' ;;
-        q) echo exec ':q<ret>' ;;
-        v) echo exec ':new-client-here<space>F1<ret>' ;;
-        w) echo exec ':new-client-here<space>F2<ret>' ;;
-        [AEHS])   echo exec G; echo exec -with-maps $kak_key ;;
-        [aehsfa]) echo exec g; echo exec -with-maps $kak_key ;;
-        m) echo exec V ;;
-        *) echo echo "$kak_key" unbound ;;
-      esac
-    }}
+def Z-submap %{
+    info Z
+    on-key %{z-handle %val{key} 0 true}
 }
 
-map global normal z ':z-submap %val{count}<ret>'
-map global normal Z V
+def -params 1 z-submap %{
+    decl -hidden int zcount %arg{1}
+    info z
+    on-key %{z-handle %val{key} %opt{zcount} false}
+}
+
+def z-handle -params 3 %{
+  %sh{
+    repeat=$3
+    z=""
+    Z=""
+    case "$1" in
+      h) Z="exec vh"; z="exec gi" ;;
+      t) Z="exec vj"; z="exec vt" ;;
+      n) Z="exec vk"; z="exec ge" ;;
+      s) Z="exec vl"  ;;
+
+      N) echo exec Ge ;;
+
+      c) echo exec gc ;;
+      T) echo exec gt ;;
+      B) echo exec gb ;;
+
+      z) echo exec vc ;;
+      b) echo exec vb ;;
+
+      d) echo exec '<c-f>gc' ;;
+      f) echo exec '<c-b>gc' ;;
+      D) echo exec '<c-d>gc' ;;
+      F) echo exec '<c-u>gc' ;;
+
+      g) Z="exec nvc"
+         if [ "$2" -eq 0 ]; then
+           z="exec gg";
+         else
+           z="exec $kak_opt_zcount g";
+         fi
+         ;;
+      G) Z="exec <a-n>vc"
+         if [ "$2" -eq 0 ]; then
+           z="exec Gg";
+         else
+           z="exec $kak_opt_zcount G";
+         fi
+         ;;
+      e) echo exec gl ;;
+      E) echo exec gL ;;
+      a) echo exec gh ;;
+      A) echo exec gH ;;
+      k) echo exec '<A-K>' ;;
+      o) echo exec '<A-a>' ;;
+      i) echo exec '<A-i>' ;;
+      q) echo exec ':q<ret>' ;;
+      v) echo exec ':new-client-here<space>F1<ret>' ;;
+      w) echo exec ':new-client-here<space>F2<ret>' ;;
+      F) echo exec gf ;;
+      u) echo exec 'g.' ;;
+      '`') echo exec 'ga' ;;
+      m) repeat="true" ;;
+      *) repeat="false" ;;
+    esac
+    if [[ "$repeat" == "true" ]]; then
+      echo "$Z"
+      echo info Z
+      echo on-key %{z-handle %val{key} 0 true}
+    else
+      echo "$z"
+    fi
+  }
+}
+
+map global normal z ':z-submap<space>%val{count}<ret>'
+map global normal Z ':Z-submap<ret>'
 
 map global user k <a-k>
 map global user K ':echo zk<ret>'
@@ -542,7 +582,7 @@ map global user c "<esc>:fzf-cd<ret>"
 map global goto o "<esc>:info ,f<ret>"
 map global goto / "<esc>:grep "
 
-hook global BufOpenFifo '\*grep\*' %{ map global user g ':grep-next<ret>' }
+hook global BufOpenFifo '\*grep\*' %{ map global user n ':grep-next<ret>' }
 
 hook global WinSetOption filetype=(c|cpp) %{
     clang-enable-autocomplete
