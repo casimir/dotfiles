@@ -252,20 +252,20 @@ def z-handle -params 3 %{
       n) Z="exec vk"; z="exec ge" ;;
       s) Z="exec vl"  ;;
 
+      c) echo exec vc ;;
+      b) echo exec vb ;;
       N) echo exec Ge ;;
 
-      c) echo exec gc ;;
-      T) echo exec gt ;;
-      B) echo exec gb ;;
+      6) echo exec gt ;;
+      7) echo exec gc ;;
+      8) echo exec gb ;;
 
-      z) echo exec vc ;;
-      b) echo exec vb ;;
+      w) echo exec '<c-f>gc' ;;
+      v) echo exec '<c-b>gc' ;;
+      W) echo exec '<c-d>gc' ;;
+      V) echo exec '<c-u>gc' ;;
 
-      d) echo exec '<c-f>gc' ;;
-      f) echo exec '<c-b>gc' ;;
-      D) echo exec '<c-d>gc' ;;
-      F) echo exec '<c-u>gc' ;;
-
+      f) Z="exec <a-n>vc" ;;
       g) Z="exec nvc"
          if [ "$2" -eq 0 ]; then
            z="exec gg";
@@ -273,11 +273,10 @@ def z-handle -params 3 %{
            z="exec $kak_opt_zcount g";
          fi
          ;;
-      G) Z="exec <a-n>vc"
-         if [ "$2" -eq 0 ]; then
-           z="exec Gg";
+      G) if [ "$2" -eq 0 ]; then
+           echo exec Gg;
          else
-           z="exec $kak_opt_zcount G";
+           echo "exec $kak_opt_zcount G";
          fi
          ;;
       e) echo exec gl ;;
@@ -288,13 +287,16 @@ def z-handle -params 3 %{
       o) echo exec '<A-a>' ;;
       i) echo exec '<A-i>' ;;
       q) echo exec ':q<ret>' ;;
-      v) echo exec ':new-client-here<space>F1<ret>' ;;
-      w) echo exec ':new-client-here<space>F2<ret>' ;;
+
+      r) echo exec ':new-client-here<space>F1<ret>' ;;
+      R) echo exec ':new-client-here<space>F2<ret>' ;;
+
       F) echo exec gf ;;
       u) echo exec 'g.' ;;
       '`') echo exec 'ga' ;;
       m) repeat="true" ;;
       *) repeat="false" ;;
+      # d still unused
     esac
     if [[ "$repeat" == "true" ]]; then
       echo "$Z"
