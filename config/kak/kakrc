@@ -1,75 +1,177 @@
+# Dvorak movement, dodging empty lines
+map global normal t 'j:while-empty j<ret>'
+map global normal n 'k:while-empty k<ret>'
+map global normal T 'J:while-empty J<ret>'
+map global normal N 'K:while-empty K<ret>'
+map global normal s l
+map global normal S L
 
+# Make new selections above and under, left and right
+map global normal <c-t> C
+map global normal <c-n> <a-C>
+map global normal <c-h> '"iZh"i<a-z>'
+map global normal <c-s> '"iZl"i<a-z>'
+
+# Select paragraphs (Use <a-i>p and repeat with full-line-ifte?)
+map global normal <a-t> ]p
+map global normal <a-T> }p
+map global normal <a-n> [p
+map global normal <a-N> {p
+
+# Extend selections left and right
+map global normal <A-s>   <A-l>
+map global normal <A-S>   <A-L>
+map global normal <A-h>   gi
+map global normal <A-H>   Gi
+map global normal <A-a>   <A-h>
+map global normal <A-A>   <A-H>
+
+# Outer object <a-[oO]>
+map global normal <a-o> <a-a>
+map global normal <a-O> <a-A>
+
+# Remove empty lines above and under
+map global normal x ':remove-adjacent-empty-line<ret>'
+map global normal X ':remove-all-adjacent-empty-lines<ret>'
+
+# Delete current line(s)
+map global normal D     <a-x>dgi
+
+# g/f: next/prev match
+map global normal g n
+map global normal G N:print-selection-info<ret>
+map global normal f <A-n>
+map global normal F <A-N>:print-selection-info<ret>
+
+# marks submap
+map global normal j :marks<ret>
+
+# J a'la vim
+map global normal J     <A-J>
+map global user   j     <A-j>
+
+# Overwrite a'la vim R
+map global normal R :overwrite<ret>
+
+# F/T on Q/K, also swap alt/shift
+map global normal k     t
+map global normal K     <a-t>
+map global normal <a-k> T
+map global normal <a-K> <a-T>
+map global normal q     f
+map global normal Q     <a-f>
+map global normal <a-q> F
+map global normal <a-Q> <a-F>
+
+# Split and select
+map global user '/' s
+map global user s S
+map global user a :select-all-focus-closest<ret>
+map global normal l <A-s>
+
+# Keep selections
+map global user k <a-k>
+map global user K ':echo zk<ret>'
+
+# Macros
+def -docstring Q rec  'exec Q'
+def -docstring q play 'exec q'
+
+# Line selection commands on v as in vim's visual mode
+map global normal v     :line-select<ret>
+map global normal V     X
+map global normal <A-v> <A-x>
+map global normal <A-V> <A-X>
+map global normal <c-v> :line-new-cursor<ret>
+
+# Pretend ; is :
+map global normal \; :
+
+# Selection fiddling
+map global normal <space> <space>
+map global normal <esc>   '\;:noh<ret>'
+map global normal :       '<A-;>'
+map global normal * lbhe*
+map global user   8 *
+
+# Rotate selections on ' and "
+map global normal "'" "':print-selection-info<ret>"
+map global normal '"' "<A-'>:print-selection-info<ret>"
+
+# Register
+map global normal -- - '"'
+
+# Paste and replace
+map global normal <a-r> R
+
+# Xclipboard
+map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
+map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
+map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
+
+# Sync %reg{"} with X clipboard, from alexherbo2
+hook global -group kakrc NormalKey y %{ nop %sh{
+  printf %s "$kak_reg_dquote" | xsel --input --clipboard
+  printf %s "$kak_reg_dquote" | xsel --input --primary
+}}
+
+# Execute current selection(s)
+map global user x %{:eval -itersel %val{selection}<ret>}
+
+# Write and close buffer
+map global user w :w<ret>
+map global user d %{ :delete-buffer<ret>:exec ga<ret> }
+
+# Comment line
+map global normal '#' :comment-line<ret>
+
+# fzf
+map global user b ":bufzf<ret>"
+map global user f "<esc>:fzf-file<ret>"
+map global user F "<esc>:fzf-file ~<ret>"
+map global user c "<esc>:fzf-cd<ret>"
+map global user C "<esc>:fzf-cd ~<ret>"
+map global user g "<esc>:fzf-git<ret>"
+
+# Format using fmt
+map global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+
+# Object map
+# Some upper-case variants:
+map global object P p
+map global object I i
+
+# Aliases
+alias global colo colorscheme
+alias global wqa  write-all-quit
+alias global bd   delete-buffer
+alias global bd!  delete-buffer!
+alias global rg   grep
+def -params 1 setf %{set buffer filetype %arg{1}}
+
+# Math prompt, from alexherbo2
+def prompt_math %{
+    prompt 'math ' %{ exec a %val{text} <esc> | bc <ret> }
+}
+map global normal = :prompt_math<ret>
+
+# Auto-mkdir when saving buffer to file, from alexherbo2
+hook global -group kakrc BufWritePre .* %{ nop %sh{
+  dir=$(dirname $kak_buffile)
+  [ -d $dir ] || mkdir --parents $dir
+}}
+
+# Remove spaces when saving
+hook global -group kakrc BufWritePre .* %{
+  try %{ exec -no-hooks -draft '%s\h+$<ret>d' }
+}
+
+# Options
 set global ui_options ncurses_assistant=none
-
-# make Alt-commands available as user commands (unless they are shadowed below)
-# %sh{
-# python - <<PY
-# import string
-# for i in string.printable[:95]:
-#   if i != '\\\\':
-#     lhs = repr(i)
-#     rhs = repr('<A-'+i+'>') if i != '>' else '<a-lt>'
-#     print('map global user -- ' + lhs + ' ' + rhs)
-# PY
-# }
-
-map global user \; <A-:>
-map global user 8 *:add-slash-hl<ret>
-map global normal * "lbhe*:add-slash-hl<ret>"
-
+set global tabstop 4
 set global idle_timeout 50
 
-def -allow-override -params 1 select-closest %{ %sh{
-python - $1 $kak_selection_desc $kak_selections_desc <<PY
-import sys
-goto, current, all = sys.argv[1:]
-all = all.split(':')
-def key(t):
-    desc = t[1]
-    return abs(int(goto) - int(desc.split('.')[0]))
-best_index, _ = min(enumerate(all), key=key)
-current_index = all.index(current)
-rots = best_index - current_index
-if rots < 0: rots += len(all)
-if rots != 0:
-    print("exec {}'".format(rots))
-print("print-selection-info")
-PY
-}}
-
-def -allow-override print-selection-info %{ %sh{
-IFS=':' read -ra sels <<< "$kak_selections_desc"
-for i in "${!sels[@]}"; do
-   if [[ "${sels[$i]}" = "${kak_selection_desc}" ]]; then
-       echo "echo selection $((i+1))/${#sels[@]}";
-       break;
-   fi
-done
-}}
-
-def -allow-override replace-if-all-single-char %{ %sh{
-python - $kak_selections_desc <<PY
-import sys
-for desc in sys.argv[1].split(':'):
-    anchor, cursor = desc.split(',')
-    if anchor != cursor:
-        print("exec c")
-        break
-else:
-    print("one-char-replace")
-PY
-}}
-
-def -allow-override one-char-replace %{
-  hook window -group one-char-replace InsertChar .* %{
-    exec <right><backspace>
-    remove-hooks window one-char-replace
-  }
-  hook window -group one-char-replace InsertEnd .* %{
-   remove-hooks window one-char-replace
-  }
-  exec i
-}
+# Insert mode
 
 # silent: stop completion
 map global insert <c-s> <c-o>
@@ -84,409 +186,25 @@ map global insert <c-y> '<c-r>"'
 # execute one normal kak command
 map global insert <c-h> <a-\;>
 
-# execute current selection(s)
-map global user x %{:eval -itersel %val{selection}<ret>}
-
-def -allow-override -params 1 same-point-insert %{
-  exec -no-hooks -draft a.<esc>\; \"id
-  exec -no-hooks <a-:><a-\;>\; %arg{1} \"iP %arg{1} H <a-:>H s.<ret> c
-}
-def -allow-override -params 1 same-point-insert-flexible %{ %sh{
-    if [[ $1 -eq 0 ]]; then
-        echo exec i;
-    else
-        echo same-point-insert $1
-    fi
-  }
-}
-map global normal i %{:same-point-insert-flexible %val{count}<ret>}
-
-# less intrusive c
-map global normal c :replace-if-all-single-char<ret>
-
-map global user d %{ :delete-buffer<ret>:exec ga<ret> }
-map global normal '#' :comment-line<ret>
-
-def -allow-override noh %{
-  rmhl dynregex_\%reg{<slash>}
-}
-def -allow-override add-slash-hl %{
-  noh
-  try %{
-    addhl dynregex '%reg{/}' 0:+u 1:CurWord 2:CurWord
-  }
-}
-hook global NormalKey .*[/?nN].* add-slash-hl
-
-map global normal <space> <space>
-map global normal <esc>   '\;:noh<ret>'
-map global normal \;      ':'
-map global normal :       '<A-;>'
-map global normal _       'I<esc>'
-
-# american sign language bindings for EOL
-map global normal <A-s>   <A-l>
-map global normal <A-S>   <A-L>
-map global normal <A-h>   gi
-map global normal <A-H>   Gi
-map global normal <A-a>   <A-h>
-map global normal <A-A>   <A-H>
-
-alias global colo colorscheme
-alias global wqa write-all-quit
-alias global bd  delete-buffer
-alias global bd! delete-buffer!
-
-
-def -allow-override -params 1 new-client-here %{
-  %sh{
-    echo "new exec :buffer <space> $kak_buffile <ret> $kak_cursor_line g :%sh{ xdotool <space> key <space> alt+$1 }<ret>"
-  }
-}
-
-def _nonempty -params 1 %{
-    try %{
-        exec -no-hooks -draft \;Gg<a-k>(\n.*){3}<ret>
-        exec -no-hooks -draft \;Ge<a-k>(\n.*){3}<ret>
-        exec -no-hooks -draft \;<a-x><a-k>\A[\n]\Z<ret>
-        exec -no-hooks %arg{1}
-        _nonempty %arg{1}
-    }
-}
-
-def nonempty -params 1 %{ eval -itersel _nonempty %arg{1} }
-
-# dvorak movement
-map global normal t 'j:nonempty j<ret>'
-map global normal n 'k:nonempty k<ret>'
-map global normal T 'J:nonempty J<ret>'
-map global normal N 'K:nonempty K<ret>'
-map global normal s l
-map global normal S L
-
-map global normal x 'j:nonempty d<ret>'
-map global normal X 'k:nonempty dk<ret>'
-
-map global goto t j
-map global goto n k
-map global goto s l
-map global goto T j
-map global goto N k
-map global goto S l
-map global goto G e
-
-map global goto a i
-
-map global view t j
-map global view n k
-map global view s l
-map global view T j
-map global view N k
-map global view S l
-map global view G e
-
-map global view z c
-map global view u t
-map global view d b
-
-map global normal <a-g> g
-map global normal <a-G> G
-
-# objects, objects...
-# shouldn't p be parens?
-# some upper-case variants:
-map global object P p
-map global object I i
-
-# next match
-map global normal g n:add-slash-hl<ret>
-map global normal G N:print-selection-info<ret>:add-slash-hl<ret>
-map global normal f <A-n>:add-slash-hl<ret>
-map global normal F <A-N>:print-selection-info<ret>:add-slash-hl<ret>
-
-map global normal <A-x> :nop<ret>
-
-# marks: jump to and save sels
-map global normal j :marks<ret>
-def marks -params 0..1 %{
-  info -title "marks%arg{1}" %{l: load
-s: save
-a: append save
-m: merge load}
-  on-key %{%sh{
-    key=""
-    case "$kak_key" in
-      l) key=z ;;
-      s) key=Z ;;
-      a) key='<a-Z>' ;;
-      m) key='<a-z>' ;;
-      [a-zA-Z]) echo marks '%{"'"$kak_key"'}' ;;
-      *) echo echo unbound "$kak_key" ;;
-    esac
-    if [[ "$key" ]]; then
-        echo exec -save-regs "''" '%{'"$1""$key"'}'
-    fi
-  }}
-}
-
-# J
-map global normal J     <A-J>
-map global user   j     <A-j>
-
-# FT
-map global normal k     t
-map global normal K     <a-t>
-map global normal <a-k> T
-map global normal <a-K> <a-T>
-
-map global normal q     f
-map global normal Q     <a-f>
-map global normal <a-q> F
-map global normal <a-Q> <a-F>
-
-# split and select
-map global user '/' s
-map global user s S
-map global user a :select-all-goto-closest<ret>:add-slash-hl<ret>
-map global normal l <A-s>
-map global normal L :nop<ret>
-map global normal <a-l> :nop<ret>
-map global normal <a-L> :nop<ret>
-
-map global normal <a-o> <a-a>
-map global normal <a-O> <a-A>
-
-def -allow-override select-all-goto-closest %{
-exec %sh{echo "\\%s<ret>:select-closest<space>$kak_cursor_line<ret>"}
-}
-
-def Z-submap %{
-    info Z
-    on-key %{z-handle %val{key} 0 true}
-}
-
-def -params 1 z-submap %{
-    decl -hidden int zcount %arg{1}
-    info z
-    on-key %{z-handle %val{key} %opt{zcount} false}
-}
-
-def z-handle -params 3 %{
-  %sh{
-    repeat=$3
-    z=""
-    Z=""
-    case "$1" in
-      H)            echo exec Gi  ;;
-      h) Z="exec vh"; z="exec gi" ;;
-      t) Z="exec vj"; z="exec vt" ;;
-      n) Z="exec vk"; z="exec ge" ;;
-      s) Z="exec vl"  ;;
-
-      c) echo exec vc ;;
-      b) echo exec vb ;;
-      N) echo exec Ge ;;
-
-      6) echo exec gt ;;
-      7) echo exec gc ;;
-      8) echo exec gb ;;
-
-      w) echo exec '<c-f>gc' ;;
-      v) echo exec '<c-b>gc' ;;
-      W) echo exec '<c-d>gc' ;;
-      V) echo exec '<c-u>gc' ;;
-
-      f) Z="exec <a-n>vc" ;;
-      g) Z="exec nvc"
-         if [ "$2" -eq 0 ]; then
-           z="exec gg";
-         else
-           z="exec $kak_opt_zcount g";
-         fi
-         ;;
-      G) if [ "$2" -eq 0 ]; then
-           echo exec Gg;
-         else
-           echo "exec $kak_opt_zcount G";
-         fi
-         ;;
-      e) echo exec gl ;;
-      E) echo exec Gl ;;
-      a) echo exec gh ;;
-      A) echo exec Gh ;;
-      k) echo exec '<A-K>' ;;
-      o) echo exec '<A-a>' ;;
-      i) echo exec '<A-i>' ;;
-      q) echo exec ':q<ret>' ;;
-
-      r) echo exec ':new-client-here<space>F1<ret>' ;;
-      R) echo exec ':new-client-here<space>F2<ret>' ;;
-
-      F) echo exec gf ;;
-      u) echo exec 'g.' ;;
-      '`') echo exec 'ga' ;;
-      m) repeat="true" ;;
-      *) repeat="false" ;;
-      # d still unused
-    esac
-    if [[ "$repeat" == "true" ]]; then
-      echo "$Z"
-      echo info Z
-      echo on-key %{z-handle %val{key} 0 true}
-    else
-      echo "$z"
-    fi
-  }
-}
-
-map global normal z ':z-submap<space>%val{count}<ret>'
-map global normal Z ':Z-submap<ret>'
-
-map global user k <a-k>
-map global user K ':echo zk<ret>'
-
-# deprecated bindings
-map global goto p '<esc>:echo bp<ret>'
-map global goto n '<esc>:echo bn<ret>'
-map global goto 2 '<esc>:echo zv<ret>'
-map global goto 3 '<esc>:echo zw<ret>'
-
+# Jedi
 map global user . :jedi<space>goto<ret>
 map global user m :jedi<space>docstring<ret>
 map global user u :jedi<space>usages<ret>
 
-def -allow-override -docstring Q rec 'exec Q'
-def -allow-override -docstring q play 'exec q'
-
-def full-line -params 2 %{
-  eval -itersel %{
-    try %{
-      # are we at the newline or on the char before?
-      exec -draft <a-:> l <a-k> [\n] <ret>
-      # is there only indentation to the left?
-      exec -draft <a-:><a-\;> \; Gh <a-k> \A^\h*.\Z <ret>
-      # then execute second arg
-      exec %arg{2}
-    } catch %{
-      # otherwise execute the first
-      exec %arg{1}
-    }
-  }
-}
-
-def v  %{ full-line giGl JGl }
-def cv %{ full-line giGl '"vZjgiGl"v<a-z>' }
-
-# Put line selection commands on v rather than x
-map global normal v     :v<ret>
-map global normal V     X
-map global normal <A-v> <A-x>
-map global normal <A-V> <A-X>
-map global normal <c-v> :cv<ret>
-map global normal <C-V> <a-m>X<a-s>
-
-def -allow-override -params 1 setf %{
-  set buffer filetype %arg{1}
-}
-
-# make new selections above and under
-map global normal <c-t> C
-map global normal <c-n> <a-C>
-map global normal C     :nop<ret>
-
-map global normal d     d
-map global normal D     <a-x>dgi
-
-map global normal -- - '"'
-
-map global normal '"' "<A-'>:print-selection-info<ret>"
-map global normal "'" "':print-selection-info<ret>"
-
-def -hidden -allow-override overwrite %{
-  try %{
-    hook buffer -group overwrite InsertChar .* %{exec <right><backspace>}
-    map buffer insert <backspace> <left>
-    hook buffer -group overwrite InsertEnd .* %{
-      remove-hooks buffer overwrite
-      map buffer insert <backspace> <backspace>
-    }
-  }
-}
-
-map global normal r r
-# overwrite a'la vim's R
-map global normal R :overwrite<ret>i
-
-# paste and replace on <a-r> for now
-map global normal <a-r> R
-
-# copy to  xclipboard
-map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
-map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
-map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
-
-# Sync %reg{"} with X clipboard, from alexherbo2
-hook global NormalKey y|d|c %{ nop %sh{
-  printf %s "$kak_reg_dquote" | xsel --input --clipboard
-  printf %s "$kak_reg_dquote" | xsel --input --primary
-}}
-
-# Auto-mkdir when saving buffer to file, from alexherbo2
-hook global BufWritePre .* %{ nop %sh{
-  dir=$(dirname $kak_buffile)
-  [ -d $dir ] || mkdir --parents $dir
-}}
-
-# Math prompt, from alexherbo2
-def prompt_math %{
-    prompt 'math ' %{ exec a %val{text} <esc> | bc <ret> }
-}
-
-map global normal = :prompt_math<ret>
-
-map global user w :w<ret>
-
-# reload kakrc and .kak when saving
-rmhooks global reload_kak
-hook -group reload_kak global BufWritePost (.*kakrc|.*\.kak) %{
-  decl -hidden str reload_file
-  %sh{
-    tmp=$(mktemp /tmp/kak-source.XXXXXX)
-    echo set buffer reload_file $tmp
-  }
-  write %opt{reload_file}
-  %sh{
-    sed -i 's/^def \([^:]*\)$/def -allow-override \1/' $kak_opt_reload_file
-  }
-  source %opt{reload_file}
-  echo Reloaded %val{bufname}
-  %sh{ rm $kak_opt_reload_file }
-}
-
+# Reload .Xresources upon saving it
 rmhooks global reload_xres
 hook -group reload_xres global BufWritePost .*Xresources %{
   nop %sh{ xrdb -merge ~/.Xresources }
   echo xrdb -merge %val{bufname}
 }
 
-set global tabstop 4
-
-decl -hidden regex curword
-face CurWord +b
-# default,rgb:4a4a4a
-
-def -allow-override remove_spaces %{ try %{ exec -draft '%s\h+$<ret>d' } }
-
-hook global BufWritePre .* remove_spaces
-
-colorscheme solarized
-
-def -allow-override my-window-setup %{
+# Window setup
+def my-window-setup %{
     try %{ addhl number_lines -hlcursor -separator ' '  }
     try %{ addhl show_matching }
     try %{ addhl dynregex '%opt{curword}' 0:CurWord }
 
-    hook global WinResize .* %{
+    hook global -group kakrc WinResize .* %{
         echo "%val{window_height}:%val{window_width}"
     }
 
@@ -505,120 +223,31 @@ def -allow-override my-window-setup %{
     try %{ set global grepcmd 'rg -n' }
 }
 
-alias global rg grep
-
-def -hidden -allow-override _update_curword %{
-    eval -no-hooks -draft %{ try %{
-        exec <space><a-i>w <a-k>\`\w+\'<ret>
-        set buffer curword "\b\Q%val{selection}\E\b"
-    } catch %{
-        set buffer curword ''
-    } }
-}
-
-hook global NormalIdle .* _update_curword
-#hook global NormalKey .* _update_curword
-
-hook global BufCreate .*(bashrc|xinitrc).* %{
+hook global -group kakrc BufCreate .*(bashrc|xinitrc).* %{
     set buffer filetype sh
 }
 
-hook global WinCreate .* my-window-setup
+hook global -group kakrc WinCreate .* my-window-setup
 
-hook global WinSetOption filetype=python %{
+hook global -group kakrc WinSetOption filetype=python %{
     try jedi-start
     jedi-enable-autocomplete
 }
 
-hook global BufCreate .*kak.* "set -add buffer completion_extra_word_char -"
+hook global -group kakrc BufCreate .*kak.* "set -add buffer completion_extra_word_char -"
 
-hook global InsertCompletionShow .* %{
+hook global -group kakrc InsertCompletionShow .* %{
     map window insert <tab> <c-n>
     map window insert <backtab> <c-p>
 }
-hook global InsertCompletionHide .* %{
+hook global -group kakrc InsertCompletionHide .* %{
     unmap window insert <tab> <c-n>;
     unmap window insert <backtab> <c-p>
 }
 
-def fzf-file -params 0..1 %{
-    fzf "edit $1" "rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
-}
+hook global -group kakrc BufOpenFifo '\*grep\*' %{ map global user n ':grep-next<ret>' }
 
-def fzf-git -params 0..1 %{
-    fzf "edit $1" "git ls-tree --name-only -r HEAD %arg{1}"
-}
-
-def fzf-tag -params 0..1 %{
-    fzf "tag $1" "readtags -l | cut -f1 | sort -u"
-}
-
-def fzf-cd -params 0..1 %{
-    fzf "cd $1" "find %arg{1} -type d -path *.git -prune -o -type d -print"
-}
-
-def fzf -params 2 %{ %sh{
-    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    edit=$(mktemp /tmp/kak-edit.XXXXXX)
-    echo "echo eval -client $kak_client \"$1\" | kak -p $kak_session" > $edit
-    chmod 755 $edit
-    (
-        # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "xdotool key alt+F1; $2 | fzf --reverse --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
-        (while read file; do
-            $edit $file
-        done) < $tmp
-        rm $tmp
-        rm $edit
-    ) > /dev/null 2>&1 < /dev/null &
-} }
-
-def bufzf %{ %sh{
-    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    setbuf=$(mktemp /tmp/kak-setbuf.XXXXXX)
-    delbuf=$(mktemp /tmp/kak-delbuf.XXXXXX)
-    echo 'echo eval -client $kak_client "buffer        $1" | kak -p $kak_session' > $setbuf
-    echo 'echo eval -client $kak_client "delete-buffer $1" | kak -p $kak_session' > $delbuf
-    echo 'echo eval -client $kak_client bufzf              | kak -p $kak_session' >> $delbuf
-    chmod 755 $setbuf
-    chmod 755 $delbuf
-    (
-        # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "xdotool key alt+F1; echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
-            fzf --reverse --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
-        if [ -s $tmp ]; then
-            ( read action
-              read buf
-              if [ "$action" == "ctrl-d" ]; then
-                  $setbuf $kak_bufname
-                  $delbuf $buf
-              else
-                  $setbuf $buf
-              fi) < $tmp
-        else
-            $setbuf $kak_bufname
-        fi
-        rm $tmp
-        rm $setbuf
-        rm $delbuf
-    ) > /dev/null 2>&1 < /dev/null &
-} }
-
-# fzf-line:
-# rg \$ -n | fzf '-d:' --with-nth=3.. --preview 'echo {1}:{2}; tail -n +{2} {1}' --no-sort
-
-map global user b ":bufzf<ret>"
-map global user F "<esc>:fzf-file ~<ret>"
-map global user C "<esc>:fzf-cd ~<ret>"
-map global user f "<esc>:fzf-file<ret>"
-map global user g "<esc>:fzf-git<ret>"
-map global user c "<esc>:fzf-cd<ret>"
-map global goto o "<esc>:info ,f<ret>"
-map global goto / "<esc>:grep "
-
-hook global BufOpenFifo '\*grep\*' %{ map global user n ':grep-next<ret>' }
-
-hook global WinSetOption filetype=(c|cpp) %{
+hook global -group kakrc WinSetOption filetype=(c|cpp) %{
     clang-enable-autocomplete
     clang-enable-diagnostics
     alias window lint clang-parse
@@ -632,19 +261,15 @@ hook global WinSetOption filetype=(c|cpp) %{
     #ycmd-enable-autocomplete
 }
 
-hook global WinSetOption filetype=sh %{
+hook global -group kakrc WinSetOption filetype=sh %{
     set buffer lintcmd 'shellcheck -fgcc -eSC2006'
     lint-enable
 }
 
-hook global WinSetOption filetype=python %{
+hook global -group kakrc WinSetOption filetype=python %{
     set buffer lintcmd 'flake8 --filename=*'
     lint-enable
 }
-
-map global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
-map global goto q <esc><a-i>p,q
-# ^ similar to gqq in vim
 
 def ide %{
     rename-client main
@@ -655,3 +280,37 @@ def ide %{
     set global jumpclient main
 }
 
+%sh{
+# Keys looking for a purpose
+Unassigned='
+    <A-x>
+    L
+    <a-l>
+    <a-L>
+    C
+    _
+    <a-c>
+    <a-C>
+'
+for k in $Unassigned; do
+    echo map global normal "$k" "':echo $k unbound<ret>'"
+done
+
+Sources='
+    fzf.kak
+    hl-curword.kak
+    marks-submap.kak
+    nonempty-lines.kak
+    one-char-replace.kak
+    overwrite.kak
+    reload-kakrc.kak
+    same-point-insert.kak
+    selections.kak
+    z-submap.kak
+'
+for f in $Sources; do
+    echo try %@ source $XDG_CONFIG_HOME/kak/$f @
+done
+}
+
+colorscheme solarized
