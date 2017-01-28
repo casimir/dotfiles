@@ -1,3 +1,4 @@
+
 set global ui_options ncurses_assistant=none
 
 # make Alt-commands available as user commands (unless they are shadowed below)
@@ -143,13 +144,28 @@ def -allow-override -params 1 new-client-here %{
   }
 }
 
+def _nonempty -params 1 %{
+    try %{
+        exec -no-hooks -draft \;Gg<a-k>(\n.*){3}<ret>
+        exec -no-hooks -draft \;Ge<a-k>(\n.*){3}<ret>
+        exec -no-hooks -draft \;<a-x><a-k>\A[\n]\Z<ret>
+        exec -no-hooks %arg{1}
+        _nonempty %arg{1}
+    }
+}
+
+def nonempty -params 1 %{ eval -itersel _nonempty %arg{1} }
+
 # dvorak movement
-map global normal t j
-map global normal n k
+map global normal t 'j:nonempty j<ret>'
+map global normal n 'k:nonempty k<ret>'
+map global normal T 'J:nonempty J<ret>'
+map global normal N 'K:nonempty K<ret>'
 map global normal s l
-map global normal T J
-map global normal N K
 map global normal S L
+
+map global normal x 'j:nonempty d<ret>'
+map global normal X 'k:nonempty dk<ret>'
 
 map global goto t j
 map global goto n k
@@ -188,7 +204,6 @@ map global normal G N:print-selection-info<ret>:add-slash-hl<ret>
 map global normal f <A-n>:add-slash-hl<ret>
 map global normal F <A-N>:print-selection-info<ret>:add-slash-hl<ret>
 
-map global normal X     :nop<ret>
 map global normal <A-x> :nop<ret>
 
 # marks: jump to and save sels
@@ -216,7 +231,7 @@ m: merge load}
 
 # J
 map global normal J     <A-J>
-map global user   J     <A-j>
+map global user   j     <A-j>
 
 # FT
 map global normal k     t
@@ -262,6 +277,7 @@ def z-handle -params 3 %{
     z=""
     Z=""
     case "$1" in
+      H)            echo exec Gi  ;;
       h) Z="exec vh"; z="exec gi" ;;
       t) Z="exec vj"; z="exec vt" ;;
       n) Z="exec vk"; z="exec ge" ;;
@@ -295,9 +311,9 @@ def z-handle -params 3 %{
          fi
          ;;
       e) echo exec gl ;;
-      E) echo exec gL ;;
+      E) echo exec Gl ;;
       a) echo exec gh ;;
-      A) echo exec gH ;;
+      A) echo exec Gh ;;
       k) echo exec '<A-K>' ;;
       o) echo exec '<A-a>' ;;
       i) echo exec '<A-i>' ;;
@@ -369,7 +385,6 @@ map global normal <A-V> <A-X>
 map global normal <c-v> :cv<ret>
 map global normal <C-V> <a-m>X<a-s>
 
-
 def -allow-override -params 1 setf %{
   set buffer filetype %arg{1}
 }
@@ -386,7 +401,6 @@ map global normal -- - '"'
 
 map global normal '"' "<A-'>:print-selection-info<ret>"
 map global normal "'" "':print-selection-info<ret>"
-
 
 def -hidden -allow-override overwrite %{
   try %{
@@ -427,7 +441,6 @@ hook global BufWritePre .* %{ nop %sh{
 def prompt_math %{
     prompt 'math ' %{ exec a %val{text} <esc> | bc <ret> }
 }
-
 
 map global normal = :prompt_math<ret>
 
