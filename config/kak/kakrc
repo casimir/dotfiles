@@ -86,21 +86,19 @@ map global insert <c-h> <a-\;>
 # execute current selection(s)
 map global user x %{:eval -itersel %val{selection}<ret>}
 
-# Insert with support for count
-# FIXME: does not work at EOL!
-def -allow-override -params 1 urk %{
-    exec -itersel -no-hooks \;i.<esc>hyd %arg{1} P %arg{1} Hs.<ret><a-space>
-    exec -no-hooks c
+def -allow-override -params 1 same-point-insert %{
+  exec -no-hooks -draft a.<esc>\; \"id
+  exec -no-hooks <a-:><a-\;>\; %arg{1} \"iP %arg{1} H <a-:>H s.<ret> c
 }
-def -allow-override -params 1 urkproxy %{ %sh{
+def -allow-override -params 1 same-point-insert-flexible %{ %sh{
     if [[ $1 -eq 0 ]]; then
         echo exec i;
     else
-        echo urk $1
+        echo same-point-insert $1
     fi
   }
 }
-map global normal i %{:urkproxy %val{count}<ret>}
+map global normal i %{:same-point-insert-flexible %val{count}<ret>}
 
 # less intrusive c
 map global normal c :replace-if-all-single-char<ret>
