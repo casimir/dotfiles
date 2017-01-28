@@ -9,7 +9,7 @@ map global normal S L
 # Make new selections above and under, left and right
 map global normal <c-t> C
 map global normal <c-n> <a-C>
-map global normal <c-h> '"iZh"i<a-z>'
+map global normal <backspace> '"iZh"i<a-z>'
 map global normal <c-s> '"iZl"i<a-z>'
 
 # Select paragraphs (Use <a-i>p and repeat with full-line-ifte?)
