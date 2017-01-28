@@ -178,18 +178,6 @@ map global view d b
 map global normal <a-g> g
 map global normal <a-G> G
 
-def -allow-override goto-line-start %{ try %{ exec gh <a-k> \A\s <ret> <a-K> $ <ret> wl } }
-def -allow-override extend-line-first-word %{ try %{ exec Gh <a-k> \A\s <ret> WL } }
-
-def -allow-override move-forward-to-line-start %{
-    eval -itersel %{
-        try %{
-            exec '<a-:><a-;>' <a-k>\A^\h*\z<ret> :goto-line-start<ret>
-        }
-    }
-}
-
-
 # objects, objects...
 # shouldn't p be parens?
 # some upper-case variants:
@@ -337,18 +325,32 @@ map global user u :jedi<space>usages<ret>
 def -allow-override -docstring Q rec 'exec Q'
 def -allow-override -docstring q play 'exec q'
 
-def -allow-override select-line-nicely %{
-    goto-line-start
-    exec 'Gl'
-    # should make it so that if it is nicely selected, selects the next
+def full-line -params 2 %{
+  eval -itersel %{
+    try %{
+      # are we at the newline or on the char before?
+      exec -draft <a-:> l <a-k> [\n] <ret>
+      # is there only indentation to the left?
+      exec -draft <a-:><a-\;> \; Gh <a-k> \A^\h*.\Z <ret>
+      # then execute second arg
+      exec %arg{2}
+    } catch %{
+      # otherwise execute the first
+      exec %arg{1}
+    }
+  }
 }
 
+def v  %{ full-line giGl JGl }
+def cv %{ full-line giGl '"vZjgiGl"v<a-z>' }
+
 # Put line selection commands on v rather than x
-map global normal v     :select-line-nicely<ret>
+map global normal v     :v<ret>
 map global normal V     X
 map global normal <A-v> <A-x>
 map global normal <A-V> <A-X>
-map global normal <c-v> '<a-:><a-;>K<a-H>'
+map global normal <c-v> :cv<ret>
+map global normal <C-V> <a-m>X<a-s>
 
 
 def -allow-override -params 1 setf %{
@@ -361,10 +363,7 @@ map global normal <c-n> <a-C>
 map global normal C     :nop<ret>
 
 map global normal d     d
-                        # :move-forward-to-line-start<ret>
-                        # if we remove a big chunk, we can go to line start
-                        # but if we only remove single characters we shouldn't
-map global normal D     <a-x>d:move-forward-to-line-start<ret>
+map global normal D     <a-x>dgi
 
 map global normal -- - '"'
 
@@ -483,7 +482,7 @@ def -hidden -allow-override _update_curword %{
 }
 
 hook global NormalIdle .* _update_curword
-hook global NormalKey .* _update_curword
+#hook global NormalKey .* _update_curword
 
 hook global BufCreate .*(bashrc|xinitrc).* %{
     set buffer filetype sh
