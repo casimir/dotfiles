@@ -407,24 +407,29 @@ map global normal R :overwrite<ret>i
 map global normal <a-r> R
 
 # copy to  xclipboard
-map global user y %{<a-|>xsel -i<ret>:echo -color Information %{yanked to X clipboard}<ret>}
 map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
 map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
 map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
 
-# auto-copy on y to x clipboard
-hook global NormalKey y %{ nop %sh{
-  printf '%s' "${kak_reg_dquote}" | xsel --input
+# Sync %reg{"} with X clipboard, from alexherbo2
+hook global NormalKey y|d|c %{ nop %sh{
+  printf %s "$kak_reg_dquote" | xsel --input --clipboard
+  printf %s "$kak_reg_dquote" | xsel --input --primary
 }}
 
-
-# WIP: this doesn't respect the newlines in the clipboard
-def -allow-override set-xclip-clipboard %{ %sh{
-  print "set-register c '%s"' "$(xclip -o)"
+# Auto-mkdir when saving buffer to file, from alexherbo2
+hook global BufWritePre .* %{ nop %sh{
+  dir=$(dirname $kak_buffile)
+  [ -d $dir ] || mkdir --parents $dir
 }}
 
-# hook global NormalIdle .* test
+# Math prompt, from alexherbo2
+def prompt_math %{
+    prompt 'math ' %{ exec a %val{text} <esc> | bc <ret> }
+}
 
+
+map global normal = :prompt_math<ret>
 
 map global user w :w<ret>
 
