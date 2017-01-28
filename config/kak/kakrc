@@ -191,11 +191,28 @@ map global normal F <A-N>:print-selection-info<ret>:add-slash-hl<ret>
 map global normal X     :nop<ret>
 map global normal <A-x> :nop<ret>
 
-# jump and save sels
-map global normal x     Z
-map global user   x     <A-Z>
-map global normal j     z
-map global user   j     <A-z>
+# marks: jump to and save sels
+map global normal j :marks<ret>
+def marks -params 0..1 %{
+  info -title "marks%arg{1}" %{l: load
+s: save
+a: append save
+m: merge load}
+  on-key %{%sh{
+    key=""
+    case "$kak_key" in
+      l) key=z ;;
+      s) key=Z ;;
+      a) key='<a-Z>' ;;
+      m) key='<a-z>' ;;
+      [a-zA-Z]) echo marks '%{"'"$kak_key"'}' ;;
+      *) echo echo unbound "$kak_key" ;;
+    esac
+    if [[ "$key" ]]; then
+        echo exec -save-regs "''" '%{'"$1""$key"'}'
+    fi
+  }}
+}
 
 # J
 map global normal J     <A-J>
