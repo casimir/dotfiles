@@ -1,5 +1,7 @@
 
-# support count with i
+# Support count with insert
+
+# Remember register # and <c-r># in insert mode!
 
 map global normal i %{:same-point-insert %val{count}<ret>}
 
