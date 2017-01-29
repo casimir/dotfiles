@@ -297,6 +297,7 @@ for k in $Unassigned; do
 done
 
 Sources='
+    autowrap.kak
     fzf.kak
     hl-curword.kak
     marks-submap.kak
