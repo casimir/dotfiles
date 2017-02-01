@@ -1,3 +1,4 @@
+# Todo: rewrite without loops
 
 def ensure-empty-line %{
     exec -no-hooks -draft \;<a-x><a-K>[^\n]<ret>

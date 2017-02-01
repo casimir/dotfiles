@@ -1,3 +1,20 @@
+%sh{
+# Keys looking for a purpose
+Unassigned='
+    <A-x>
+    <a-l>
+    <a-L>
+    L
+    _
+    C
+    <a-c>
+    <a-C>
+'
+for k in $Unassigned; do
+    echo map global normal "$k" "':echo $k unbound<ret>'"
+done
+}
+
 # Dvorak movement, dodging empty lines
 map global normal t 'j:while-empty j<ret>'
 map global normal n 'k:while-empty k<ret>'
@@ -39,9 +56,10 @@ map global normal D     <a-x>dgi
 
 # g/f: next/prev match
 map global normal g n
-map global normal G N:print-selection-info<ret>
+map global normal G N
+map global normal <a-G> '"aZ<a-space>"bZ"az<space>n"b<a-z>'
 map global normal f <A-n>
-map global normal F <A-N>:print-selection-info<ret>
+map global normal F <A-N>
 
 # marks submap
 map global normal j :marks<ret>
@@ -64,8 +82,8 @@ map global normal <a-q> F
 map global normal <a-Q> <a-F>
 
 # Split and select
-map global user '/' s
-map global user s S
+map global normal -- - s
+map global normal L S
 map global user a :select-all-focus-closest<ret>
 map global normal l <A-s>
 
@@ -99,7 +117,7 @@ map global normal "'" "':print-selection-info<ret>"
 map global normal '"' "<A-'>:print-selection-info<ret>"
 
 # Register
-map global normal -- - '"'
+map global user "'" '"'
 
 # Paste and replace
 map global normal <a-r> R
@@ -108,11 +126,11 @@ map global normal <a-r> R
 map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
 map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
 map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
+map global user y %{:%sh{printf %s "$kak_buffile" | xsel --input --primary}<ret>}
 
 # Sync %reg{"} with X clipboard, from alexherbo2
-hook global -group kakrc NormalKey y %{ nop %sh{
-  printf %s "$kak_reg_dquote" | xsel --input --clipboard
-  printf %s "$kak_reg_dquote" | xsel --input --primary
+hook global -group kakrc NormalKey y|d %{ %sh{
+  echo "$kak_reg_dquote" | xclip
 }}
 
 # Execute current selection(s)
@@ -281,20 +299,6 @@ def ide %{
 }
 
 %sh{
-# Keys looking for a purpose
-Unassigned='
-    <A-x>
-    L
-    <a-l>
-    <a-L>
-    C
-    _
-    <a-c>
-    <a-C>
-'
-for k in $Unassigned; do
-    echo map global normal "$k" "':echo $k unbound<ret>'"
-done
 
 Sources='
     autowrap.kak
@@ -304,6 +308,7 @@ Sources='
     nonempty-lines.kak
     one-char-replace.kak
     overwrite.kak
+    line-selection.kak
     reload-kakrc.kak
     same-point-insert.kak
     selections.kak

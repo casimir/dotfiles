@@ -31,17 +31,27 @@ for i in "${!sels[@]}"; do
 done
 }}
 
-hook global -group kakrc NormalKey .*[/?nN*].* highlight-search
-hook global -group kakrc NormalKey .*['NCzZ].* print-selection-info
-
-def noh %{
-  rmhl dynregex_\%reg{<slash>}
+hook global -group kakrc NormalKey .*(['snNCzZ]).* print-selection-info
+hook global -group kakrc NormalKey [sS] %{
+    try %{remove-hooks global once}
+    # NormalBegin is not triggered when the prompt is finished,
+    # but just before prompt launches (?)
+    hook global -group once NormalBegin .* %{
+        print-selection-info
+        try %{remove-hooks global once}
+    }
 }
+
+hook global -group kakrc NormalKey .*[/?nN*].* highlight-search
 
 def highlight-search %{
   noh
   try %{
     addhl dynregex '%reg{/}' 0:+u 1:+i 2:+i
   }
+}
+
+def noh %{
+  rmhl dynregex_\%reg{<slash>}
 }
 
