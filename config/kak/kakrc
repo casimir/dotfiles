@@ -123,15 +123,27 @@ map global user "'" '"'
 map global normal <a-r> R
 
 # Xclipboard
-map global user p %{<a-!>xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
-map global user P %{!xsel<ret>:echo -color Information %{pasted from X clipboard}<ret>}
-map global user R %{:reg w "%sh{xsel}"<ret>"wR:echo -color Information %{replaced from X clipboard }<ret>}
-map global user y %{:%sh{printf %s "$kak_buffile" | xsel --input --primary}<ret>}
+map global user p %{<a-!>xsel<ret>}
+map global user P %{!xsel<ret>}
+map global user R %{:reg w "%sh{xsel}"<ret>"wR}
+map global user y %{:xcopy %val{bufname}<ret>}
+map global user Y %{:xcopy %val{buffile}<ret>}
 
-# Sync %reg{"} with X clipboard, from alexherbo2
-hook global -group kakrc NormalKey y|d %{ %sh{
-  echo "$kak_reg_dquote" | xclip
+def xcopy -params 1 %{%sh{
+  echo -n "$1" | xsel --input --primary
+  echo -n "$1" | xsel --input --clipboard
+  l=$(echo -n "$1" | wc -l)
+  if [[ $l -eq 0 ]]; then
+    echo echo "copied '\"$(echo -n "$1" | head -n 1)\"'"
+  elif [[ $l -eq 1 ]]; then
+    echo echo "copied 1 line"
+  else
+    echo echo "copied $l lines"
+  fi
 }}
+
+# Sync %reg{"} with X clipboard, idea from alexherbo2
+hook global -group kakrc NormalKey y|d %{xcopy %reg{"}}
 
 # Execute current selection(s)
 map global user x %{:eval -itersel %val{selection}<ret>}
