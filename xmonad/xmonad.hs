@@ -125,7 +125,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
       , (super      xK_minus, spawn "urxvt")
       , (shiftSuper xK_minus, spawn "urxvt -rv")
       , (shiftSuper xK_f,     spawn "vimb")
-      , (super      xK_f,     spawn "firefox")
+      , (super      xK_f,     spawn "qutebrowser")
 
       , ((altMask, xK_F1),    sendMessage (setAxisCrumbMessage Horizontal) >> sendMessage Swap)
       , ((altMask, xK_F2),    sendMessage (setAxisCrumbMessage Vertical) >> sendMessage Swap)
