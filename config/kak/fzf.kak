@@ -1,6 +1,7 @@
 
 def fzf-file -params 0..1 %{
-    fzf "edit $1" "rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
+    fzf "edit $1" "ag -l -f -p ~/.binignore --hidden --one-device . %arg{1}"
+                # "rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
 }
 
 def fzf-git -params 0..1 %{
@@ -22,7 +23,7 @@ def fzf -params 2 %{ %sh{
     chmod 755 $edit
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "xdotool key alt+F1; $2 | fzf --reverse --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        urxvt -e sh -c "$2 | fzf --reverse --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
         done) < $tmp
@@ -42,7 +43,7 @@ def bufzf %{ %sh{
     chmod 755 $delbuf
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "xdotool key alt+F1; echo $kak_buflist | tr ':' '\n' | grep -v \"$kak_bufname\" | grep -v \"$kak_buffile\" |
+        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | 
             fzf --reverse --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
             ( read action

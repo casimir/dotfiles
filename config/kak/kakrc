@@ -38,7 +38,7 @@ map global normal <a-N> {p
 # Extend selections left and right
 map global normal <A-s>   <A-l>
 map global normal <A-S>   <A-L>
-map global normal <A-h>   gi
+map global normal <A-h>   \;Gi
 map global normal <A-H>   Gi
 map global normal <A-a>   <A-h>
 map global normal <A-A>   <A-H>
@@ -65,8 +65,11 @@ map global normal F <A-N>
 map global normal j :marks<ret>
 
 # J a'la vim
-map global normal J     <A-J>
-map global user   j     <A-j>
+def J %{exec -itersel -no-hooks <A-J><a-m>c<space><esc><space>vm }
+map global normal J :J<ret>
+map global user   j <A-J>
+# btw: <A-J> = <a-s><space>di<space><esc>
+# or           <a-s>glldi<space><esc>
 
 # Overwrite a'la vim R
 map global normal R :overwrite<ret>
@@ -314,8 +317,10 @@ def ide %{
 
 Sources='
     autowrap.kak
+    backspace.kak
     fzf.kak
     hl-curword.kak
+    line-selection.kak
     marks-submap.kak
     nonempty-lines.kak
     one-char-replace.kak

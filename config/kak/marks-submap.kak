@@ -3,15 +3,15 @@
 def marks -params 0..1 %{
   info -title "marks%arg{1}" %{l: load
 s: save
-a: append save
-m: merge load}
+a: append
+u: union}
   on-key %{%sh{
     key=""
     case "$kak_key" in
       l) key=z ;;
       s) key=Z ;;
       a) key='<a-Z>' ;;
-      m) key='<a-z>' ;;
+      u) key='<a-z>' ;;
       [a-zA-Z]) echo marks '%{"'"$kak_key"'}' ;;
       *) echo echo unbound "$kak_key" ;;
     esac

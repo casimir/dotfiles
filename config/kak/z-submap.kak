@@ -1,12 +1,10 @@
 
 def Z-submap %{
-    info Z
     on-key %{z-handle %val{key} 0 true}
 }
 
 def -params 1 z-submap %{
     decl -hidden int zcount %arg{1}
-    info z
     on-key %{z-handle %val{key} %opt{zcount} false}
 }
 
@@ -30,10 +28,10 @@ def z-handle -params 3 %{
       7) echo exec gc ;;
       8) echo exec gb ;;
 
-      w) echo exec '<c-f>gc' ;;
-      v) echo exec '<c-b>gc' ;;
-      W) echo exec '<c-d>gc' ;;
-      V) echo exec '<c-u>gc' ;;
+      w) echo exec '<c-f>gc' ; repeat="true" ;;
+      v) echo exec '<c-b>gc' ; repeat="true" ;;
+      W) echo exec '<c-d>gc' ; repeat="true" ;;
+      V) echo exec '<c-u>gc' ; repeat="true" ;;
 
       f) Z="exec <a-n>vc" ;;
       g) Z="exec nvc"
@@ -65,15 +63,17 @@ def z-handle -params 3 %{
       u) echo exec 'g.' ;;
       '`') echo exec 'ga' ;;
       m) repeat="true" ;;
-      *) repeat="false" ;;
+      *) # z="echo -- '$1' unused";
+         repeat="false" ;;
       # d still unused
     esac
     if [[ "$repeat" == "true" ]]; then
       echo "$Z"
-      echo info Z
+      echo 'echo -- -- Z --'
       echo on-key %{z-handle %val{key} 0 true}
     else
       echo "$z"
+      echo echo
     fi
   }
 }
