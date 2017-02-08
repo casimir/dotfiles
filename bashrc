@@ -28,8 +28,9 @@ onpar() {
 export HISTCONTROL=ignorespace:ignoreboth
 export HISTFILESIZE=4000000000
 export HISTSIZE=1000000
-export PROMPT_COMMAND="history -a"
+HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
+PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
 
 export XDG_CONFIG_HOME=$HOME/config
 export GIT_EDITOR='kak'
@@ -180,9 +181,20 @@ PERL_MM_OPT="INSTALL_BASE=/home/dan/perl5"; export PERL_MM_OPT;
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_COMMAND="rg --files"
-export FZF_DEFAULT_OPTS="--reverse -m -e --color=16"
+export FZF_DEFAULT_OPTS="--height '60%' --reverse -m -e --color=16"
 
 (cd $HOME
 [ ! -f dircolors.ansi-dark ] && wget https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark
 eval $(dircolors dircolors.ansi-dark)
 )
+
+alias hl='highlight -O ansi'
+alias lr='less -R'
+
+
+# http://unix.stackexchange.com/questions/55203/bash-autocomplete-first-list-files-then-cycle-through-them
+# http://unix.stackexchange.com/questions/205489/bash-ignore-case-but-disallow-autocomplete-if-ambiguous
+bind 'set completion-ignore-case on'
+bind 'TAB:menu-complete'
+bind 'set show-all-if-ambiguous on'
+bind 'set menu-complete-display-prefix on'
