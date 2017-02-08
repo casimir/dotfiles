@@ -95,8 +95,8 @@ map global user k <a-k>
 map global user K ':echo zk<ret>'
 
 # Macros
-def -docstring Q rec  'exec Q'
-def -docstring q play 'exec q'
+map global normal <a-x> q
+map global normal <a-X> Q
 
 # Line selection commands on v as in vim's visual mode
 map global normal v     :line-select<ret>
@@ -298,6 +298,12 @@ hook global -group kakrc WinSetOption filetype=sh %{
     set buffer lintcmd 'shellcheck -fgcc -eSC2006'
     lint-enable
 }
+
+hook global BufSetOption filetype=pug %{
+    set buffer tabstop 2
+}
+
+set global disabled_hooks (pug-hooks|pug-indent)
 
 hook global -group kakrc WinSetOption filetype=python %{
     set buffer lintcmd 'flake8 --filename=*'
