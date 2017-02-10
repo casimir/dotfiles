@@ -1,20 +1,3 @@
-%sh{
-# Keys looking for a purpose
-Unassigned='
-    <A-x>
-    <a-l>
-    <a-L>
-    L
-    _
-    C
-    <a-c>
-    <a-C>
-'
-for k in $Unassigned; do
-    echo map global normal "$k" "':echo $k unbound<ret>'"
-done
-}
-
 # Dvorak movement, dodging empty lines
 map global normal t 'j:while-empty j<ret>'
 map global normal n 'k:while-empty k<ret>'
@@ -55,11 +38,63 @@ map global normal X ':remove-all-adjacent-empty-lines<ret>'
 map global normal D     <a-x>dgi
 
 # g/f: next/prev match
-map global normal g n
-map global normal G N
+map global normal g ':match<space>n<ret>'
+map global normal G ':match<space>N<ret>'
+
 map global normal <a-G> '"aZ<a-space>"bZ"az<space>n"b<a-z>'
-map global normal f <A-n>
-map global normal F <A-N>
+map global normal f ':rmatch<space>n<ret>'
+map global normal F ':rmatch<space>N<ret>'
+
+map global normal <a-c> ':center_on_lastline<ret>'
+
+def rmatch -params 1 %{
+    match "<A-%arg{1}>"
+}
+
+decl int wrappyline 0
+
+def match -params 1 %{
+    set_wrappyline %arg{1}
+    %sh{
+        if [[ "$kak_opt_wrappyline" -eq "$kak_cursor_line" ]]; then
+            echo "exec $1
+                  exec -no-hooks 987vh vc
+                  set window wrappyline %val{cursor_line}"
+            echo echo -debug "%opt{wrappyline}"
+        else
+            echo "exec $1
+                  exec -no-hooks 987vh
+                  set window wrappyline 0"
+        fi
+    }
+}
+
+hook -group kakrc global NormalKey ^(?![:nN])(?!<[aA]-[nN]>).*$ %{
+    set window wrappyline -1
+}
+
+def set_wrappyline -params 1 %{
+    decl int top
+    decl int bottom
+    decl int new
+    eval -draft -no-hooks %{
+        exec gb
+        set global bottom %val{cursor_line}
+        exec gt
+        set global top %val{cursor_line}
+    }
+    eval -draft -no-hooks %{
+        exec %arg{1}
+        set global new %val{cursor_line}
+    }
+    %sh{
+        if [[ "$kak_opt_new" -gt "$kak_opt_bottom" ]]; then
+            echo 'set window wrappyline %val{cursor_line}'
+        elif [[  "$kak_opt_new" -lt "$kak_opt_top" ]]; then
+            echo 'set window wrappyline %val{cursor_line}'
+        fi
+    }
+}
 
 # marks submap
 map global normal j :marks<ret>
@@ -95,8 +130,8 @@ map global user k <a-k>
 map global user K ':echo zk<ret>'
 
 # Macros
-map global normal <a-x> q
-map global normal <a-X> Q
+def -docstring Q rec  'exec Q'
+def -docstring q play 'exec q'
 
 # Line selection commands on v as in vim's visual mode
 map global normal v     :line-select<ret>
@@ -137,7 +172,11 @@ def xcopy -params 1 %{%sh{
   echo -n "$1" | xsel --input --clipboard
   l=$(echo -n "$1" | wc -l)
   if [[ $l -eq 0 ]]; then
+    echo 'try %{'
     echo echo "copied '\"$(echo -n "$1" | head -n 1)\"'"
+    echo '} catch %{'
+    echo echo copied "${#1}" chars
+    echo '}'
   elif [[ $l -eq 1 ]]; then
     echo echo "copied 1 line"
   else
