@@ -8,10 +8,12 @@ keycode 9 = Caps_Lock
 keycode 66 = Escape
 
 keycode 37 = Super_L
-keycode 64 = Delete
+keycode 64 = Control_L
 keycode 119 = Alt_L
-keycode 134 = Tab ISO_Left_Tab
+keycode 134 = Control_R
 keycode 105 = Mode_switch
+
+keycode 22 = BackSpace Delete Delete Delete
 
 add Lock = Caps_Lock
 add Control = Control_L Control_R
