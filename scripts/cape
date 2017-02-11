@@ -11,9 +11,9 @@ xmodmap ~/.keymaps/swedish-aoe
 # xmodmap -e 'add Control = Control_R'
 # xmodmap -e 'keycode 254 = Tab Tab'
 # xmodmap -e 'keycode 49 = grave asciitilde Tab ISO_Left_Tab'
-xmodmap -e 'keycode 253 = Delete Delete Delete Delete'
+xmodmap -e 'keycode 253 = Delete'
 if [[ $(lsusb | grep -i kinesis) ]]; then
-    true
+    xcape -e 'Alt_L=Delete;Control_L=BackSpace'
 else
     xcape -e 'Control_R=Tab;Super_L=Delete;Alt_L=BackSpace;Mode_switch=Return'
 fi

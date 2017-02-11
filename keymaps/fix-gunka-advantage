@@ -7,13 +7,12 @@ clear Mod5
 keycode 9 = Caps_Lock
 keycode 66 = Escape
 
+keycode 22 = Control_L
 keycode 37 = Super_L
-keycode 64 = Control_L
+keycode 64 = BackSpace
 keycode 119 = Alt_L
-keycode 134 = Control_R
+keycode 134 = Delete
 keycode 105 = Mode_switch
-
-keycode 22 = BackSpace Delete Delete Delete
 
 add Lock = Caps_Lock
 add Control = Control_L Control_R
