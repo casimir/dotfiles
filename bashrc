@@ -6,8 +6,6 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
-#source $HOME/.nix-profile/etc/profile.d/nix.sh
-
 export SB='kark burk bark koala'
 
 RED='\033[0;31m'
@@ -43,11 +41,6 @@ export PATH=$HOME/code/jbofihe:$PATH
 export PATH=$HOME/.gem/ruby/*/bin:$PATH
 
 export PS1='[$(date +%H:%M)|\w] \n\$ '
-
-alias hipspec='emna -v=2'
-alias hip='emna --explore=off'
-
-alias dafny='mono ~/code/dafny/Binaries/Dafny.exe'
 
 # if [ ! "$TERM" == "rxvt-unicode-256color" ]; then
 #     setterm -blength 0
@@ -90,6 +83,7 @@ alias ch='cabal haddock --hyperlink-source'
 alias co='cabal configure'
 alias cs='cabal sandbox init'
 
+alias g='git commit -m'
 alias ga='git add'
 alias gam='git commit --amend'
 alias gb='git branch'
@@ -117,67 +111,10 @@ alias gsw='git show --color'
 alias gw='git diff --color-words --color'
 alias gws='git diff --color-words --staged --color'
 
-# alias st='svn status'
-# alias sc='svn commit'
-# alias sr='svn revert'
-# alias sa='svn add'
-# alias so='svn checkout'
-# alias su='svn update'
-
-alias epf='eproof -tAuto -xAuto --tptp3-format'
-alias epr='eprover -tAuto -xAuto --tptp3-format'
-alias spa='SPASS -Auto -TPTP -PGiven=0 -PProblem=0 -DocProof=0 -PStatistic=0'
-alias vam='vampire_lin32 -mode casc'
-
 alias xo='xclip -o'
-
-alias ski='kibr lookup'
-alias sis='kibr search'
 
 alias sd='pwd | xclip -selection secondary'
 alias ld='cd $(xclip -o -selection secondary)'
-
-alias jd='jbo define'
-alias jf='jbo filter'
-
-js() {
-    jbo filter $1 | xargs -0 jbo define
-}
-
-jl() {
-    jbo filter $1 | xargs -0 jbo define | less
-}
-
-terminal() {
-    urxvt -fn "xft:dejavu sans mono-$1:autohint=true" +sb
-}
-
-rlp() {
-#        set -o LOCAL_OPTIONS -o ERR_RETURN
-        file=$1
-        shift
-        cat "$file" | ssh danr@remote12.chalmers.se lp -d cse-ed-5473-laser1 $* -
-                                                                #5102b-laser1
-                                                                #5102b-color1
-}
-
-rlp2() {
-#        set -o LOCAL_OPTIONS -o ERR_RETURN
-        file=$1
-        shift
-        cat "$file" | ssh danr@remote12.chalmers.se lp -d cse-ed-5102b-color1 $* -
-                                                                #5102b-laser1
-                                                                #5102b-color1
-}
-
-
-export PYTHONPATH=$HOME/python:$HOME/code/python:$PYTHONPATH
-export SB_MODELS=$HOME/code/jbokorp/corpus_import/annotate/models
-export CWB_DATADIR=$HOME/corpora/data
-export CORPUS_REGISTRY=$HOME/corpora/registry
-
-PERL_MB_OPT="--install_base \"/home/dan/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/dan/perl5"; export PERL_MM_OPT;
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_COMMAND="rg --files"
@@ -190,7 +127,6 @@ eval $(dircolors dircolors.ansi-dark)
 
 alias hl='highlight -O ansi'
 alias lr='less -R'
-
 
 # http://unix.stackexchange.com/questions/55203/bash-autocomplete-first-list-files-then-cycle-through-them
 # http://unix.stackexchange.com/questions/205489/bash-ignore-case-but-disallow-autocomplete-if-ambiguous
