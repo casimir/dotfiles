@@ -1,21 +1,39 @@
+URxvt.font: xft:Consolas:size=16:weight=50
+URxvt.boldFont: xft:Consolas:size=16:weight=200
+URxvt.letterSpace: -1
+
 URxvt.scrollBar: false
-URxvt.font: xft:Iosevka Slab:size=22:weight=50
-URxvt.boldFont: xft:Iosevka Slab:size=22:weight=70
-URxvt.perl-ext-common: font-size
+URxvt.internalBorder: 2
+URxvt.externalBorder: 0
+
+URxvt.perl-lib        : /usr/lib/urxvt/perl
+URxvt.perl-ext-common : font-size,matcher,clipboard,keyboard-select
+URxvt.keysym.M-u      : matcher:select
+URxvt.url-launcher    : qutebrowser
+
+URxvt.keysym.M-Escape : perl:keyboard-select:activate
+URxvt.keysym.C-Escape : perl:clipboard:paste
+
+URxvt.keysym.M-s    : builtin:
+URxvt.keysym.M-x    : builtin:
+URxvt.keysym.M-c    : builtin:
+URxvt.keysym.M-v    : builtin:
+URxvt.keysym.M-C-v  : builtin:
+
+URxvt.clipboard.pastecmd : xsel -o --primary
+
 URxvt*dynamicColors: on
 ! https://github.com/majutsushi/urxvt-font-sizes
 ! https://aur.archlinux.org/packages/urxvt-font-size-git/
 URxvt.resize-font.smaller: C-minus
 URxvt.resize-font.bigger:  C-slash
 URxvt.keysym.C-slash:  font-size:incglobal
-URxvt.keysym.C-plus:  font-size:incglobal
+URxvt.keysym.C-plus:   font-size:incglobal
 URxvt.keysym.C-minus:  font-size:decglobal
 URxvt.keysym.C-Up:     font-size:increase
 URxvt.keysym.C-Down:   font-size:decrease
 URxvt.keysym.C-equal:  font-size:reset
-URxvt.keysym.C-backslash:  font-size:show
-URxvt.internalBorder: 0
-URxvt.externalBorder: 0
+! URxvt.keysym.C-backslash:  font-size:show
 URxvt.font-size.step: 1
 
 URxvt.iso14755:         False
@@ -53,7 +71,7 @@ URxvt.iso14755:         False
 
 ! Light
 
-#define S_base03        #fdf6e3
+#define S_base03        #ffffff
 #define S_base02        #eee8d5
 #define S_base01        #93a1a1
 #define S_base00        #839496
