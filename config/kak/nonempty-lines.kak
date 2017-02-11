@@ -1,7 +1,7 @@
 # Todo: rewrite without loops
 
 def ensure-empty-line %{
-    exec -no-hooks -draft \;<a-x><a-K>[^\n]<ret>
+    exec -no-hooks -draft \;<a-x><a-k>^\h*$<ret>
 }
 
 def _while-empty -params 1 %{
@@ -16,35 +16,23 @@ def _while-empty -params 1 %{
 
 def while-empty -params 1 %{ eval -itersel _while-empty %arg{1} }
 
-def remove-adjacent-empty-line %{
+def remove-adjacent-empty-line -params 1 %{
     eval -no-hooks -itersel %{
         try %{
             eval -no-hooks -draft %{
-                exec -no-hooks k
+                exec -no-hooks %arg{1}
                 ensure-empty-line
-                exec -no-hooks d
-            }
-        } catch %{
-            try %{
-                eval -no-hooks -draft %{
-                    exec -no-hooks j
-                    ensure-empty-line
-                    exec -no-hooks d
-                }
+                exec -no-hooks <a-x>d
             }
         }
     }
 }
 
 def remove-all-adjacent-empty-lines %{
-    eval -no-hooks -draft %{
-        eval -no-hooks -draft %{
-            exec -no-hooks j
-            while-empty d
-        }
-        eval -no-hooks -draft %{
-            exec -no-hooks k
-            while-empty dk
-        }
+    eval -save-regs x -draft -no-hooks %{
+        reg x ''
+        try %{ exec -draft gh <a-?>[^\n]<ret>"xZ     }
+        try %{ exec -draft gl ?    [^\n]<ret>"x<a-Z> }
+        exec \"xz<a-s><a-k>^\h*$<ret>d
     }
 }

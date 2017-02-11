@@ -16,8 +16,9 @@ def -hidden -params 1 same-point-insert %{
 }
 
 def -hidden -params 1 _same-point-insert %{
-  exec -no-hooks -draft a.<esc>\; \"id
-  exec -no-hooks <a-:><a-\;>\; %arg{1} \"iP %arg{1} H <a-:>H s.<ret> c
-  try print-selection-info
+    eval -save-regs i %{
+        exec -no-hooks -draft a.<esc>\; \"id
+        exec -no-hooks <a-:><a-\;>\; %arg{1} \"iP %arg{1} H <a-:>H s.<ret> c
+        try print-selection-info
+    }
 }
-

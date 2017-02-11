@@ -23,7 +23,7 @@ def fzf -params 2 %{ %sh{
     chmod 755 $edit
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "$2 | fzf --reverse --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
+        urxvt -e sh -c "$2 | fzf --height 100% --reverse --color=16 -e -m --bind 'ctrl-c:execute($edit \"{}\")' > $tmp"
         (while read file; do
             $edit $file
         done) < $tmp
@@ -43,8 +43,8 @@ def bufzf %{ %sh{
     chmod 755 $delbuf
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | 
-            fzf --reverse --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
+        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' |
+            fzf --height 100% --reverse --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
             ( read action
               read buf
