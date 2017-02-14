@@ -121,22 +121,19 @@ map global normal <ret>   '<space>:pagewise k<ret>'
 decl int viewport_y
 decl int viewport_h
 def viewport_update %{
-    eval -save-regs tcb %{
+    eval -save-regs ct %{
         eval -draft -no-hooks %{
             reg c %val{cursor_line}
             exec gt
             reg t %val{cursor_line}
-            exec gb
-            reg b %val{cursor_line}
         }
         set window viewport_y %sh{ echo $(($kak_reg_c - $kak_reg_t)) }
-        set window viewport_h %sh{ echo $(($kak_reg_b - $kak_reg_t)) }
     }
 }
 
 def pagewise -params 1 %{
     viewport_update
-    exec %opt{viewport_h} %arg{1} vt %opt{viewport_y} vk
+    exec %val{window_height} %arg{1} vt %opt{viewport_y} vk
 }
 
 def viewport_preserve -params 1 %{
@@ -212,6 +209,27 @@ map global user d %{ :delete-buffer<ret>:exec ga<ret> }
 # Comment line
 map global normal '#' :comment-line<ret>
 
+# Buffers
+map global normal <a-,> :bp<ret>:bufinfo<ret>
+map global normal <a-.> :bn<ret>:bufinfo<ret>
+map global normal <a--> ga:bufinfo<ret>
+map global normal <a-d> :db<ret>:bufinfo<ret>
+map global normal <a-q> :db!<ret>:bufinfo<ret>
+
+def bufinfo %{
+    %sh{
+        echo -n info -- %^
+        (while read -d : buf; do
+            if [[ "$buf" == "$kak_bufname" ]]; then
+                echo "> $buf <"
+            else
+                echo "  $buf  "
+            fi
+        done) <<< "$kak_buflist"
+        echo ^
+    }
+}
+
 # fzf
 import fzf
 map global user b ":bufzf<ret>"
@@ -231,6 +249,8 @@ map global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
 map global object P p
 map global object I i
 
+#
+
 # Aliases
 alias global colo colorscheme
 alias global wqa  write-all-quit
@@ -248,8 +268,8 @@ hook global -group kakrc BufWritePre .* %{ nop %sh{
   [ -d $dir ] || mkdir --parents $dir
 }}
 
-# Remove spaces when saving
-hook global -group kakrc BufWritePre .* %{
+# Remove trailing whitespaces before saving
+hook global -group trim_whitespace_pre_buf_write BufWritePre .* %{
   try %{ exec -no-hooks -draft '%s\h+$<ret>d' }
 }
 
@@ -268,7 +288,7 @@ map global insert <c-h> <a-\;>   ; # execute one normal kak command
 
 # Jedi
 map global user . ':jedi goto<ret>'
-map global user m ':jedi docstring<ret>'
+map global user h ':jedi docstring<ret>'
 map global user u ':jedi usages<ret>'
 
 # Reload .Xresources upon saving it
@@ -307,6 +327,10 @@ hook global -group kakrc WinCreate .* my-window-setup
 
 hook global -group kakrc BufCreate .*(bashrc|xinitrc).* %{
     set buffer filetype sh
+}
+
+hook global -group kakrc BufCreate .*(Makefile).* %{
+    set buffer filetype makefile
 }
 
 hook global -group kakrc WinSetOption filetype=python %{
@@ -368,6 +392,27 @@ def ide %{
 
 colorscheme solarized
 
+# by lenormf, see https://github.com/mawww/kakoune/issues/1192
+decl -hidden range-faces show_matching_range
+
+hook global -group kakrc InsertChar .+ %{ eval -draft %{
+    set buffer show_matching_range ""
+
+    try %{
+        exec <esc>\;hm<a-k>..<ret>\;
+        set buffer show_matching_range "%val{timestamp}:%val{selection_desc}|MatchingChar"
+    }
+} }
+
+hook global -group kakrc InsertEnd .* %{
+    set buffer show_matching_range ""
+}
+
+hook global -group kakrc WinCreate .* %{
+    addhl ranges show_matching_range
+}
+
+# import kw
 try %{
     add-highlighter -group /kakrc/code regex \b(import)\b 0:keyword
 }

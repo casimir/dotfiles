@@ -32,6 +32,7 @@ $(vim_plug):
 # ----------------------------------------------------------------------------
 
 all: $(dotted_targets) $(config_targets) ~/.kakrc $(vim_plug)
+	xdg-mime default zathura-pdf-poppler.desktop application/pdf
 
 .PHONY: all
 

@@ -7,10 +7,11 @@ clear Mod4
 keycode 9 = Escape
 keycode 66 = Caps_Lock
 
+keycode 22 = Control_L
 keycode 37 = Super_L
-keycode 134 = Delete
+keycode 134 = BackSpace
 keycode 119 = Alt_L
-keycode 64 = Tab ISO_Left_Tab
+keycode 64 = Delete
 keycode 105 = Mode_switch
 
 add Lock = Caps_Lock
