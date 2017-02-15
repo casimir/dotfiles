@@ -128,3 +128,4 @@ config/google-chrome
 *.z
 *.Z
 *.zip
+Desktop/*
