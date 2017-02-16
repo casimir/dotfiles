@@ -7,7 +7,7 @@ def overwrite %{
     map buffer insert <backspace> <left>
     hook buffer -group overwrite InsertEnd .* %{
       remove-hooks buffer overwrite
-      map buffer insert <backspace> <backspace>
+      unmap buffer insert <backspace> <left>
     }
     exec i
   }
