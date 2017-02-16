@@ -28,23 +28,14 @@ export HISTFILESIZE=4000000000
 export HISTSIZE=1000000
 HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
-PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
+PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 export XDG_CONFIG_HOME=$HOME/config
 export GIT_EDITOR='kak'
 export EDITOR='kak'
-export PATH=/home/dan/build/pakcs-1.11.1/bin:$PATH
-export PATH=$HOME/scripts:$HOME/bin:$HOME/bin/provers:$HOME/code/provers:$PATH
-export PATH=$HOME/.cabal/bin:$PATH
-export PATH=$HOME/.local/bin:$PATH
-export PATH=$HOME/code/jbofihe:$PATH
-export PATH=$HOME/.gem/ruby/*/bin:$PATH
+export PATH=$HOME/scripts:$HOME/bin:$HOME/.cabal/bin:$HOME/.local/bin:$PATH
 
 export PS1='[$(date +%H:%M)|\w] \n\$ '
-
-# if [ ! "$TERM" == "rxvt-unicode-256color" ]; then
-#     setterm -blength 0
-# fi
 
 stty stop undef
 stty start undef
@@ -65,12 +56,6 @@ alias dir='ls --color=auto'
 
 alias ai='sudo apt-get install'
 alias as='sudo apt-cache search'
-
-export GHC_INCLUDE_DIRS='.'
-
-alias ghc='ghc -i$GHC_INCLUDE_DIRS'
-alias ghci='ghci -i$GHC_INCLUDE_DIRS'
-alias runghc='runghc -i$GHC_INCLUDE_DIRS'
 
 alias cb='cabal build'
 alias ci='cabal install'
