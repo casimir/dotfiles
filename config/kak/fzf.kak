@@ -1,6 +1,6 @@
 
 def fzf-file -params 0..1 %{
-    fzf "edit $1" "ag -l -f -p ~/.binignore --hidden --one-device . %arg{1}"
+    fzf "edit $1" "ag -l -f -p ~/.binignore -p ~/.ignore --hidden --one-device . %arg{1}"
                 # "rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
 }
 

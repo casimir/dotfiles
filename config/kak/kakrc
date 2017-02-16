@@ -149,7 +149,6 @@ map global normal * lbhe*
 map global user   8 *
 map global normal D \%
 
-map global normal 0 <space>
 map global normal = <space>
 
 def selinfo %{
@@ -179,16 +178,19 @@ map global user R %{:reg w "%sh{xsel}"<ret>"wR}
 map global user y %{:xcopy %val{bufname}<ret>}
 map global user Y %{:xcopy %val{buffile}<ret>}
 
-def xcopy -params 1 %{%sh{
-  echo -n "$1" | xsel --input --primary
-  echo -n "$1" | xsel --input --clipboard
-  l=$(echo -n "$1" | wc -l)
+def xcopy -params 0..1 %{%sh{
+  if [ -z "$1" ]; then
+    val="$kak_reg_dquote"
+  else
+    val=$1
+  fi
+  echo -n "$val" | xsel --input --primary
+  echo -n "$val" | xsel --input --clipboard
+  l=$(echo -n "$val" | wc -l)
+  val=${val//\\/\\}
+  val=${val//./\\.}
   if [[ $l -eq 0 ]]; then
-    echo 'try %{'
-    echo echo "copied '\"$(echo -n "$1" | head -n 1)\"'"
-    echo '} catch %{'
-    echo echo copied "${#1}" chars
-    echo '}'
+    echo echo "copied %.$val."
   elif [[ $l -eq 1 ]]; then
     echo echo "copied 1 line"
   else
@@ -197,7 +199,7 @@ def xcopy -params 1 %{%sh{
 }}
 
 # Sync %reg{"} with X clipboard, idea from alexherbo2
-hook global -group kakrc NormalKey y|d %{xcopy %reg{"}}
+hook global -group kakrc NormalKey y|d %{xcopy}
 
 # Execute current selection(s)
 map global user x %{:eval -itersel %val{selection}<ret>}
@@ -272,6 +274,9 @@ hook global -group kakrc BufWritePre .* %{ nop %sh{
 hook global -group trim_whitespace_pre_buf_write BufWritePre .* %{
   try %{ exec -no-hooks -draft '%s\h+$<ret>d' }
 }
+hook global -group expandtabs_pre_buf_write BufWritePre .* %{
+  try %{ exec -no-hooks -draft '%@' }
+}
 
 # Options
 set global ui_options ncurses_assistant=none
@@ -313,15 +318,15 @@ def my-window-setup %{
     addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,rgb:ffcccc
 
     set window completers filename:word=all
-
-    # auto indent
-    hook -group copyindent window InsertChar \n %{ exec -draft -itersel K<a-&> }
-
-    # Auto expand tabs into spaces
-    hook -group expandtabs window InsertChar \t %{ exec -draft -itersel h@ }
-
-    try %{ set global grepcmd 'rg -n' }
 }
+
+# auto indent
+hook -group copyindent global InsertChar \n %{ exec -draft -itersel K<a-&> }
+
+# Auto expand tabs into spaces
+hook -group expandtabs global InsertChar \t %{ exec -draft -itersel x@ }
+
+set global grepcmd 'rg -n'
 
 hook global -group kakrc WinCreate .* my-window-setup
 
