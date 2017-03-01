@@ -317,7 +317,27 @@ def my-window-setup %{
     addhl group red80
     addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,rgb:ffcccc
 
-    set window completers filename:word=all
+    set window completers filename
+    map window insert <tab> '<a-;>:contextual-tab<ret>'
+}
+
+def contextual-tab -docstring "To be bound in insert mode" %{
+    try %{
+        # Complete if current char is whitespace, and previous is not
+        exec -draft '<esc><space>;<a-k>\s<ret>h<a-k>\S<ret>'
+        %sh{
+            if [[ "$kak_opt_filetype" == "python" ]]; then
+                cmd="jedi complete"
+            else
+                cmd="exec <c-x><c-w>"
+            fi
+            #echo echo -debug $cmd
+            echo $cmd
+        }
+    } catch %{
+        # Otherwise just insert a tab
+        exec <tab>
+    }
 }
 
 # auto indent
@@ -350,8 +370,8 @@ hook global -group kakrc InsertCompletionShow .* %{
     map window insert <backtab> <c-p>
 }
 hook global -group kakrc InsertCompletionHide .* %{
-    unmap window insert <tab> <c-n>
-    unmap window insert <backtab> <c-p>
+    map window insert <tab>     '<a-;>:contextual-tab<ret>'
+    map global insert <backtab> '<a-;>:backspace<ret>'
 }
 
 hook global -group kakrc BufOpenFifo '\*grep\*' %{ map global user n ':grep-next<ret>' }
