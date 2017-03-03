@@ -199,7 +199,7 @@ def xcopy -params 0..1 %{%sh{
 }}
 
 # Sync %reg{"} with X clipboard, idea from alexherbo2
-hook global -group kakrc NormalKey y|d %{xcopy}
+hook global -group kakrc NormalKey y %{xcopy}
 
 # Execute current selection(s)
 map global user x %{:eval -itersel %val{selection}<ret>}
@@ -282,7 +282,7 @@ hook global -group expandtabs_pre_buf_write BufWritePre .* %{
 set global ui_options ncurses_assistant=none
 set global tabstop 4
 set global idle_timeout 50
-set global scrolloff 1,5
+set global scrolloff 1,0
 
 # Insert mode
 map global insert <c-s> <c-o>    ; # silent: stop completion
