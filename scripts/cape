@@ -15,7 +15,8 @@ xmodmap -e 'keycode 253 = Delete'
 if [[ $(lsusb | grep -i kinesis) ]]; then
     xcape -e 'Alt_L=Delete;Control_L=BackSpace'
 else
-    xcape -e 'Control_R=Tab;Super_L=Delete;Alt_L=BackSpace;Mode_switch=Return'
+    true
+    # xcape -e 'Control_R=Tab;Super_L=Delete;Alt_L=BackSpace;Mode_switch=Return'
 fi
 xset r rate 150
 xset b off
