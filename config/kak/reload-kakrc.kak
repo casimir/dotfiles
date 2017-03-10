@@ -13,6 +13,7 @@ hook -group reload_kak global BufWritePost (.*kakrc|.*\.kak) %{
   write %opt{reload_file}
   %sh{
     sed -i 's/^def \([^:]*\)$/def -allow-override \1/' $kak_opt_reload_file
+    sed -i 's/^plug/#/' $kak_opt_reload_file
   }
   source %opt{reload_file}
   echo Reloaded %val{bufname}

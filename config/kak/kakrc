@@ -4,6 +4,19 @@ def import -params 1 %{
     }
 }
 
+def plug -params 1 %{
+    %sh{
+        if [[ ! -d $HOME/build/$1 ]]; then
+            (cd $HOME/build; git clone https://github.com/$1)
+        fi
+        for file in $(echo $HOME/build/$(basename $1)/*.kak); do
+            echo source "$file"
+        done
+    }
+}
+
+plug Delapouite/kakoune-expand-region
+
 import autowrap
 import backspace
 import hl-curword
@@ -152,12 +165,12 @@ map global normal D \%
 map global normal = <space>
 
 def selinfo %{
-    info %{
+    info '
 <a-;>  swap direction
 <a-:>  face forward
 jo     one selection (space)
 :      reduce selection to cursor (;)
-    }
+    '
 }
 
 hook -group kakrc global NormalKey '^(<a-[:;]>|<space>|;)$' selinfo
@@ -438,9 +451,9 @@ hook global -group kakrc WinCreate .* %{
     addhl ranges show_matching_range
 }
 
-# import kw
+# make import and plug look like keywords :)
 try %{
-    add-highlighter -group /kakrc/code regex \b(import)\b 0:keyword
+    add-highlighter -group /kakrc/code regex \b(import|plug)\b 0:keyword
 }
 map -docstring 'case insensitive search' global user '/' /(?i)
 map -docstring 'case insensitive backward search' global user '<a-/>' <a-/>(?i)
