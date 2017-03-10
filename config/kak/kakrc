@@ -67,10 +67,10 @@ map global normal <a-O> <a-A>
 
 
 # g: next/prev match
-map global normal g     n
-map global normal G     N
-map global normal <a-g> <a-n>
-map global normal <a-G> <a-N>
+map global normal g     n978vh
+map global normal G     N978vh
+map global normal <a-g> <a-n>978vh
+map global normal <a-G> <a-N>978vh
 
 # Marks submap
 map global normal j :marks<ret>
@@ -434,6 +434,7 @@ hook global -group kakrc InsertEnd .* %{
 }
 
 hook global -group kakrc WinCreate .* %{
+
     addhl ranges show_matching_range
 }
 
@@ -441,4 +442,15 @@ hook global -group kakrc WinCreate .* %{
 try %{
     add-highlighter -group /kakrc/code regex \b(import)\b 0:keyword
 }
+map -docstring 'case insensitive search' global user '/' /(?i)
+map -docstring 'case insensitive backward search' global user '<a-/>' <a-/>(?i)
+map -docstring 'case insensitive extend search' global user '?' ?(?i)
+map -docstring 'case insensitive backward extend-search' global user '<a-?>' <a-?>(?i)
 
+
+
+set global modelinefmt %{
+%val{bufname} |
+{{mode_info}}{{context_info}} |
+%val{cursor_line}:%val{cursor_char_column} |
+%sh{[[ $kak_client != unnamed* ]] && echo "$kak_client | "}%val{session}}
