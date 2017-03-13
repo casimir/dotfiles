@@ -127,6 +127,9 @@ map global normal \; :
 # Macros
 map global normal <esc> '<esc>:noh<ret>'
 
+# ret...
+map global user <ret> <ret>
+
 # Nav
 map global normal <space> '<space>:pagewise j<ret>'
 map global normal <ret>   '<space>:pagewise k<ret>'
@@ -463,7 +466,7 @@ map -docstring 'case insensitive backward extend-search' global user '<a-?>' <a-
 
 
 set global modelinefmt %{
-%val{bufname} |
-{{mode_info}}{{context_info}} |
+{{mode_info}} |
 %val{cursor_line}:%val{cursor_char_column} |
+%val{bufname} |
 %sh{[[ $kak_client != unnamed* ]] && echo "$kak_client | "}%val{session}}
