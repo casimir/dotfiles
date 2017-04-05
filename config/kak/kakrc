@@ -16,6 +16,19 @@ def plug -params 1 %{
 }
 
 plug Delapouite/kakoune-expand-region
+plug danr/kak-ycmd
+set global ycmd_path /home/dan/build/ycmd/ycmd
+
+hook global BufCreate .*[.](ts) %{
+    set buffer filetype typescript
+}
+
+hook -group typescript-highlight global WinSetOption filetype=typescript %{
+    ycmd-enable-autocomplete
+}
+hook -group typescript-highlight global WinSetOption filetype=(?!typescript).* %{
+    ycmd-disable-autocomplete
+}
 
 import autowrap
 import backspace
@@ -340,14 +353,16 @@ def my-window-setup %{
 def contextual-tab -docstring "To be bound in insert mode" %{
     try %{
         # Complete if current char is whitespace, and previous is not
-        exec -draft '<esc><space>;<a-k>\s<ret>h<a-k>\S<ret>'
+        exec -draft '<esc><space>;<a-k>\W<ret>h<a-k>\S<ret>'
         %sh{
             if [[ "$kak_opt_filetype" == "python" ]]; then
                 cmd="jedi complete"
+            elif [[ "$kak_opt_filetype" == "typescript" ]]; then
+                cmd="ycmd-complete"
             else
                 cmd="exec <c-x><c-w>"
             fi
-            #echo echo -debug $cmd
+            echo echo -debug $cmd
             echo $cmd
         }
     } catch %{
