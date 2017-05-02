@@ -312,7 +312,7 @@ imap <c-c><c-p> <plug>(fzf-complete-path)
 imap <c-c><c-f> <plug>(fzf-complete-file-ag)
 imap <c-c><c-l> <plug>(fzf-complete-line)
 
-colorscheme solarized
+" colorscheme solarized
 
 let g:EasyMotion_leader_key = ','
 

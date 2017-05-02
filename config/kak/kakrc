@@ -16,6 +16,14 @@ def plug -params 1 %{
 }
 
 plug Delapouite/kakoune-expand-region
+#plug mawww/kak-ycmd
+#set global ycmd_path /home/dan/build/ycmd/ycmd
+
+hook global BufCreate .*[.](ts) %{
+    set buffer filetype typescript
+    #ycmd-start
+    #ycmd-enable-autocomplete
+}
 
 import autowrap
 import backspace
@@ -221,7 +229,7 @@ hook global -group kakrc NormalKey y %{xcopy}
 map global user x %{:eval -itersel %val{selection}<ret>}
 
 # Write and close buffer
-map global user w :w<ret>
+map global user w :w<ret>:lsp_sync<ret>
 map global user d %{ :delete-buffer<ret>:exec ga<ret> }
 
 # Comment line
@@ -307,11 +315,6 @@ map global insert <c-k> <c-v>    ; # raw insert, use vim binding
 map global insert <c-y> '<c-r>"' ; # paste from normal yank register, readline key
 map global insert <c-h> <a-\;>   ; # execute one normal kak command
 
-# Jedi
-map global user . ':jedi goto<ret>'
-map global user h ':jedi docstring<ret>'
-map global user u ':jedi usages<ret>'
-
 # Reload .Xresources upon saving it
 rmhooks global reload_xres
 hook -group reload_xres global BufWritePost .*Xresources %{
@@ -333,23 +336,20 @@ def my-window-setup %{
     addhl group red80
     addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,rgb:ffcccc
 
-    set window completers filename
+    # set window completers filename
     map window insert <tab> '<a-;>:contextual-tab<ret>'
 }
+
+map global insert <a-w> <c-x><c-w>
+map global insert <a-c> '<a-;>:lsp_complete %(exec b)<ret>'
+
 
 def contextual-tab -docstring "To be bound in insert mode" %{
     try %{
         # Complete if current char is whitespace, and previous is not
         exec -draft '<esc><space>;<a-k>\s<ret>h<a-k>\S<ret>'
-        %sh{
-            if [[ "$kak_opt_filetype" == "python" ]]; then
-                cmd="jedi complete"
-            else
-                cmd="exec <c-x><c-w>"
-            fi
-            #echo echo -debug $cmd
-            echo $cmd
-        }
+        lsp_complete %(exec b)
+        #exec <c-x><c-w>
     } catch %{
         # Otherwise just insert a tab
         exec <tab>
@@ -374,9 +374,36 @@ hook global -group kakrc BufCreate .*(Makefile).* %{
     set buffer filetype makefile
 }
 
-hook global -group kakrc WinSetOption filetype=python %{
-    try jedi-start
-    jedi-enable-autocomplete
+#hook global -group kakrc WinSetOption filetype=python %{
+    #try jedi-start
+    #jedi-enable-autocomplete
+#}
+#
+# Jedi
+#map global user . ':jedi goto<ret>'
+#map global user h ':jedi docstring<ret>'
+#map global user u ':jedi usages<ret>'
+
+decl str lsp_python_cmd pyls
+decl str lsp_typescript_cmd 'node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js'
+decl str lsp_go_cmd '/home/dan/go/bin/go-langserver'
+
+map global user . ':lsp_goto_definition<ret>'
+map global user u ':lsp_references<ret>'
+map global user h ':lsp_hover docsclient<ret>'
+map global user H ':lsp_hover cursor<ret>'
+map global user i ':lsp_hover info<ret>'
+
+# should be grep-next in grep buffer
+map global user n ':lsp_diagnostics_jump next<ret>:lsp_diagnostics cursor<ret>'
+map global user r ':lsp_diagnostics_jump prev<ret>:lsp_diagnostics cursor<ret>'
+map global user e ':lsp_diagnostics cursor<ret>'
+
+set-option global completers filename:word=buffer:option=lsp_completions
+hook global WinCreate .* %{
+    try %{
+        add-highlighter flag_lines default lsp_flags
+    }
 }
 
 hook global -group kakrc BufCreate .*kak.* "set -add buffer completion_extra_word_char -"
@@ -389,8 +416,6 @@ hook global -group kakrc InsertCompletionHide .* %{
     map window insert <tab>     '<a-;>:contextual-tab<ret>'
     map global insert <backtab> '<a-;>:backspace<ret>'
 }
-
-hook global -group kakrc BufOpenFifo '\*grep\*' %{ map global user n ':grep-next<ret>' }
 
 hook global -group kakrc WinSetOption filetype=(c|cpp) %{
     clang-enable-autocomplete
@@ -419,7 +444,7 @@ set global disabled_hooks (pug-hooks|pug-indent)
 
 hook global -group kakrc WinSetOption filetype=python %{
     set buffer lintcmd 'flake8 --filename=*'
-    lint-enable
+    #lint-enable
 }
 
 def ide %{
@@ -470,3 +495,9 @@ set global modelinefmt %{
 %val{cursor_line}:%val{cursor_char_column} |
 %val{bufname} |
 %sh{[[ $kak_client != unnamed* ]] && echo "$kak_client | "}%val{session}}
+set global modelinefmt %{
+{{mode_info}} |
+%val{cursor_line}:%val{cursor_char_column} |
+%val{bufname} |
+%val{client} |
+%val{session}}
