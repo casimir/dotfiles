@@ -16,13 +16,9 @@ def plug -params 1 %{
 }
 
 plug Delapouite/kakoune-expand-region
-#plug mawww/kak-ycmd
-#set global ycmd_path /home/dan/build/ycmd/ycmd
 
 hook global BufCreate .*[.](ts) %{
     set buffer filetype typescript
-    #ycmd-start
-    #ycmd-enable-autocomplete
 }
 
 import autowrap
