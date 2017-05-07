@@ -15,7 +15,7 @@ def plug -params 1 %{
     }
 }
 
-plug Delapouite/kakoune-expand-region
+#plug Delapouite/kakoune-expand-region
 
 hook global BufCreate .*[.](ts) %{
     set buffer filetype typescript
@@ -111,7 +111,10 @@ map global normal <a-K> <a-T>
 map global normal -- - s
 map global normal L S
 map global normal l <A-s>
-map global user   a :select-all-focus-closest<ret>
+map global user   a :echo'@'<ret>
+#:select-all-focus-closest<ret>
+map global normal @ :select-all-focus-closest<ret>
+map global normal _ ':exec s<ret><ret>'
 
 # Keep selections
 map global user k <a-k>
@@ -167,7 +170,9 @@ map global normal <c-g> ':viewport_preserve n<ret>'
 map global normal : \;
 map global normal * lbhe*
 map global user   8 *
-map global normal D \%
+map global normal D ":echo '<a-2>'<ret>"
+map global normal \% ":echo '<a-2>'<ret>"
+map global normal <a-2> \%
 
 map global normal = <space>
 
@@ -225,7 +230,7 @@ hook global -group kakrc NormalKey y %{xcopy}
 map global user x %{:eval -itersel %val{selection}<ret>}
 
 # Write and close buffer
-map global user w :w<ret>:lsp_sync<ret>
+map global user w :w<ret>
 map global user d %{ :delete-buffer<ret>:exec ga<ret> }
 
 # Comment line
@@ -298,6 +303,11 @@ hook global -group expandtabs_pre_buf_write BufWritePre .* %{
   try %{ exec -no-hooks -draft '%@' }
 }
 
+hook global BufSetOption filetype=makefile %{
+  set buffer disabled_hooks expandtabs.*
+  addhl show_whitespaces -lf ' ' -spc ' '
+}
+
 # Options
 set global ui_options ncurses_assistant=none
 set global tabstop 4
@@ -337,14 +347,14 @@ def my-window-setup %{
 }
 
 map global insert <a-w> <c-x><c-w>
-map global insert <a-c> '<a-;>:lsp_complete %(exec b)<ret>'
+map global insert <a-c> '<a-;>:eval -draft %(exec b; lsp_complete)<ret>'
 
 
 def contextual-tab -docstring "To be bound in insert mode" %{
     try %{
         # Complete if current char is whitespace, and previous is not
         exec -draft '<esc><space>;<a-k>\s<ret>h<a-k>\S<ret>'
-        lsp_complete %(exec b)
+        eval -draft %(exec b; lsp_complete)
         #exec <c-x><c-w>
     } catch %{
         # Otherwise just insert a tab
@@ -380,9 +390,26 @@ hook global -group kakrc BufCreate .*(Makefile).* %{
 #map global user h ':jedi docstring<ret>'
 #map global user u ':jedi usages<ret>'
 
-decl str lsp_python_cmd pyls
-decl str lsp_typescript_cmd 'node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js'
-decl str lsp_go_cmd '/home/dan/go/bin/go-langserver'
+decl str lsp_servers %{
+    python:pyls
+    typescript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
+    javascript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
+    go:/home/dan/go/bin/go-langserver
+}
+
+# hook global InsertChar .* %{
+#     try %{
+#         exec -draft <space><a-k>[%opt{lsp_complete_chars}]<ret>
+#         lsp_complete
+#     }
+#     try %{
+#         exec -draft <space><a-k>[%opt{lsp_signature_help_chars}]<ret>
+#         lsp_sinature_help
+#     }
+# }
+
+hook global InsertChar [.] %{try lsp_complete}
+hook global InsertChar [(,] %{try lsp_signature_help}
 
 map global user . ':lsp_goto_definition<ret>'
 map global user u ':lsp_references<ret>'
@@ -433,10 +460,9 @@ hook global -group kakrc WinSetOption filetype=sh %{
 }
 
 hook global BufSetOption filetype=pug %{
-    set buffer tabstop 2
+  set buffer tabstop 2
+  set buffer disabled_hooks (pug-hooks|pug-indent)
 }
-
-set global disabled_hooks (pug-hooks|pug-indent)
 
 hook global -group kakrc WinSetOption filetype=python %{
     set buffer lintcmd 'flake8 --filename=*'
@@ -479,20 +505,21 @@ hook global -group kakrc WinCreate .* %{
 try %{
     add-highlighter -group /kakrc/code regex \b(import|plug)\b 0:keyword
 }
-map -docstring 'case insensitive search' global user '/' /(?i)
-map -docstring 'case insensitive backward search' global user '<a-/>' <a-/>(?i)
-map -docstring 'case insensitive extend search' global user '?' ?(?i)
-map -docstring 'case insensitive backward extend-search' global user '<a-?>' <a-?>(?i)
+map -docstring '/(?i)'     global user '/'     /(?i)
+map -docstring '<a-/>(?i)' global user '<a-/>' <a-/>(?i)
+map -docstring '?(?i)'     global user '?'     ?(?i)
+map -docstring '<a-?>(?i)' global user '<a-?>' <a-?>(?i)
 
-
+map global normal <a-8> ':buffer *debug*<ret>'
+map global normal <a-3> ':edit ~/.kakrc<ret>'
 
 set global modelinefmt %{
-{{mode_info}} |
+{{mode_info}}{{context_info}} |
 %val{cursor_line}:%val{cursor_char_column} |
 %val{bufname} |
 %sh{[[ $kak_client != unnamed* ]] && echo "$kak_client | "}%val{session}}
 set global modelinefmt %{
-{{mode_info}} |
+{{mode_info}}{{context_info}} |
 %val{cursor_line}:%val{cursor_char_column} |
 %val{bufname} |
 %val{client} |

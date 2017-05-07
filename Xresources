@@ -55,20 +55,6 @@ URxvt.iso14755:         False
 #define S_green         #859900
 
 
-! Dark
-! #define S_base03        #002b36
-! #define S_base02        #073642
-
-! #define S_base03        #1c1c1c
-! #define S_base02        #303030
-! #define S_base01        #586e75
-! #define S_base00        #657b83
-! #define S_base0         #839496
-! #define S_base1         #93a1a1
-! #define S_base2         #eee8d5
-! #define S_base3         #fdf6e3
-
-
 ! Light
 
 #define S_base03        #ffffff
@@ -77,8 +63,27 @@ URxvt.iso14755:         False
 #define S_base00        #839496
 #define S_base0         #657b83
 #define S_base1         #586e75
-#define S_base2         #073642
-#define S_base3         #002b36
+#define S_base2         #2a2a2a
+#define S_base3         #1c1c1c
+
+! #define S_base2         #073642
+! #define S_base3         #002b36
+
+
+! Dark
+! #define S_base03        #002b36
+! #define S_base02        #073642
+
+#define S_base03        #1c1c1c
+#define S_base02        #2a2a2a
+#define S_base01        #586e75
+#define S_base00        #657b83
+#define S_base0         #839496
+#define S_base1         #93a1a1
+#define S_base2         #eee8d5
+#define S_base3         #fdf6e3
+
+
 
 
 ! To only apply colors to your terminal, for example, prefix
@@ -92,9 +97,9 @@ URxvt.keysym.C-8: command:\033]10;S_base01\007\033]11;S_base3\007
 URxvt.intensityStyles:         false
 *background:              S_base03
 URxvt.borderColor:        S_base03
-*foreground:              S_base2
-*cursorColor:             S_base2
-*pointerColorBackground:  S_base01
+*foreground:              S_base1
+*cursorColor:             S_base1
+*pointerColorBackground:  S_base00
 *pointerColorForeground:  S_base2
 
 *color0:                  S_base02

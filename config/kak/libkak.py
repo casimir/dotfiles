@@ -13,6 +13,23 @@ import time
 import shutil
 
 
+"""
+from pexpect.replwrap import REPLWrapper
+def ghci_repl():
+    ghci = REPLWrapper("ghci", "> ", ":set prompt {}")
+    ghci.run_command(":set prompt2 {}".format(ghci.continuation_prompt))
+    return ghci
+
+:complete repl "import "
+:ctags
+
+:break [<mod>] <l> [<col>]  set a breakpoint at the specified location
+:break <name>               set a breakpoint on the specified function
+:show breaks                show the active breakpoints
+:show context               show the breakpoint context
+
+
+
 def debug(*ws):
     return
     print(threading.current_thread().name, *ws)

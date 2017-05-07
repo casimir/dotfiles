@@ -74,7 +74,7 @@ base2  = "#eee8d5"
 base3  = "#fdf6e3"
 
 myNormalBorderColor  = base02 -- "#073642"
-myFocusedBorderColor = cyan -- green
+myFocusedBorderColor = base01 -- green
 
 dmenu :: String
 dmenu = "dmenu_run -fn \"Iosevka Slab-22:weight=50\" -l 6 -b"
@@ -190,10 +190,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
 
      -- mod-[1..9], Switch to workspace N
      -- mod-shift-[1..9], Move client to workspace N
-     [ ((m .|. modMask, k),
-           do cond (windows $ f i)
-              setDefaultCursor cursor)
-     | (i, k, cursor) <- zip3 (XMonad.workspaces conf) [xK_1 .. xK_9] cursors
+     [ ((m .|. modMask, k), cond (windows $ f i))
+     | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
      , (f, m, cond) <- [(W.view, 0, condWait i), (W.shift, shiftMask, id)]]
 
      ++
@@ -359,7 +357,7 @@ defaults = ewmh $ def {
     manageHook         = myManageHook,
     startupHook        = do startupHook def
                             refresh
-                            setDefaultCursor xC_dot,
+                            setDefaultCursor xC_heart,
     handleEventHook    = handleEventHook def <+> fullscreenEventHook <+>
                          serverModeEventHookCmd
   }
