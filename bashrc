@@ -100,6 +100,9 @@ alias xo='xclip -o'
 
 alias sd='pwd | xclip -selection secondary'
 alias ld='cd $(xclip -o -selection secondary)'
+alias mt='mv -t "$(xclip -o -selection secondary)"; clear; ls'
+alias wl='watch -n 0.1 -t -c ls --color=always'
+alias wg='watch -n 0.1 -t -c git status -s'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_COMMAND="rg --files"

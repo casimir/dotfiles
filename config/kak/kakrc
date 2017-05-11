@@ -95,7 +95,7 @@ map global normal j :marks<ret>
 # J a'la vim
 def J %{exec -itersel -no-hooks <A-J><a-m>c<space><esc><space>vm }
 map global normal J :J<ret>
-map global user   j <A-J>
+map -docstring join global user   j <A-J>
 
 # Overwrite a'la vim R
 import overwrite
@@ -111,14 +111,17 @@ map global normal <a-K> <a-T>
 map global normal -- - s
 map global normal L S
 map global normal l <A-s>
-map global user   a :echo'@'<ret>
+
+#map global user   a :echo'@'<ret>
 #:select-all-focus-closest<ret>
 map global normal @ :select-all-focus-closest<ret>
 map global normal _ ':exec s<ret><ret>'
 
+#map -docstring %{select all} global user   a :select-all-focus-closest<ret>
+
 # Keep selections
-map global user k <a-k>
-map global user K <a-K>
+map -docstring %{keep} global user k <a-k>
+map -docstring %{keep not} global user K <a-K>
 
 # Line selection commands on v as in vim's visual mode
 import line-selection
@@ -135,7 +138,7 @@ map global normal \; :
 map global normal <esc> '<esc>:noh<ret>'
 
 # ret...
-map global user <ret> <ret>
+map -docstring <ret> global user <ret> <ret>
 
 # Nav
 map global normal <space> '<space>:pagewise j<ret>'
@@ -169,9 +172,8 @@ map global normal <c-g> ':viewport_preserve n<ret>'
 # Selection fiddling
 map global normal : \;
 map global normal * lbhe*
-map global user   8 *
+map -docstring * global user   8 *
 map global normal D ":echo '<a-2>'<ret>"
-map global normal \% ":echo '<a-2>'<ret>"
 map global normal <a-2> \%
 
 map global normal = <space>
@@ -191,17 +193,17 @@ hook -group kakrc global NormalKey '^(<a-[:;]>|<space>|;)$' selinfo
 map global normal '"' '<a-">'
 
 # Register
-map global user "'" '"'
+map -docstring register global user "'" '"'
 
 # Paste and replace
 map global normal <a-r> R
 
 # Xclipboard
-map global user p %{<a-!>xsel<ret>}
-map global user P %{!xsel<ret>}
-map global user R %{:reg w "%sh{xsel}"<ret>"wR}
-map global user y %{:xcopy %val{bufname}<ret>}
-map global user Y %{:xcopy %val{buffile}<ret>}
+map -docstring 'xser paste'    global user p %{<a-!>xsel<ret>}
+map -docstring 'xsel Paste'    global user P %{!xsel<ret>}
+map -docstring 'xsel replace'  global user R %{:reg w "%sh{xsel}"<ret>"wR}
+map -docstring 'xcopy bufname' global user y %{:xcopy %val{bufname}<ret>}
+map -docstring 'xcopy buffile' global user Y %{:xcopy %val{buffile}<ret>}
 
 def xcopy -params 0..1 %{%sh{
   if [ -z "$1" ]; then
@@ -227,11 +229,11 @@ def xcopy -params 0..1 %{%sh{
 hook global -group kakrc NormalKey y %{xcopy}
 
 # Execute current selection(s)
-map global user x %{:eval -itersel %val{selection}<ret>}
+map -docstring eval global user x %{:eval -itersel %val{selection}<ret>}
 
 # Write and close buffer
-map global user w :w<ret>
-map global user d %{ :delete-buffer<ret>:exec ga<ret> }
+map -docstring write  global user w :w<ret>
+map -docstring bufdel global user d %{ :delete-buffer<ret>:exec ga<ret> }
 
 # Comment line
 map global normal '#' :comment-line<ret>
@@ -259,17 +261,17 @@ def bufinfo %{
 
 # fzf
 import fzf
-map global user b ":bufzf<ret>"
-map global user f ":fzf-file<ret>"
-map global user F ":fzf-file ~<ret>"
-map global user c ":fzf-cd<ret>"
-map global user C ":fzf-cd ~<ret>"
-map global user g ":fzf-git<ret>"
+map -docstring "bufzf"      global user b ":bufzf<ret>"
+map -docstring "fzf-file"   global user f ":fzf-file<ret>"
+map -docstring "fzf-file ~" global user F ":fzf-file ~<ret>"
+map -docstring "fzf-cd"     global user c ":fzf-cd<ret>"
+map -docstring "fzf-cd ~"   global user C ":fzf-cd ~<ret>"
+map -docstring "fzf-git"    global user g ":fzf-git<ret>"
 
 map global normal <a-c> ':fzf-cd<ret>'
 
 # Format using fmt
-map global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+map -docstring format global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
 
 # Object map
 # Some upper-case variants:
@@ -288,6 +290,8 @@ def setf -params 1 %{set buffer filetype %arg{1}}
 def auinfo %{set -add window autoinfo normal}
 def gitcd  %{cd %sh{cd $(dirname $kak_buffile); git rev-parse --show-toplevel}}
 def filecd %{cd %sh{echo $(dirname $kak_buffile)}}
+
+map -docstring pwd global user ` %{:echo %val{client_env_PWD}<ret>}
 
 # Auto-mkdir when saving buffer to file, from alexherbo2
 hook global -group kakrc BufWritePre .* %{ nop %sh{
@@ -321,6 +325,11 @@ map global insert <c-k> <c-v>    ; # raw insert, use vim binding
 map global insert <c-y> '<c-r>"' ; # paste from normal yank register, readline key
 map global insert <c-h> <a-\;>   ; # execute one normal kak command
 
+# Jedi
+map -docstring goto      global user . ':jedi goto<ret>'
+map -docstring docstring global user h ':jedi docstring<ret>'
+map -docstring usages    global user u ':jedi usages<ret>'
+
 # Reload .Xresources upon saving it
 rmhooks global reload_xres
 hook -group reload_xres global BufWritePost .*Xresources %{
@@ -348,6 +357,7 @@ def my-window-setup %{
 
 map global insert <a-w> <c-x><c-w>
 map global insert <a-c> '<a-;>:eval -draft %(exec b; lsp_complete)<ret>'
+map global insert <a-h> '<a-;>:lsp_signature_help<ret>'
 
 
 def contextual-tab -docstring "To be bound in insert mode" %{
@@ -380,49 +390,29 @@ hook global -group kakrc BufCreate .*(Makefile).* %{
     set buffer filetype makefile
 }
 
-#hook global -group kakrc WinSetOption filetype=python %{
-    #try jedi-start
-    #jedi-enable-autocomplete
-#}
-#
-# Jedi
-#map global user . ':jedi goto<ret>'
-#map global user h ':jedi docstring<ret>'
-#map global user u ':jedi usages<ret>'
-
 decl str lsp_servers %{
     python:pyls
     typescript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
     javascript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
     go:/home/dan/go/bin/go-langserver
 }
+decl str lsp_python_disabled_diagnostics '^E501'
 
-# hook global InsertChar .* %{
-#     try %{
-#         exec -draft <space><a-k>[%opt{lsp_complete_chars}]<ret>
-#         lsp_complete
-#     }
-#     try %{
-#         exec -draft <space><a-k>[%opt{lsp_signature_help_chars}]<ret>
-#         lsp_sinature_help
-#     }
-# }
+#hook global InsertChar [.] %{try lsp_complete}
+hook global InsertChar [,] %{try lsp_signature_help}
 
-hook global InsertChar [.] %{try lsp_complete}
-hook global InsertChar [(,] %{try lsp_signature_help}
-
-map global user . ':lsp_goto_definition<ret>'
-map global user u ':lsp_references<ret>'
-map global user h ':lsp_hover docsclient<ret>'
-map global user H ':lsp_hover cursor<ret>'
-map global user i ':lsp_hover info<ret>'
+map global -docstring 'lsp goto'  user . ':lsp_goto_definition<ret>'
+map global -docstring 'lsp refs'  user u ':lsp_references<ret>'
+map global -docstring 'hover docs'   user h ':lsp_hover docsclient<ret>'
+map global -docstring 'hover cursor' user H ':lsp_hover cursor<ret>'
+map global -docstring 'hover info'   user i ':lsp_hover info<ret>'
 
 # should be grep-next in grep buffer
-map global user n ':lsp_diagnostics_jump next<ret>:lsp_diagnostics cursor<ret>'
-map global user r ':lsp_diagnostics_jump prev<ret>:lsp_diagnostics cursor<ret>'
-map global user e ':lsp_diagnostics cursor<ret>'
+map global -docstring 'lsp next' user t ':lsp_diagnostics_jump next cursor<ret>'
+map global -docstring 'lsp prev' user n ':lsp_diagnostics_jump prev cursor<ret>'
+map global -docstring diagnostics user e ':lsp_diagnostics cursor<ret>'
 
-set-option global completers filename:word=buffer:option=lsp_completions
+#set-option global completers filename:word=buffer:option=lsp_completions
 hook global WinCreate .* %{
     try %{
         add-highlighter flag_lines default lsp_flags
@@ -439,6 +429,8 @@ hook global -group kakrc InsertCompletionHide .* %{
     map window insert <tab>     '<a-;>:contextual-tab<ret>'
     map global insert <backtab> '<a-;>:backspace<ret>'
 }
+
+hook global -group kakrc BufOpenFifo '\*grep\*' %{ map -docstring grep-next global user n ':grep-next<ret>' }
 
 hook global -group kakrc WinSetOption filetype=(c|cpp) %{
     clang-enable-autocomplete
@@ -505,6 +497,7 @@ hook global -group kakrc WinCreate .* %{
 try %{
     add-highlighter -group /kakrc/code regex \b(import|plug)\b 0:keyword
 }
+
 map -docstring '/(?i)'     global user '/'     /(?i)
 map -docstring '<a-/>(?i)' global user '<a-/>' <a-/>(?i)
 map -docstring '?(?i)'     global user '?'     ?(?i)

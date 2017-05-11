@@ -12,5 +12,6 @@ xset r rate 150
 openbox &
 sleep 1
 #javaws ~/bin/egenrapportering.jnlp
-firefox
+#firefox
+urxvt
 kill $ZEPHYR_PID

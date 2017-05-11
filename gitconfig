@@ -1,15 +1,15 @@
 [user]
-	name = Dan Rosén
-	email = dan.rosen@gu.se
+    name = Dan Rosén
+    email = dan.rosen@gu.se
 [core]
-	editor = kak
+    editor = kak
     excludesfile = ~/.gitexcludes
 [branch "master"]
-	autosetupmerge = true
+    autosetupmerge = true
 [merge]
-	tool = vimdiff
-	conflictstyle = diff3
+    tool = vimdiff
+    conflictstyle = diff3
 [push]
-	default = simple
+    default = simple
 [color]
-	ui = true
+    ui = always
