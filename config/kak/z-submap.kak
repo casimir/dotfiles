@@ -14,11 +14,11 @@ def z-handle -params 3 %{
     z=""
     Z=""
     case "$1" in
-      H)            echo exec Gi  ;;
-      h) Z="exec vh"; z="exec gi" ;;
-      t) Z="exec vj"; z="exec vt" ;;
-      n) Z="exec vk"; z="exec ge" ;;
-      s) Z="exec vl"  ;;
+      #H)            echo exec Gi  ;;
+      h) Z="exec vh"; z="newsel h" ;;
+      t) Z="exec vj"; z="exec vt"  ;;
+      n) Z="exec vk"; z="exec ge"  ;;
+      s) Z="exec vl"; z="newsel l" ;;
 
       c) echo exec vc ;;
       b) echo exec vb ;;
@@ -47,10 +47,10 @@ def z-handle -params 3 %{
            echo "exec $kak_opt_zcount G";
          fi
          ;;
-      e) echo exec gl ;;
-      E) echo exec Gl ;;
-      a) echo exec gh ;;
-      A) echo exec Gh ;;
+      #e) echo "exec ';Gl'" ;;
+      #E) echo "exec 'Gl'" ;;
+      #a) echo "exec ';Gh'" ;;
+      #A) echo "exec 'Gh'" ;;
       k) echo exec '<A-K>' ;;
       o) echo exec '<A-a>' ;;
       i) echo exec '<A-i>' ;;

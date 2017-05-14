@@ -17,8 +17,8 @@ def plug -params 1 %{
 
 #plug Delapouite/kakoune-expand-region
 
-hook global BufCreate .*[.](ts) %{
-    set buffer filetype typescript
+hook -group kakrc global BufCreate .*[.](ts) %{
+    set buffer filetype javascript
 }
 
 import autowrap
@@ -71,12 +71,15 @@ map global normal <a-n> [p
 map global normal <a-N> {p
 
 # Extend selections left and right
-map global normal <A-s>   <A-l>
-map global normal <A-S>   <A-L>
-map global normal <A-h>   \;Gi
-map global normal <A-H>   Gi
-#map global normal <A-a>   <A-h>
-#map global normal <A-A>   <A-H>
+map global normal <c-s>   gl
+map global normal <a-s> \;Gl
+map global normal <a-S>   Gl
+map global normal <backspace> gi
+map global normal <a-h> \;Gi
+map global normal <a-H>   Gi
+map global normal <c-a>   gh
+map global normal <a-a> \;Gh
+map global normal <a-A>   Gh
 
 # Outer object <a-[oO]>
 map global normal <a-o> <a-a>
@@ -171,8 +174,8 @@ map global normal : \;
 map global normal * lbhe*
 map global user   8 *
 map global normal D ":echo '<a-2>'<ret>"
-map global normal \% ":echo '<a-2>'<ret>"
-map global normal <a-2> \%
+#map global normal \% ":echo '<a-2>'<ret>"
+#map global normal <a-2> \%
 
 map global normal = <space>
 
@@ -233,6 +236,7 @@ map global user x %{:eval -itersel %val{selection}<ret>}
 map global user w :w<ret>
 map global user d %{ :delete-buffer<ret>:exec ga<ret> }
 
+
 # Comment line
 map global normal '#' :comment-line<ret>
 
@@ -242,6 +246,8 @@ map global normal <a-.> :bn<ret>:bufinfo<ret>
 map global normal <a--> ga:bufinfo<ret>
 map global normal <a-d> :db<ret>:bufinfo<ret>
 map global normal <a-q> :db!<ret>:bufinfo<ret>
+
+map global user -- - g.
 
 def bufinfo %{
     %sh{
@@ -265,6 +271,14 @@ map global user F ":fzf-file ~<ret>"
 map global user c ":fzf-cd<ret>"
 map global user C ":fzf-cd ~<ret>"
 map global user g ":fzf-git<ret>"
+map global user G ":fzf-file-from-git-here<ret>"
+
+def fzf-file-from-git-here %{
+    fzf-file %sh{
+        cd $(dirname $kak_buffile)
+        git rev-parse --show-toplevel
+    }
+}
 
 map global normal <a-c> ':fzf-cd<ret>'
 
@@ -342,19 +356,32 @@ def my-window-setup %{
     addhl group red80
     addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,rgb:ffcccc
 
-    # set window completers filename
     map window insert <tab> '<a-;>:contextual-tab<ret>'
 }
 
-map global insert <a-w> <c-x><c-w>
-map global insert <a-c> '<a-;>:eval -draft %(exec b; lsp_complete)<ret>'
+set global completers filename
 
+map global insert <a-w> <c-x><c-w>
+map global insert <a-c> '<a-;>:eval -draft %(exec b; lsp-complete)<ret>'
+map global insert <a-h> '<a-;>:lsp-signature-help<ret>'
+
+def lsp-start %{
+    %sh{
+        ( python $HOME/code/libkak/lspc.py $kak_session
+        ) > /dev/null 2>&1 < /dev/null &
+    }
+}
+lsp-start
+
+# Aggressive diagnostics
+hook -group kakrc global InsertEnd    .* lsp-sync
+hook -group kakrc global BufWritePost .* lsp-sync
 
 def contextual-tab -docstring "To be bound in insert mode" %{
     try %{
         # Complete if current char is whitespace, and previous is not
         exec -draft '<esc><space>;<a-k>\s<ret>h<a-k>\S<ret>'
-        eval -draft %(exec b; lsp_complete)
+        eval -draft %(exec b; lsp-complete)
         #exec <c-x><c-w>
     } catch %{
         # Otherwise just insert a tab
@@ -397,33 +424,35 @@ decl str lsp_servers %{
     go:/home/dan/go/bin/go-langserver
 }
 
+decl str lsp_python_disabled_diagnostics '^E501'
+
 # hook global InsertChar .* %{
 #     try %{
-#         exec -draft <space><a-k>[%opt{lsp_complete_chars}]<ret>
-#         lsp_complete
+#         exec -draft <space><a-k>[%opt{lsp-complete-chars}]<ret>
+#         lsp-complete
 #     }
 #     try %{
-#         exec -draft <space><a-k>[%opt{lsp_signature_help_chars}]<ret>
-#         lsp_sinature_help
+#         exec -draft <space><a-k>[%opt{lsp-signature-help-chars}]<ret>
+#         lsp-sinature-help
 #     }
 # }
 
-hook global InsertChar [.] %{try lsp_complete}
-hook global InsertChar [(,] %{try lsp_signature_help}
+#hook global InsertChar [.] %{try lsp-complete}
+#hook global InsertChar [,] %{try lsp-signature-help}
 
-map global user . ':lsp_goto_definition<ret>'
-map global user u ':lsp_references<ret>'
-map global user h ':lsp_hover docsclient<ret>'
-map global user H ':lsp_hover cursor<ret>'
-map global user i ':lsp_hover info<ret>'
+map global user . ':lsp-goto-definition<ret>'
+map global user u ':lsp-references<ret>'
+map global user h ':lsp-hover docsclient<ret>'
+map global user H ':lsp-hover cursor<ret>'
+map global user i ':lsp-hover info<ret>'
 
 # should be grep-next in grep buffer
-map global user n ':lsp_diagnostics_jump next<ret>:lsp_diagnostics cursor<ret>'
-map global user r ':lsp_diagnostics_jump prev<ret>:lsp_diagnostics cursor<ret>'
-map global user e ':lsp_diagnostics cursor<ret>'
+map global user n ':lsp-diagnostics-jump next cursor<ret>'
+map global user r ':lsp-diagnostics-jump prev cursor<ret>'
+map global user e ':lsp-diagnostics cursor<ret>'
 
-set-option global completers filename:word=buffer:option=lsp_completions
-hook global WinCreate .* %{
+#set-option global completers filename:word=buffer:option=lsp_completions
+hook -group kakrc global WinCreate .* %{
     try %{
         add-highlighter flag_lines default lsp_flags
     }
@@ -459,7 +488,7 @@ hook global -group kakrc WinSetOption filetype=sh %{
     lint-enable
 }
 
-hook global BufSetOption filetype=pug %{
+hook -group kakrc global BufSetOption filetype=pug %{
   set buffer tabstop 2
   set buffer disabled_hooks (pug-hooks|pug-indent)
 }
@@ -483,12 +512,17 @@ colorscheme solarized
 # by lenormf, see https://github.com/mawww/kakoune/issues/1192
 decl -hidden range-faces show_matching_range
 
-hook global -group kakrc InsertChar .+ %{ eval -draft %{
-    set buffer show_matching_range ""
-
+hook global -group kakrc InsertChar [[(<{}>)\]] %{ eval -draft %{
     try %{
-        exec <esc>\;hm<a-k>..<ret>\;
-        set buffer show_matching_range "%val{timestamp}:%val{selection_desc}|MatchingChar"
+        exec -no-hooks <esc>\;hm<a-k>..<ret>\;
+        echo -debug HL
+        set window show_matching_range "%val{timestamp}:%val{selection_desc}|MatchingChar"
+    }
+
+    hook window -group once-matching InsertChar [^[(<{}>)\]] %{
+        set window show_matching_range ""
+        remove-hooks window once-matching
+        echo -debug RMHL
     }
 } }
 
@@ -497,7 +531,6 @@ hook global -group kakrc InsertEnd .* %{
 }
 
 hook global -group kakrc WinCreate .* %{
-
     addhl ranges show_matching_range
 }
 
