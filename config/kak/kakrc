@@ -17,7 +17,7 @@ def plug -params 1 %{
 
 #plug Delapouite/kakoune-expand-region
 
-hook global BufCreate .*[.](ts) %{
+hook global BufCreate .*[.](ts)x? %{
     set buffer filetype typescript
 }
 
@@ -325,11 +325,6 @@ map global insert <c-k> <c-v>    ; # raw insert, use vim binding
 map global insert <c-y> '<c-r>"' ; # paste from normal yank register, readline key
 map global insert <c-h> <a-\;>   ; # execute one normal kak command
 
-# Jedi
-map -docstring goto      global user . ':jedi goto<ret>'
-map -docstring docstring global user h ':jedi docstring<ret>'
-map -docstring usages    global user u ':jedi usages<ret>'
-
 # Reload .Xresources upon saving it
 rmhooks global reload_xres
 hook -group reload_xres global BufWritePost .*Xresources %{
@@ -356,8 +351,8 @@ def my-window-setup %{
 }
 
 map global insert <a-w> <c-x><c-w>
-map global insert <a-c> '<a-;>:eval -draft %(exec b; lsp_complete)<ret>'
-map global insert <a-h> '<a-;>:lsp_signature_help<ret>'
+map global insert <a-c> '<a-;>:eval -draft %(exec b; lsp-complete)<ret>'
+map global insert <a-h> '<a-;>:lsp-signature-help<ret>'
 
 
 def contextual-tab -docstring "To be bound in insert mode" %{
@@ -399,18 +394,26 @@ decl str lsp_servers %{
 decl str lsp_python_disabled_diagnostics '^E501'
 
 #hook global InsertChar [.] %{try lsp_complete}
-hook global InsertChar [,] %{try lsp_signature_help}
+#hook global InsertChar [,] %{try lsp_signature_help}
 
-map global -docstring 'lsp goto'  user . ':lsp_goto_definition<ret>'
-map global -docstring 'lsp refs'  user u ':lsp_references<ret>'
-map global -docstring 'hover docs'   user h ':lsp_hover docsclient<ret>'
-map global -docstring 'hover cursor' user H ':lsp_hover cursor<ret>'
-map global -docstring 'hover info'   user i ':lsp_hover info<ret>'
+map global -docstring 'lsp goto'     user . ':lsp-goto-definition<ret>'
+map global -docstring 'lsp refs'     user u ':lsp-references<ret>'
+map global -docstring 'hover docs'   user h ':lsp-hover docsclient<ret>'
+map global -docstring 'hover cursor' user H ':lsp-hover cursor<ret>'
+map global -docstring 'hover info'   user i ':lsp-hover info<ret>'
+map global -docstring 'lsp next'     user t ':lsp-diagnostics-jump next cursor<ret>'
+map global -docstring 'lsp prev'     user n ':lsp-diagnostics-jump prev cursor<ret>'
+map global -docstring diagnostics    user e ':lsp-diagnostics cursor<ret>'
 
-# should be grep-next in grep buffer
-map global -docstring 'lsp next' user t ':lsp_diagnostics_jump next cursor<ret>'
-map global -docstring 'lsp prev' user n ':lsp_diagnostics_jump prev cursor<ret>'
-map global -docstring diagnostics user e ':lsp_diagnostics cursor<ret>'
+hook -group lsp global InsertEnd    .* lsp-sync
+hook -group lsp global BufWritePost .* lsp-sync
+
+def lsp-start %{
+    %sh{
+        ( python $HOME/code/libkak/lspc.py $kak_session
+        ) > /dev/null 2>&1 < /dev/null &
+    }
+}
 
 #set-option global completers filename:word=buffer:option=lsp_completions
 hook global WinCreate .* %{
