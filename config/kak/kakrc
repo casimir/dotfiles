@@ -21,6 +21,11 @@ hook -group kakrc global BufCreate .*[.](ts)x? %{
     set buffer filetype javascript
 }
 
+hook -group kakrc global WinSetOption filetype=(java|type)script %{
+    set buffer tabstop 2
+    set buffer indentwidth 2
+}
+
 import autowrap
 import backspace
 import hl-curword
@@ -137,8 +142,8 @@ map global normal <c-v> :line-new-cursor<ret>
 # Prompt on ;
 map global normal \; :
 
-# Macros
-map global normal <esc> '<esc>:noh<ret>'
+# Macros, one selection and remove highlighting
+map global normal <esc> '<esc>:noh<ret><space>'
 
 # ret...
 map -docstring <ret> global user <ret> <ret>
@@ -170,7 +175,7 @@ def viewport_preserve -params 1 %{
     exec %arg{1} vt %opt{viewport_y} vk
 }
 
-map  global normal <c-g> ':viewport_preserve n<ret>'
+map global normal <c-g> ':viewport_preserve n<ret>'
 
 # Selection fiddling
 map global normal : \;
@@ -183,7 +188,7 @@ def selinfo %{
     info '
 <a-;>  swap direction
 <a-:>  face forward
-jo     one selection (space)
+<esc>  one selection (space)
 :      reduce selection to cursor (;)
     '
 }
@@ -243,7 +248,7 @@ map global normal '#' :comment-line<ret>
 # Buffers
 map global normal <a-,> :bp<ret>:bufinfo<ret>
 map global normal <a-.> :bn<ret>:bufinfo<ret>
-map global normal <a--> ga:bufinfo<ret>
+map global normal <a-minus> ga:bufinfo<ret>
 map global normal <a-d> :db<ret>:bufinfo<ret>
 map global normal <a-q> :db!<ret>:bufinfo<ret>
 
@@ -251,17 +256,42 @@ map global user -- - g.
 
 def bufinfo %{
     %sh{
+        i=0
         echo -n info -- %^
         (while read -d : buf; do
+            i=$((i+1))
             if [[ "$buf" == "$kak_bufname" ]]; then
-                echo "> $buf <"
+                echo "$i) > $buf <"
             else
-                echo "  $buf  "
+                echo "$i)   $buf  "
             fi
-        done) <<< "$kak_buflist"
+        done) <<< "$kak_buflist:"
         echo ^
     }
 }
+
+def selbuf -params 1 %{
+    %sh{
+        i=0
+        (while read -d : buf; do
+            i=$((i+1))
+            if [[ "$i" == "$1" ]]; then
+                echo buffer $buf
+            fi
+        done) <<< "$kak_buflist:"
+    }
+}
+
+map global normal <a-1> ':selbuf 1<ret>:bufinfo<ret>'
+map global normal <a-2> ':selbuf 2<ret>:bufinfo<ret>'
+map global normal <a-3> ':selbuf 3<ret>:bufinfo<ret>'
+map global normal <a-4> ':selbuf 4<ret>:bufinfo<ret>'
+map global normal <a-5> ':selbuf 5<ret>:bufinfo<ret>'
+map global normal <a-6> ':selbuf 6<ret>:bufinfo<ret>'
+map global normal <a-7> ':selbuf 7<ret>:bufinfo<ret>'
+map global normal <a-8> ':selbuf 8<ret>:bufinfo<ret>'
+map global normal <a-9> ':selbuf 9<ret>:bufinfo<ret>'
+map global normal <a-0> ':selbuf 10<ret>:bufinfo<ret>'
 
 # fzf
 import fzf
@@ -408,20 +438,9 @@ def lsp-start %{
         ) > /dev/null 2>&1 < /dev/null &
     }
 }
-
+lsp-start
 
 decl str lsp_python_disabled_diagnostics '^E501'
-
-map global user . ':lsp-goto-definition<ret>'
-map global user u ':lsp-references<ret>'
-map global user h ':lsp-hover docsclient<ret>'
-map global user H ':lsp-hover cursor<ret>'
-map global user i ':lsp-hover info<ret>'
-
-# should be grep-next in grep buffer
-map global user n ':lsp-diagnostics-jump next cursor<ret>'
-map global user r ':lsp-diagnostics-jump prev cursor<ret>'
-map global user e ':lsp-diagnostics cursor<ret>'
 
 hook -group kakrc global WinCreate .* %{
     try %{
@@ -431,18 +450,33 @@ hook -group kakrc global WinCreate .* %{
 
 set global completers filename
 
+def ifte-at-word-end -params 2 %{
+    try %{
+        exec -no-hooks -draft '<esc><space>;H<a-k>\S\s<ret>'
+        eval %arg{1}
+    } catch %{
+        eval %arg{2}
+    }
+}
+
+def lsp-at-word-end %{
+    ifte-at-word-end %{
+        eval -no-hooks -draft %{exec b; lsp-complete}
+    } %{
+        lsp-complete
+    }
+}
+
 map global insert <a-w> <c-x><c-w>
-map global insert <a-c> '<a-;>:eval -draft %(exec -no-hooks b; lsp-complete)<ret>'
+map global insert <a-c> '<a-;>:lsp-at-word-end<ret>'
 map global insert <a-h> '<a-;>:lsp-signature-help<ret>'
 
 
 def contextual-tab -docstring "To be bound in insert mode" %{
-    try %{
+    ifte-at-word-end %{
         # Complete if current char is whitespace, and previous is not
-        exec -draft '<esc><space>;<a-k>\s<ret>h<a-k>\S<ret>'
-        eval -draft %(exec b; lsp-complete)
-        #exec <c-x><c-w>
-    } catch %{
+        eval -draft -no-hooks %{exec b; lsp-complete}
+    } %{
         # Otherwise just insert a tab
         exec <tab>
     }
@@ -484,6 +518,7 @@ hook global -group kakrc WinSetOption filetype=sh %{
 
 hook -group kakrc global BufSetOption filetype=pug %{
   set buffer tabstop 2
+  set buffer indentwidth 2
   set buffer disabled_hooks (pug-hooks|pug-indent)
 }
 
@@ -536,17 +571,49 @@ map -docstring '<a-/>(?i)' global user '<a-/>' <a-/>(?i)
 map -docstring '?(?i)'     global user '?'     ?(?i)
 map -docstring '<a-?>(?i)' global user '<a-?>' <a-?>(?i)
 
-map global normal <a-8> ':buffer *debug*<ret>'
-map global normal <a-3> ':edit ~/.kakrc<ret>'
+#map global normal <a-0> ':buffer *debug*<ret>'
+map global normal <a-`> ':edit ~/.kakrc<ret>'
+
+decl -hidden int height
+
+def -hidden update_height %{
+    eval -draft -no-hooks %{
+        exec ge
+        %sh{
+            [[ $kak_opt_height != $kak_cursor_line ]] && echo "set buffer height $(($kak_cursor_line-1))"
+        }
+    }
+}
+
+# hook -group kakrc global NormalIdle .* update_height
+# hook -group kakrc global InsertChar [\n] update_height
 
 set global modelinefmt %{
-{{mode_info}}{{context_info}} |
+{{context_info}} {{mode_info}} |
+%val{cursor_line}:%val{cursor_char_column} |
+%sh{
+    [[ ${kak_opt_height:-0} != 0 ]] && \
+    printf "%3d%% | " "$((100 * ($kak_cursor_line - 1) / $kak_opt_height))"
+
+    echo -n "$kak_bufname | "
+
+    [[ $kak_client != unnamed0 ]] && \
+    echo "$kak_client | "
+}%val{session}}
+
+set global modelinefmt %{
+{{context_info}} {{mode_info}} |
 %val{cursor_line}:%val{cursor_char_column} |
 %val{bufname} |
-%sh{[[ $kak_client != unnamed* ]] && echo "$kak_client | "}%val{session}}
-set global modelinefmt %{
-{{mode_info}}{{context_info}} |
+%val{session}}
+hook -group kakrc global WinDisplay .* %{
+    %sh{
+        [[ $kak_client != unnamed0 ]] && echo 'set window modelinefmt %{
+{{context_info}} {{mode_info}} |
 %val{cursor_line}:%val{cursor_char_column} |
 %val{bufname} |
 %val{client} |
 %val{session}}
+        '
+    }
+}
