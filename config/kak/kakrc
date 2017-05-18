@@ -246,6 +246,8 @@ map -docstring bufdel global user d %{ :delete-buffer<ret>:exec ga<ret> }
 map global normal '#' :comment-line<ret>
 
 # Buffers
+map global normal <a-0> ':buffer *debug*<ret>'
+map global normal <a-`> ':edit ~/.kakrc<ret>:bufinfo<ret>'
 map global normal <a-,> :bp<ret>:bufinfo<ret>
 map global normal <a-.> :bn<ret>:bufinfo<ret>
 map global normal <a-minus> ga:bufinfo<ret>
@@ -259,11 +261,14 @@ def bufinfo %{
         i=0
         echo -n info -- %^
         (while read -d : buf; do
+            if [[ "$buf" == *debug* ]]; then
+                continue
+            fi
             i=$((i+1))
             if [[ "$buf" == "$kak_bufname" ]]; then
-                echo "$i) > $buf <"
+                echo "$i. > $buf <"
             else
-                echo "$i)   $buf  "
+                echo "$i.   $buf  "
             fi
         done) <<< "$kak_buflist:"
         echo ^
@@ -274,6 +279,9 @@ def selbuf -params 1 %{
     %sh{
         i=0
         (while read -d : buf; do
+            if [[ "$buf" == *debug* ]]; then
+                continue
+            fi
             i=$((i+1))
             if [[ "$i" == "$1" ]]; then
                 echo buffer $buf
@@ -291,7 +299,6 @@ map global normal <a-6> ':selbuf 6<ret>:bufinfo<ret>'
 map global normal <a-7> ':selbuf 7<ret>:bufinfo<ret>'
 map global normal <a-8> ':selbuf 8<ret>:bufinfo<ret>'
 map global normal <a-9> ':selbuf 9<ret>:bufinfo<ret>'
-map global normal <a-0> ':selbuf 10<ret>:bufinfo<ret>'
 
 # fzf
 import fzf
@@ -432,10 +439,16 @@ map global -docstring diagnostics    user e ':lsp-diagnostics cursor<ret>'
 hook -group lsp global InsertEnd    .* lsp-sync
 hook -group lsp global BufWritePost .* lsp-sync
 
+decl str lsp_pid
+hook global KakEnd .* %{
+    %sh{kill $kak_opt_lsp_pid}
+}
 def lsp-start %{
     %sh{
+        kill $kak_opt_lsp_pid
         ( python $HOME/code/libkak/lspc.py $kak_session
         ) > /dev/null 2>&1 < /dev/null &
+        echo set global lsp_pid $!
     }
 }
 lsp-start
@@ -570,9 +583,6 @@ map -docstring '/(?i)'     global user '/'     /(?i)
 map -docstring '<a-/>(?i)' global user '<a-/>' <a-/>(?i)
 map -docstring '?(?i)'     global user '?'     ?(?i)
 map -docstring '<a-?>(?i)' global user '<a-?>' <a-?>(?i)
-
-#map global normal <a-0> ':buffer *debug*<ret>'
-map global normal <a-`> ':edit ~/.kakrc<ret>'
 
 decl -hidden int height
 
