@@ -18,9 +18,9 @@ if [[ "$HOSTNAME" == "melocoton" ]]; then
     xrandr | grep 'DP1-2 connected' && xrandr --output eDP1 --off --output DP1-2 --auto
 fi
 
-eval `ssh-agent`
+eval $(ssh-agent)
 
-xflux -l 57.70887 -g 11.97456
+#xflux -l 57.70887 -g 11.97456
 
 xrdb .Xresources
 urxvt &

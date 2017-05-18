@@ -86,8 +86,8 @@ URxvt.iso14755:         False
 !
 ! URxvt*background:            S_base03
 
-URxvt.keysym.C-7: command:\033]10;S_base2\007\033]11;S_base03\007
-URxvt.keysym.C-8: command:\033]10;S_base01\007\033]11;S_base3\007
+! URxvt.keysym.C-7: command:\033]10;S_base2\007\033]11;S_base03\007
+! URxvt.keysym.C-8: command:\033]10;S_base01\007\033]11;S_base3\007
 
 URxvt.intensityStyles:         false
 *background:              S_base03

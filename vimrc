@@ -5,9 +5,11 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 
+Plug 'tjdevries/nvim-langserver-shim'
+
 Plug 'bronson/vim-visual-star-search'
 Plug 'vim-scripts/closetag.vim'
-Plug 'altercation/vim-colors-solarized'
+" Plug 'altercation/vim-colors-solarized'
 
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
@@ -18,6 +20,17 @@ autocmd! User GoyoLeave Limelight!
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
 " Plug 'airblade/vim-gitgutter'
+
+let g:langserver_executables = {
+      \ 'go': {
+        \ 'name': 'sourcegraph/langserver-go',
+        \ 'cmd': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+        \ },
+      \ 'python': {
+        \ 'name': 'sourcegraph/langserver-python',
+        \ 'cmd': ['pyls', '--log-file', expand('~/langserver-pyls.log')],
+        \ },
+      \ }
 
 Plug 'tpope/vim-rsi'            " readline
 let g:rsi_no_meta = 1

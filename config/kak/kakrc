@@ -251,6 +251,7 @@ map global normal <a-`> ':edit ~/.kakrc<ret>:bufinfo<ret>'
 map global normal <a-,> :bp<ret>:bufinfo<ret>
 map global normal <a-.> :bn<ret>:bufinfo<ret>
 map global normal <a-minus> ga:bufinfo<ret>
+map global normal <a-space> ga:bufinfo<ret>
 map global normal <a-d> :db<ret>:bufinfo<ret>
 map global normal <a-q> :db!<ret>:bufinfo<ret>
 

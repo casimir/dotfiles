@@ -46,7 +46,7 @@ tall = Tall 1 (3/100) (1/2)
 
 myTerminal =  "urxvt -fn \"xft:terminus-8\" +sb"
 
-myBorderWidth   = 2
+myBorderWidth   = 3
 myModMask       = mod4Mask
 
 myNumlockMask   = mod2Mask
@@ -74,7 +74,7 @@ base2  = "#eee8d5"
 base3  = "#fdf6e3"
 
 myNormalBorderColor  = base02 -- "#073642"
-myFocusedBorderColor = base01 -- green
+myFocusedBorderColor = orange -- green
 
 dmenu :: String
 dmenu = "dmenu_run -fn \"Iosevka Slab-22:weight=50\" -l 6 -b"
