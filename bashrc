@@ -33,7 +33,9 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 export XDG_CONFIG_HOME=$HOME/config
 export GIT_EDITOR='kak'
 export EDITOR='kak'
-export PATH=$HOME/scripts:$HOME/bin:$HOME/.cabal/bin:$HOME/.local/bin:$PATH
+# mkdir -p ~/.npm-global
+# npm config set prefix '~/.npm-global'
+export PATH=$HOME/.npm-global/bin:$HOME/scripts:$HOME/bin:$HOME/.cabal/bin:$HOME/.local/bin:$PATH
 
 export PS1='[$(date +%H:%M)|\w] \n\$ '
 
@@ -45,6 +47,8 @@ shopt -s autocd
 
 alias today='date +"%Y-%m-%d"'
 alias now='date +"%Y-%m-%d-%H%M"'
+
+alias k=kak
 
 alias ..='cd ..'
 alias .='ls --color=auto'

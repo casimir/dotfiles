@@ -21,10 +21,21 @@ hook -group kakrc global BufCreate .*[.](ts)x? %{
     set buffer filetype javascript
 }
 
-hook -group kakrc global WinSetOption filetype=(java|type)script %{
+hook -group kakrc global BufSetOption filetype=(java|type)script %{
     set buffer tabstop 2
     set buffer indentwidth 2
 }
+hook -group kakrc global WinSetOption filetype=(java|type)script %{
+    set window tabstop 2
+    set window indentwidth 2
+}
+
+hook -group kakrc global BufCreate .*purs %{ set buffer filetype purescript }
+hook -group kakrc global WinSetOption filetype=purescript %{ addhl ref haskell }
+
+def lsp-start-psc-ide %{ lsp-execute-command purescript.startPscIde }
+
+hook -group kakrc global BufWritePost .*purs %{ lsp-execute-command purescript.build }
 
 import autowrap
 import backspace
@@ -108,6 +119,7 @@ map -docstring join global user   j <A-J>
 # Overwrite a'la vim R
 import overwrite
 map global normal R :overwrite<ret>
+map global normal C r<space>:overwrite<ret>
 
 # t on k
 map global normal k     t
@@ -305,6 +317,7 @@ import fzf
 map -docstring "bufzf"      global user b ":bufzf<ret>"
 map -docstring "fzf-file"   global user f ":fzf-file<ret>"
 map -docstring "fzf-file ~" global user F ":fzf-file ~<ret>"
+map -docstring "fzf-file"   global user <a-f> ':fzf-file %sh{dirname $kak_buffile}<ret>'
 map -docstring "fzf-cd"     global user c ":fzf-cd<ret>"
 map -docstring "fzf-cd ~"   global user C ":fzf-cd ~<ret>"
 map -docstring "fzf-git"    global user g ":fzf-git<ret>"
@@ -419,6 +432,7 @@ hook global -group kakrc BufCreate .*(Makefile).* %{
 
 decl str lsp_servers %{
     python:pyls
+    purescript:purescript-language-server --stdio
     typescript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
     javascript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
     go:/home/dan/go/bin/go-langserver
@@ -552,7 +566,7 @@ def ide %{
 colorscheme solarized
 
 # by lenormf, see https://github.com/mawww/kakoune/issues/1192
-decl -hidden range-faces show_matching_range
+decl -hidden range-specs show_matching_range
 
 hook global -group kakrc InsertChar [[(<{}>)\]] %{ eval -draft %{
     try %{
@@ -561,6 +575,11 @@ hook global -group kakrc InsertChar [[(<{}>)\]] %{ eval -draft %{
     }
 
     hook window -group once-matching InsertChar [^[(<{}>)\]] %{
+        set window show_matching_range ""
+        remove-hooks window once-matching
+    }
+
+    hook window -group once-matching InsertEnd .* %{
         set window show_matching_range ""
         remove-hooks window once-matching
     }
@@ -594,6 +613,39 @@ def -hidden update_height %{
         }
     }
 }
+
+map -docstring 'merge sels' global user m <a-m>
+
+def div -params 0..1 -docstring %{Wraps selected text with a tag and indents it.
+
+The parameter can be omitted and then defaults to div.} %{
+    eval -itersel %{
+        exec <a-:><a-x>H Zo< / %sh{[ -n "$1" ] && echo "$1" || echo "div"} ><esc><a-x>yz<A-P>s/<ret>dz>
+    }
+}
+
+def select-indent -docstring %{Select to the same indentation level, upwards} %{
+    eval -itersel %{
+        exec glh<a-/>^(\h*)<ret><a-?>^<c-r>1\H<ret><a-x><a-:>
+    }
+}
+alias global si select-indent
+
+def select-tag -docstring %{Selects xml tag from start to end.
+
+Assumptions:
+
+- Start tag begins on an own line
+- Closing tag has the same indentation as start tag or tag is self-closing} %{
+    eval -itersel %{
+        try %{
+            exec <a-/> ^(\h*) <([\w.]+) <ret> ?<c-r>1 < / <c-r>2 ><ret>
+        } catch %{
+            exec ? /> <ret>
+        }
+    }
+}
+alias global st select-tag
 
 # hook -group kakrc global NormalIdle .* update_height
 # hook -group kakrc global InsertChar [\n] update_height
