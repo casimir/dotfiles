@@ -1,5 +1,5 @@
-URxvt.font: xft:Consolas:size=16:weight=50
-URxvt.boldFont: xft:Consolas:size=16:weight=200
+URxvt.font: xft:Consolas:size=13:weight=50
+URxvt.boldFont: xft:Consolas:size=13:weight=200
 URxvt.letterSpace: -1
 
 URxvt.scrollBar: false

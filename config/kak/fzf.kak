@@ -1,6 +1,7 @@
 
 def fzf-file -params 0..1 %{
-    fzf "edit $1" "ag -l -f -p ~/.binignore -p ~/.ignore --hidden --one-device . %arg{1}"
+    fzf "edit $1" "find %arg{1} -name .git -prune -o -name .svn -prune -o -regex '.*\(bower_components\|output\|.mozilla\|firefox\|node_modules\|grunt\|cache\|Cache\|config/\(Slack\|chromium\|goole-chrome\)\).*' -prune -o \( -type d -o -type f -o -type l \) -a -not -path %arg{1} -a -not -name '.' -print | sed 's@^\./@@'"
+                # "ag -l -f -p ~/.binignore -p ~/.ignore --hidden --one-device . %arg{1}"
                 # "rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
 }
 
@@ -43,7 +44,7 @@ def bufzf %{ %sh{
     chmod 755 $delbuf
     (
         # todo: expect ctrl-[vw] to make execute in new windows instead
-        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' |
+        urxvt -e sh -c "echo $kak_buflist | tr ':' '\n' | sort |
             fzf --height 100% --reverse --color=16 -0 -1 -e '--preview=$setbuf {}' --preview-window=up:0 --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then
             ( read action
