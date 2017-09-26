@@ -22,6 +22,8 @@ plug occivink/kakoune-find
 plug occivink/kakoune-sudo-write
 plug danr/kakoune-easymotion
 
+map global normal ^ :select-vertically<ret>
+
 hook -group kakrc global BufCreate .*[.](ts)x? %{
     set buffer filetype javascript
 }
@@ -148,10 +150,19 @@ map global normal _ ':exec s<ret><ret>'
 map -docstring %{keep} global user k <a-k>
 map -docstring %{keep not} global user K <a-K>
 
+def old_X %{
+    try %{
+        exec -draft \; <a-k>\n<ret>
+        exec X
+    } catch %{
+        exec <a-x><a-:>
+    }
+}
+
 # Line selection commands on v as in vim's visual mode
 import line-selection
 map global normal v     :line-select<ret>
-map global normal V     X
+map global normal V     :old_X<ret>
 map global normal <A-v> <A-x>
 map global normal <A-V> <A-X>
 map global normal <c-v> :line-new-cursor<ret>
@@ -169,8 +180,8 @@ map -docstring <ret> global user <ret> <ret>
 map global normal <space> '<space>:pagewise j<ret>'
 map global normal <ret>   '<space>:pagewise k<ret>'
 
-decl int viewport_y
 decl int viewport_h
+decl int viewport_y
 def viewport_update %{
     eval -save-regs ct %{
         eval -draft -no-hooks %{
