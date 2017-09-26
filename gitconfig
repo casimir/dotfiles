@@ -4,6 +4,7 @@
 [core]
     editor = kak
     excludesfile = ~/.gitexcludes
+    autocrlf = input
 [branch "master"]
     autosetupmerge = true
 [merge]
