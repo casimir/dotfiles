@@ -7,7 +7,7 @@ def import -params 1 %{
 def plug -params 1 %{
     %sh{
         if [[ ! -d $HOME/build/$1 ]]; then
-            (cd $HOME/build; git clone https://github.com/$1)
+            (cd $HOME/build; git clone https://github.com/$1 2> /dev/null)
         fi
         for file in $(echo $HOME/build/$(basename $1)/*.kak); do
             echo source "$file"
@@ -15,7 +15,12 @@ def plug -params 1 %{
     }
 }
 
-#plug Delapouite/kakoune-expand-region
+plug occivink/kakoune-vertical-selection
+plug occivink/kakoune-interactive-itersel
+plug occivink/kakoune-expand
+plug occivink/kakoune-find
+plug occivink/kakoune-sudo-write
+plug danr/kakoune-easymotion
 
 hook -group kakrc global BufCreate .*[.](ts)x? %{
     set buffer filetype javascript
@@ -244,7 +249,8 @@ def xcopy -params 0..1 %{%sh{
 }}
 
 # Sync %reg{"} with X clipboard, idea from alexherbo2
-hook global -group kakrc NormalKey y %{xcopy}
+map global normal y y:xcopy<ret>
+#hook global -group kakrc NormalKey y %{xcopy}
 
 # Execute current selection(s)
 map -docstring eval global user x %{:eval -itersel %val{selection}<ret>}
@@ -416,6 +422,10 @@ def my-window-setup %{
 # auto indent
 hook -group copyindent global InsertChar \n %{ exec -draft -itersel K<a-&> }
 
+hook -group kakrc global WinSetOption ^filetype=markdown$ %{
+    set window disabled_hooks copyindent
+}
+
 # Auto expand tabs into spaces
 hook -group expandtabs global InsertChar \t %{ exec -draft -itersel x@ }
 
@@ -456,11 +466,11 @@ hook -group lsp global BufWritePost .* lsp-sync
 
 decl str lsp_pid
 hook global KakEnd .* %{
-    %sh{kill $kak_opt_lsp_pid}
+    %sh{[ -n "$kak_opt_lsp_pid" ] && kill $kak_opt_lsp_pid}
 }
 def lsp-start %{
     %sh{
-        kill $kak_opt_lsp_pid
+        [ -n "$kak_opt_lsp_pid" ] && kill $kak_opt_lsp_pid
         ( python $HOME/code/libkak/lspc.py $kak_session
         ) > /dev/null 2>&1 < /dev/null &
         echo set global lsp_pid $!

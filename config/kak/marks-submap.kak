@@ -12,6 +12,8 @@ def marks -params 0..1 %{
       s) key=Z ;;
       a) key='<a-Z>' ;;
       u) key='<a-z>' ;;
+      w) key=':easy-motion-word<ret>' ;;
+      l) key=':easy-motion-line<ret>' ;;
       [a-zA-Z]) echo marks '%{"'"$kak_key"'}' ;;
       *) echo echo marks: unbound "$kak_key" ;;
     esac

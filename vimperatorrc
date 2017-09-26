@@ -18,9 +18,10 @@ noremap ; :
 noremap : ;
 noremap c ;y
 noremap b ;F
+noremap <a-.> gt
+noremap <a-,> gT
 cmap <c-n> <up>
-noremap <c-r> :source ~/.vimperatorrc
-noremap <c-r> :source ~/.vimperatorrc
+noremap <c-r> :source ~/.vimperatorrc<cr>
 set autocomplete=false
 set editor='gvim'
 set hintchars=uhetonasidpgcrl

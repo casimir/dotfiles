@@ -1,6 +1,6 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
-{-# OPTIONS_GHC -i/home/dan/.xmonad/ -v #-}
+{-# OPTIONS_GHC -i/home/dan/.xmonad/ #-}
 
 import XMonad hiding ((|||))
 
@@ -155,8 +155,28 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
         -- Back to tiling
       , (super xK_b,      withFocused $ windows . W.sink)
 
-      --, (super xK_i, bringMenu)
-      --, (super xK_u, gotoMenu)
+      , (super xK_i, do
+            withWindowSet $ \ws -> do
+                let scr = W.current ws
+                osd_cat (show (W.screenDetail scr))
+                modify $ \ st ->
+                  let ws = windowset st
+                      c = W.current ws
+                  in  st { windowset = ws { W.current = c { W.screenDetail =
+                            SD (Rectangle 500 0 2440 1440) }}}
+        )
+
+      , (shiftSuper xK_i, do
+            withWindowSet $ \ws -> do
+                let scr = W.current ws
+                osd_cat (show (W.screenDetail scr))
+                modify $ \ st ->
+                  let ws = windowset st
+                      c = W.current ws
+                  in  st { windowset = ws { W.current = c { W.screenDetail =
+                            SD (Rectangle 0 0 3440 1440) }}}
+        )
+      --, (super xK_u, gotoMenu.)
 
         -- Quit xmonad
       , (shiftSuper xK_q, io (exitWith ExitSuccess))
@@ -249,7 +269,7 @@ waitNine m =
 osd_cat :: String -> X ()
 osd_cat s =
     do liftIO (writeFile "/tmp/osd" s)
-       spawn "osd_cat /tmp/osd --age=1 --pos=bottom --lines=1"
+       spawn "osd_cat /tmp/osd --age=1 --pos=bottom --lines=5"
 
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse myMouseBindings
