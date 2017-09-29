@@ -1,3 +1,4 @@
+alias global sp tmux-new-vertical
 def import -params 1 %{
     try %{
         source %sh{echo $XDG_CONFIG_HOME/kak/$1.kak}
@@ -53,6 +54,33 @@ import reload-kakrc
 import same-point-insert
 import selections
 import z-submap
+
+# snippets
+import snippets
+
+hook -group kakrc global WinSetOption filetype=haskell %{
+    set window snippets %{
+        flc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleContexts #-}<esc>zi
+        fli <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleInstances #-}<esc>zi
+        vp  <esc>dZ<a-/>^module<ret>O{-# LANGUAGE ViewPatterns #-}<esc>zi
+        nfp <esc>dZ<a-/>^module<ret>O{-# LANGUAGE NamedFieldPuns #-}<esc>zi
+        rwc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE RecordWildCards #-}<esc>zi
+        gnd <esc>dZ<a-/>^module<ret>O{-# LANGUAGE GeneralizedNewtypeDeriving #-}<esc>zi
+        tos <esc>dZ<a-/>^module<ret>O{-# LANGUAGE TypeOperators #-}<esc>zi
+        icm <esc>dZ<a-/>^import<ret>oimport Control.Monad<esc>zi
+        imr <esc>dZ<a-/>^import<ret>oimport Control.Monad.Reader<esc>zi
+        ims <esc>dZ<a-/>^import<ret>oimport Control.Monad.State<esc>zi
+        imw <esc>dZ<a-/>^import<ret>oimport Control.Monad.Writer<esc>zi
+        imc <esc>dZ<a-/>^import<ret>oimport Control.Monad.Cont<esc>zi
+        imb <esc>dZ<a-/>^import<ret>oimport Data.Maybe<esc>zi
+        idl <esc>dZ<a-/>^import<ret>oimport Data.List<esc>zi
+        ips <esc>dZ<a-/>^import<ret>oimport Text.Show.Pretty<esc>zi
+        ipp <esc>dZ<a-/>^import<ret>oimport Text.PrettyPrint<esc>zi
+        idm <esc>dZ<a-/>^import<ret>oimport Data.Map (Map)<ret>import qualified Data.Map as M<esc>zi
+        ids <esc>dZ<a-/>^import<ret>oimport Data.Set (Set)<ret>import qualified Data.Set as S<esc>zi
+        deq <space><space>deriving (Eq, Ord, Show)
+    }
+}
 
 # Dvorak movement, dodging empty lines
 import nonempty-lines
@@ -221,7 +249,7 @@ def selinfo %{
     '
 }
 
-hook -group kakrc global NormalKey '^(<a-[:;]>|<space>|;)$' selinfo
+#hook -group kakrc global NormalKey '^(<a-[:;]>|<space>|;)$' selinfo
 
 # Rotate selections on "
 map global normal '"' '<a-">'
@@ -701,3 +729,5 @@ hook -group kakrc global WinDisplay .* %{
         '
     }
 }
+
+
