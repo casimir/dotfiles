@@ -1,0 +1,3 @@
+#!/bin/sh
+ghc -dynamic -ilib xmonad.hs
+date >> /tmp/xmonad_rebuild_log
