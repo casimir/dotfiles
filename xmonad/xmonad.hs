@@ -141,7 +141,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList (moreKeys ++ keyli
       , (super xK_g, spawn dmenu)
 
         -- Lock
-      , (super xK_x, spawn "xlock")
+      , (super xK_x, spawn "slock")
 
         -- Kill window
       , (shiftSuper xK_d, kill)
@@ -376,8 +376,7 @@ defaults = ewmh $ def {
     layoutHook         = myLayout,
     manageHook         = myManageHook,
     startupHook        = do startupHook def
-                            refresh
-                            setDefaultCursor xC_heart,
+                            refresh,
     handleEventHook    = handleEventHook def <+> fullscreenEventHook <+>
                          serverModeEventHookCmd
   }
