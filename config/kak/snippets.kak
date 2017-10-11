@@ -11,7 +11,7 @@ hook -group kakrc global InsertChar \n %{
                     [ -n "$short" ] && (
                         echo "reg s '$short'"
                         echo "reg r \"$@\""
-                        echo "try %{ exec -draft \"<a-k>\A%reg{s}\Z<ret>c%reg{r}<esc>\" }"
+                        echo "try %{ exec -draft \"<a-k>\A%reg{s}\z<ret>c%reg{r}<esc>\" }"
                     )
                 }
                 proc $line
