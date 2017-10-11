@@ -5,7 +5,7 @@ def full-line-ifte -params 2 %{
       # are we at the newline or on the char before?
       exec -draft <a-:> l <a-k> [\n] <ret>
       # is there only indentation to the left?
-      exec -draft <a-:><a-\;> \; Gh <a-k> \A^\h*.\Z <ret>
+      exec -draft <a-:><a-\;> \; Gh <a-k> \A^\h*.\z <ret>
       # then execute second arg
       exec %arg{2}
     } catch %{

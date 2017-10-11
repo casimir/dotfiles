@@ -14,7 +14,7 @@ def _while-empty -params 1 %{
     }
 }
 
-def while-empty -params 1 %{ eval -itersel _while-empty %arg{1} }
+def while-empty -params 1 %{ eval -no-hooks -itersel _while-empty %arg{1} }
 
 def remove-adjacent-empty-line -params 1 %{
     eval -no-hooks -itersel %{

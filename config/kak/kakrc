@@ -1,3 +1,4 @@
+alias global sp tmux-new-vertical
 def import -params 1 %{
     try %{
         source %sh{echo $XDG_CONFIG_HOME/kak/$1.kak}
@@ -56,6 +57,42 @@ import reload-kakrc
 import same-point-insert
 import selections
 import z-submap
+
+# snippets
+import snippets
+
+hook -group kakrc global WinSetOption filetype=haskell %{
+    set window snippets %{
+        fc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleContexts #-}<esc>zi
+        fi <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleInstances #-}<esc>zi
+        vp <esc>dZ<a-/>^module<ret>O{-# LANGUAGE ViewPatterns #-}<esc>zi
+        nfp <esc>dZ<a-/>^module<ret>O{-# LANGUAGE NamedFieldPuns #-}<esc>zi
+        rwc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE RecordWildCards #-}<esc>zi
+        gnd <esc>dZ<a-/>^module<ret>O{-# LANGUAGE GeneralizedNewtypeDeriving #-}<esc>zi
+        tos <esc>dZ<a-/>^module<ret>O{-# LANGUAGE TypeOperators #-}<esc>zi
+        lc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE LambdaCase #-}<esc>zi
+        icm <esc>dZ<a-/>^import<ret>oimport Control.Monad<esc>zi
+        imr <esc>dZ<a-/>^import<ret>oimport Control.Monad.Reader<esc>zi
+        ims <esc>dZ<a-/>^import<ret>oimport Control.Monad.State<esc>zi
+        imw <esc>dZ<a-/>^import<ret>oimport Control.Monad.Writer<esc>zi
+        imc <esc>dZ<a-/>^import<ret>oimport Control.Monad.Cont<esc>zi
+        imb <esc>dZ<a-/>^import<ret>oimport Data.Maybe<esc>zi
+        idl <esc>dZ<a-/>^import<ret>oimport Data.List<esc>zi
+        ips <esc>dZ<a-/>^import<ret>oimport Text.Show.Pretty<esc>zi
+        ipp <esc>dZ<a-/>^import<ret>oimport Text.PrettyPrint<esc>zi
+        idm <esc>dZ<a-/>^import<ret>oimport Data.Map (Map)<ret>import qualified Data.Map as M<esc>zi
+        ids <esc>dZ<a-/>^import<ret>oimport Data.Set (Set)<ret>import qualified Data.Set as S<esc>zi
+        deq <space><space>deriving (Eq, Ord, Show)
+    }
+}
+
+hook -group kakrc global WinSetOption filetype=kak %{
+    set window snippets %{
+        mgn map global normal
+        mgu map global user
+        hg hook -group kakrc global
+    }
+}
 
 # Dvorak movement, dodging empty lines
 import nonempty-lines
@@ -186,7 +223,7 @@ map global normal <ret>   '<space>:pagewise k<ret>'
 decl int viewport_h
 decl int viewport_y
 def viewport_update %{
-    eval -save-regs ct %{
+    eval -draft -save-regs ct %{
         eval -draft -no-hooks %{
             reg c %val{cursor_line}
             exec gt
@@ -224,7 +261,7 @@ def selinfo %{
     '
 }
 
-hook -group kakrc global NormalKey '^(<a-[:;]>|<space>|;)$' selinfo
+#hook -group kakrc global NormalKey '^(<a-[:;]>|<space>|;)$' selinfo
 
 # Rotate selections on "
 map global normal '"' '<a-">'
@@ -535,7 +572,7 @@ def contextual-tab -docstring "To be bound in insert mode" %{
 }
 
 hook global -group kakrc BufCreate .*kak.* %{
-    set -add buffer completion_extra_word_char -
+    set -add buffer extra_word_chars -
 }
 
 hook global -group kakrc InsertCompletionShow .* %{
@@ -628,17 +665,6 @@ map -docstring '<a-/>(?i)' global user '<a-/>' <a-/>(?i)
 map -docstring '?(?i)'     global user '?'     ?(?i)
 map -docstring '<a-?>(?i)' global user '<a-?>' <a-?>(?i)
 
-decl -hidden int height
-
-def -hidden update_height %{
-    eval -draft -no-hooks %{
-        exec ge
-        %sh{
-            [[ $kak_opt_height != $kak_cursor_line ]] && echo "set buffer height $(($kak_cursor_line-1))"
-        }
-    }
-}
-
 map -docstring 'merge sels' global user M <a-m>
 
 def div -params 0..1 -docstring %{Wraps selected text with a tag and indents it.
@@ -674,33 +700,44 @@ alias global st select-tag
 
 # hook -group kakrc global NormalIdle .* update_height
 # hook -group kakrc global InsertChar [\n] update_height
+#
+decl -hidden int height
 
-set global modelinefmt %{
-{{context_info}} {{mode_info}} |
-%val{cursor_line}:%val{cursor_char_column} |
-%sh{
-    [[ ${kak_opt_height:-0} != 0 ]] && \
-    printf "%3d%% | " "$((100 * ($kak_cursor_line - 1) / $kak_opt_height))"
-
-    echo -n "$kak_bufname | "
-
-    [[ $kak_client != unnamed0 ]] && \
-    echo "$kak_client | "
-}%val{session}}
-
-set global modelinefmt %{
-{{context_info}} {{mode_info}} |
-%val{cursor_line}:%val{cursor_char_column} |
-%val{bufname} |
-%val{session}}
-hook -group kakrc global WinDisplay .* %{
-    %sh{
-        [[ $kak_client != unnamed0 ]] && echo 'set window modelinefmt %{
-{{context_info}} {{mode_info}} |
-%val{cursor_line}:%val{cursor_char_column} |
-%val{bufname} |
-%val{client} |
-%val{session}}
-        '
+def -hidden update_height %{
+    eval -draft -no-hooks %{
+        exec ge
+        %sh{
+            [[ $kak_opt_height != $kak_cursor_line ]] && echo "set buffer height $(($kak_cursor_line-1))"
+        }
     }
 }
+
+decl str modeline_info  ''
+
+hook -group kakrc global WinDisplay .* update_modeline_info
+hook -group kakrc global PromptIdle .* update_modeline_info
+hook -group kakrc global InsertIdle .* update_modeline_info
+hook -group kakrc global NormalIdle .* update_modeline_info
+hook -group kakrc global NormalKey [jknJKN] update_modeline_info
+
+def update_modeline_info %{
+    try %{
+        update_height
+        %sh{
+        echo -n "set window modeline_info '"
+        [[ ${kak_opt_height:-0} != 0 ]] && \
+        printf "%3d%% |" "$((100 * ($kak_cursor_line - 1) / $kak_opt_height))"
+
+        [[ $kak_client != unnamed0 ]] && \
+        echo -n " $kak_client |"
+
+        echo "'"
+        }
+    }
+}
+
+set global modelinefmt %{
+{{context_info}} {{mode_info}} | %val{bufname} |
+%val{cursor_line}:%val{cursor_char_column} |
+%opt{modeline_info}
+%val{session}}
