@@ -21,6 +21,9 @@ plug occivink/kakoune-expand
 plug occivink/kakoune-find
 plug occivink/kakoune-sudo-write
 plug danr/kakoune-easymotion
+plug fsub/kakoune-mark
+
+map global user m :mark-word<ret>
 
 map global normal ^ :select-vertically<ret>
 
@@ -351,7 +354,7 @@ def fzf-file-from-git-here %{
 map global normal <a-c> ':fzf-cd<ret>'
 
 # Format using fmt
-map -docstring format global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+map -docstring format global user q '|fmt -w 80<ret>:echo -markup {green}[sel] | fmt -w 80<ret>'
 
 # Object map
 # Some upper-case variants:
@@ -636,7 +639,7 @@ def -hidden update_height %{
     }
 }
 
-map -docstring 'merge sels' global user m <a-m>
+map -docstring 'merge sels' global user M <a-m>
 
 def div -params 0..1 -docstring %{Wraps selected text with a tag and indents it.
 
