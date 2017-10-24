@@ -22,6 +22,9 @@ plug occivink/kakoune-expand
 plug occivink/kakoune-find
 plug occivink/kakoune-sudo-write
 plug danr/kakoune-easymotion
+plug fsub/kakoune-mark
+
+map global user m :mark-word<ret>
 
 map global normal ^ :select-vertically<ret>
 
@@ -60,14 +63,14 @@ import snippets
 
 hook -group kakrc global WinSetOption filetype=haskell %{
     set window snippets %{
-        flc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleContexts #-}<esc>zi
-        fli <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleInstances #-}<esc>zi
-        vp  <esc>dZ<a-/>^module<ret>O{-# LANGUAGE ViewPatterns #-}<esc>zi
+        fc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleContexts #-}<esc>zi
+        fi <esc>dZ<a-/>^module<ret>O{-# LANGUAGE FlexibleInstances #-}<esc>zi
+        vp <esc>dZ<a-/>^module<ret>O{-# LANGUAGE ViewPatterns #-}<esc>zi
         nfp <esc>dZ<a-/>^module<ret>O{-# LANGUAGE NamedFieldPuns #-}<esc>zi
         rwc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE RecordWildCards #-}<esc>zi
         gnd <esc>dZ<a-/>^module<ret>O{-# LANGUAGE GeneralizedNewtypeDeriving #-}<esc>zi
         tos <esc>dZ<a-/>^module<ret>O{-# LANGUAGE TypeOperators #-}<esc>zi
-        llc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE LambdaCase #-}<esc>zi
+        lc <esc>dZ<a-/>^module<ret>O{-# LANGUAGE LambdaCase #-}<esc>zi
         icm <esc>dZ<a-/>^import<ret>oimport Control.Monad<esc>zi
         imr <esc>dZ<a-/>^import<ret>oimport Control.Monad.Reader<esc>zi
         ims <esc>dZ<a-/>^import<ret>oimport Control.Monad.State<esc>zi
@@ -80,6 +83,14 @@ hook -group kakrc global WinSetOption filetype=haskell %{
         idm <esc>dZ<a-/>^import<ret>oimport Data.Map (Map)<ret>import qualified Data.Map as M<esc>zi
         ids <esc>dZ<a-/>^import<ret>oimport Data.Set (Set)<ret>import qualified Data.Set as S<esc>zi
         deq <space><space>deriving (Eq, Ord, Show)
+    }
+}
+
+hook -group kakrc global WinSetOption filetype=kak %{
+    set window snippets %{
+        mgn map global normal
+        mgu map global user
+        hg hook -group kakrc global
     }
 }
 
@@ -380,7 +391,7 @@ def fzf-file-from-git-here %{
 map global normal <a-c> ':fzf-cd<ret>'
 
 # Format using fmt
-map -docstring format global user q '|fmt -w 80<ret>:echo -color green [sel] | fmt -w 80<ret>'
+map -docstring format global user q '|fmt -w 80<ret>:echo -markup {green}[sel] | fmt -w 80<ret>'
 
 # Object map
 # Some upper-case variants:
@@ -654,7 +665,7 @@ map -docstring '<a-/>(?i)' global user '<a-/>' <a-/>(?i)
 map -docstring '?(?i)'     global user '?'     ?(?i)
 map -docstring '<a-?>(?i)' global user '<a-?>' <a-?>(?i)
 
-map -docstring 'merge sels' global user m <a-m>
+map -docstring 'merge sels' global user M <a-m>
 
 def div -params 0..1 -docstring %{Wraps selected text with a tag and indents it.
 

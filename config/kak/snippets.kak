@@ -1,8 +1,8 @@
 try %{ decl str snippets }
 
-hook -group kakrc global InsertChar \n %{
+hook -group kakrc global InsertChar \s %{
     eval -draft -no-hooks %{
-        exec 'k<a-x>H'
+        exec '<a-/>\S+<ret>'
         %sh{
             (while read line; do
                 proc() {
