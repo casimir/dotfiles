@@ -28,9 +28,9 @@ map global user m :mark-word<ret>
 
 map global normal ^ :select-vertically<ret>
 
-hook -group kakrc global BufCreate .*[.](ts)x? %{
-    set buffer filetype javascript
-}
+#hook -group kakrc global BufCreate .*[.](ts)x? %{
+    #set buffer filetype javascript
+#}
 
 hook -group kakrc global BufSetOption filetype=(java|type)script %{
     set buffer tabstop 2
@@ -462,9 +462,9 @@ def my-window-setup %{
         echo "%val{window_height}:%val{window_width}"
     }
 
-    rmhl red80
-    addhl group red80
-    addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,rgb:ffcccc
+    #rmhl red80
+    #addhl group red80
+    #addhl -group red80 regex ^[^\n]{80}([^\n]) 1:default,rgb:ffcccc
 
     map window insert <tab> '<a-;>:contextual-tab<ret>'
 }
