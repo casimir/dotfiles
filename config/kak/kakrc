@@ -1,5 +1,17 @@
-def next %{exec "/%reg{/}"}
-map global prompt <tab> <ret>:next<ret>
+def tabsearch -params 1 %{
+    define-command -allow-override next "exec \"%arg{1}\%reg{/}\""
+    map global prompt <tab> <ret>:next<ret>
+    exec %arg{1}
+}
+def colon %{
+    map global prompt <tab> <tab>
+    exec :
+}
+map global normal / ':tabsearch /<ret>'
+map global normal ? ':tabsearch ?<ret>'
+map global normal <a-/> ':tabsearch <lt>a-/><ret>'
+map global normal <a-?> ':tabsearch <lt>a-?><ret>'
+map global normal \; :colon<ret>
 
 alias global sp tmux-new-vertical
 def import -params 1 %{
@@ -209,9 +221,6 @@ map global normal V     :old_X<ret>
 map global normal <A-v> <A-x>
 map global normal <A-V> <A-X>
 map global normal <c-v> :line-new-cursor<ret>
-
-# Prompt on ;
-map global normal \; :
 
 # Macros, one selection and remove highlighting
 map global normal <esc> '<esc>:noh<ret><space>'
