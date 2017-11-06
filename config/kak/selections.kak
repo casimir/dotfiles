@@ -45,7 +45,7 @@ hook global NormalKey .*[/?nN*].* highlight-search
 def highlight-search %{
   noh
   try %{
-    addhl dynregex '%reg{/}' 0:+u 1:+i 2:+i
+    addhl window/ dynregex '%reg{/}' 0:+u 1:+i 2:+i
   }
 }
 
