@@ -52,3 +52,5 @@ tags
 pip-selcheck.json
 include/
 bin/
+
+node_modules

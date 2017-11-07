@@ -503,8 +503,8 @@ hook global -group kakrc BufCreate .*(Makefile).* %{
 decl str lsp_servers %{
     python:pyls
     purescript:purescript-language-server --stdio
-    typescript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
-    javascript:node /home/dan/build/javascript-typescript-langserver/lib/language-server-stdio.js
+    typescript:typescript-language-server --stdio
+    javascript:typescript-language-server --stdio
     go:/home/dan/go/bin/go-langserver
 }
 decl str lsp_python_disabled_diagnostics '^E501'
